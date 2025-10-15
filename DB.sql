@@ -83,3 +83,10 @@ CREATE TABLE votar_o (
     FOREIGN KEY (idUsuario) REFERENCES usuario(id),
     FOREIGN KEY (idOpcion) REFERENCES opcion_e(id)
 );
+
+CREATE TABLE errores{
+	tipo varchar(50),
+	mensaje varchar(50),
+	foreign key (idContenido) references contenidos(id)
+}
+
