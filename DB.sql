@@ -7,7 +7,7 @@ CREATE TABLE programas (
     estadoAprobacion VARCHAR(50),
     categoria VARCHAR(50),
     nombre VARCHAR(50),
-    estado VARCHAR(50)
+	fechaYhora DATETIME,
 );
 
 CREATE TABLE segmentos (
@@ -21,7 +21,6 @@ CREATE TABLE segmentos (
 
 CREATE TABLE emisiones (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    fechaYhora DATETIME,
     enVivo BOOLEAN,
     plataforma VARCHAR(50),
     idPrograma INT,
@@ -90,3 +89,44 @@ CREATE TABLE errores{
 	foreign key (idContenido) references contenidos(id)
 }
 
+DELIMITER // 
+ CREATE PROCEDURE cpr(IN categoria1 varchar(50), IN nombre1 varchar(50), IN fechaYhora1 DATETIME, OUT mensaje varchar(50))
+ BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET p_mensaje = 'Ocurrio un error.';
+	 END;
+	START TRANSACTION;
+	 INSERT INTO programas(estadoAprobacion, categoria, nombre, fechaYhora) VALUES('En Revisión', categoria1, nombre1, fechaYhora)
+	COMMIT;
+   SET mensaje = 'Programa ingresado con éxito.' 
+ END;
+   
+ CREATE PROCEDURE bpr(IN id1 int, OUT mensaje varchar(50))
+ BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET p_mensaje = 'Ocurrio un error.';
+	 END;
+    START TRANSACTION;
+	 DELETE FROM progamas where id = id1;
+	COMMIT;
+   SET mensaje = 'Programa borrado con éxito.' 
+ END;
+ CREATE PROCEDURE mpr(IN id1 int, IN estadoAprobacion1 varchar(50), IN categoria1 varchar(50), IN nombre1 varchar(50), IN fechaYhora1 DATETIME, OUT mensaje varchar(50))
+ BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET p_mensaje = 'Ocurrio un error.';
+	 END;
+	START TRANSACTION;
+	 UPDATE programas
+	 SET estadoAprobacion = estadoAprobacion1, categoria = categoria1, nombre = nombre1, fechaYhora = fechaYhora1
+	 WHERE id = id1;
+	COMMIT;
+   SET mensaje = 'Datos del programa actualizados con éxito.'
+ END // 
+ DELIMITER ;
