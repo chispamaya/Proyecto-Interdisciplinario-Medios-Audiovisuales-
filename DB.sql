@@ -95,7 +95,7 @@ DELIMITER //
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
 	  ROLLBACK;
-	  SET p_mensaje = 'Ocurrio un error.';
+	  SET mensaje = 'Ocurrio un error.';
 	 END;
 	START TRANSACTION;
 	 INSERT INTO programas(estadoAprobacion, categoria, nombre, fechaYhora) VALUES('En Revisión', categoria1, nombre1, fechaYhora)
@@ -108,19 +108,105 @@ DELIMITER //
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
 	  ROLLBACK;
-	  SET p_mensaje = 'Ocurrio un error.';
+	  SET mensaje = 'Ocurrio un error.';
 	 END;
     START TRANSACTION;
 	 DELETE FROM progamas where id = id1;
 	COMMIT;
    SET mensaje = 'Programa borrado con éxito.' 
  END;
+ 
  CREATE PROCEDURE mpr(IN id1 int, IN estadoAprobacion1 varchar(50), IN categoria1 varchar(50), IN nombre1 varchar(50), IN fechaYhora1 DATETIME, OUT mensaje varchar(50))
  BEGIN
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
 	  ROLLBACK;
-	  SET p_mensaje = 'Ocurrio un error.';
+	  SET mensaje = 'Ocurrio un error.';
+	 END;
+	START TRANSACTION;
+	 UPDATE programas
+	 SET estadoAprobacion = estadoAprobacion1, categoria = categoria1, nombre = nombre1, fechaYhora = fechaYhora1
+	 WHERE id = id1;
+	COMMIT;
+   SET mensaje = 'Datos del programa actualizados con éxito.'
+ END;
+ 
+ 
+
+ CREATE PROCEDURE cu(IN email1 varchar(50), IN nombre1 varchar(50), IN contrasenia1 varchar(50), IN idRol1 int, OUT mensaje varchar(50))
+ BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET mensaje = 'Ocurrio un error.';
+	 END;
+	START TRANSACTION;
+	 INSERT INTO usuario(email, nombre, contrasenia, idRol) VALUES(email1, nombre1, contrasenia1, idRol1)
+	COMMIT;
+   SET mensaje = 'Usuario ingresado con éxito.' 
+ END;
+ 
+ CREATE PROCEDURE bu(IN id1 int, OUT mensaje varchar(50))
+ BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET mensaje = 'Ocurrio un error.';
+	 END;
+    START TRANSACTION;
+	 DELETE FROM usuario where id = id1;
+	COMMIT;
+   SET mensaje = 'Usuario borrado con éxito.' 
+ END;
+ CREATE PROCEDURE mu(IN id1 int, IN idRol1 varchar(50), OUT mensaje varchar(50))
+ BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET mensaje = 'Ocurrio un error.';
+	 END;
+	START TRANSACTION;
+	 UPDATE usuario
+	 SET idRol = idRol1
+	 WHERE id = id1;
+	COMMIT;
+   SET mensaje = 'Rol del usuario actualizado con éxito.'
+ END;
+ 
+ 
+ 
+ CREATE PROCEDURE cpl(IN categoria1 varchar(50), IN nombre1 varchar(50), IN fechaYhora1 DATETIME, OUT mensaje varchar(50))
+ BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET mensaje = 'Ocurrio un error.';
+	 END;
+	START TRANSACTION;
+	 INSERT INTO programas(estadoAprobacion, categoria, nombre, fechaYhora) VALUES('En Revisión', categoria1, nombre1, fechaYhora)
+	COMMIT;
+   SET mensaje = 'Programa ingresado con éxito.' 
+ END;
+   
+ CREATE PROCEDURE bpr(IN id1 int, OUT mensaje varchar(50))
+ BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET mensaje = 'Ocurrio un error.';
+	 END;
+    START TRANSACTION;
+	 DELETE FROM progamas where id = id1;
+	COMMIT;
+   SET mensaje = 'Programa borrado con éxito.' 
+ END;
+ 
+ CREATE PROCEDURE mpr(IN id1 int, IN estadoAprobacion1 varchar(50), IN categoria1 varchar(50), IN nombre1 varchar(50), IN fechaYhora1 DATETIME, OUT mensaje varchar(50))
+ BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET mensaje = 'Ocurrio un error.';
 	 END;
 	START TRANSACTION;
 	 UPDATE programas
@@ -129,4 +215,5 @@ DELIMITER //
 	COMMIT;
    SET mensaje = 'Datos del programa actualizados con éxito.'
  END // 
+ 
  DELIMITER ;
