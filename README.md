@@ -10,10 +10,7 @@
 Proyecto en desarrollo, un sistema de automatizacion de stock para Black Iron
 
 ## :hammer:Funcionalidades del proyecto
-- `Funcionalidad 1`: Visualizacion de stock
-- `Funcionalidad 2`: Advertencia ante falta de stock
-- `Funcionalidad 3`: Registrar pedido/compra
-- `Funcionalidad 4`: Cancelar pedido/compra y reintegro de stock 
+- `Funcionalidad 1`: 
 Acceso al Proyecto;
 ## Tecnologías utilizadas
 ![python_src_logo_icon_168037](https://github.com/user-attachments/assets/ab09d3aa-79f8-406a-b069-68eaf778359d)
