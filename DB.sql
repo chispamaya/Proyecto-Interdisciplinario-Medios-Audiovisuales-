@@ -2,13 +2,6 @@ DROP DATABASE IF EXISTS softlutionANDro;
 CREATE DATABASE softlutionANDro;
 USE softlutionANDro;
 
-CREATE TABLE programas (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    estadoAprobacion VARCHAR(50),
-    categoria VARCHAR(50),
-    nombre VARCHAR(50),
-	fechaYhora DATETIME,
-);
 
 CREATE TABLE segmentos (
     id INT AUTO_INCREMENT PRIMARY KEY,
@@ -19,11 +12,28 @@ CREATE TABLE segmentos (
     FOREIGN KEY (idPrograma) REFERENCES programas(id)
 );
 
+CREATE TABLE plataforma(
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	nombre varchar(50),
+	tipo varchar(50)
+);
+
+CREATE TABLE programas (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    estadoAprobacion VARCHAR(50),
+    categoria VARCHAR(50),
+    nombre VARCHAR(50),
+	fechaYhora DATETIME,
+	idPlataforma int,
+	foreign key(idPlataforma) references plataforma(id)
+);
+
 CREATE TABLE emisiones (
     id INT AUTO_INCREMENT PRIMARY KEY,
     enVivo BOOLEAN,
-    plataforma VARCHAR(50),
+    idPlataforma int,
     idPrograma INT,
+	FOREIGN key(idPlataforma) references plataforma(id),
     FOREIGN KEY (idPrograma) REFERENCES programas(id)
 );
 
@@ -84,13 +94,15 @@ CREATE TABLE votar_o (
 );
 
 CREATE TABLE errores{
+	id int AUTO_INCREMENT PRIMARY KEY,
 	tipo varchar(50),
 	mensaje varchar(50),
-	foreign key (idContenido) references contenidos(id)
-}
+	idContenido int,
+	foreign key(idContenido) references contenidos(id)
+};
 
 DELIMITER // 
- CREATE PROCEDURE cpr(IN categoria1 varchar(50), IN nombre1 varchar(50), IN fechaYhora1 DATETIME, OUT mensaje varchar(50))
+ CREATE PROCEDURE cpr(IN categoria1 varchar(50), IN nombre1 varchar(50), IN fechaYhora1 DATETIME, IN idP1 INT, OUT mensaje varchar(50))
  BEGIN
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
@@ -98,7 +110,7 @@ DELIMITER //
 	  SET mensaje = 'Ocurrio un error.';
 	 END;
 	START TRANSACTION;
-	 INSERT INTO programas(estadoAprobacion, categoria, nombre, fechaYhora) VALUES('En Revisión', categoria1, nombre1, fechaYhora)
+	 INSERT INTO programas(estadoAprobacion, categoria, nombre, fechaYhora, idPlataforma) VALUES('En Revisión', categoria1, nombre1, fechaYhora1, idP1)
 	COMMIT;
    SET mensaje = 'Programa ingresado con éxito.' 
  END;
@@ -111,12 +123,12 @@ DELIMITER //
 	  SET mensaje = 'Ocurrio un error.';
 	 END;
     START TRANSACTION;
-	 DELETE FROM progamas where id = id1;
+	 DELETE FROM programas where id = id1;
 	COMMIT;
    SET mensaje = 'Programa borrado con éxito.' 
  END;
  
- CREATE PROCEDURE mpr(IN id1 int, IN estadoAprobacion1 varchar(50), IN categoria1 varchar(50), IN nombre1 varchar(50), IN fechaYhora1 DATETIME, OUT mensaje varchar(50))
+ CREATE PROCEDURE mpr(IN id1 int, IN estadoAprobacion1 varchar(50), IN categoria1 varchar(50), IN nombre1 varchar(50), IN fechaYhora1 DATETIME, IN idP1 int, OUT mensaje varchar(50))
  BEGIN
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
@@ -125,7 +137,7 @@ DELIMITER //
 	 END;
 	START TRANSACTION;
 	 UPDATE programas
-	 SET estadoAprobacion = estadoAprobacion1, categoria = categoria1, nombre = nombre1, fechaYhora = fechaYhora1
+	 SET estadoAprobacion = estadoAprobacion1, categoria = categoria1, nombre = nombre1, fechaYhora = fechaYhora1, idPlataforma = idP1
 	 WHERE id = id1;
 	COMMIT;
    SET mensaje = 'Datos del programa actualizados con éxito.'
@@ -158,7 +170,7 @@ DELIMITER //
 	COMMIT;
    SET mensaje = 'Usuario borrado con éxito.' 
  END;
- CREATE PROCEDURE mu(IN id1 int, IN idRol1 varchar(50), OUT mensaje varchar(50))
+ CREATE PROCEDURE mu(IN id1 int, IN idRol1 int, OUT mensaje varchar(50))
  BEGIN
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
@@ -175,7 +187,7 @@ DELIMITER //
  
  
  
- CREATE PROCEDURE cpl(IN categoria1 varchar(50), IN nombre1 varchar(50), IN fechaYhora1 DATETIME, OUT mensaje varchar(50))
+ CREATE PROCEDURE cs(IN estadoAprobacion1 varchar(50), IN duracion1 varchar(50), IN titulo1 varchar(50), IN idP1 int, OUT mensaje varchar(50))
  BEGIN
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
@@ -183,12 +195,12 @@ DELIMITER //
 	  SET mensaje = 'Ocurrio un error.';
 	 END;
 	START TRANSACTION;
-	 INSERT INTO programas(estadoAprobacion, categoria, nombre, fechaYhora) VALUES('En Revisión', categoria1, nombre1, fechaYhora)
+	 INSERT INTO segmentos(estadoAprobacion, duracion, titulo, idPrograma) VALUES(estadoAprobacion1, duracion1, titulo1, idP1)
 	COMMIT;
-   SET mensaje = 'Programa ingresado con éxito.' 
+   SET mensaje = 'Segmento ingresado con éxito.' 
  END;
-   
- CREATE PROCEDURE bpr(IN id1 int, OUT mensaje varchar(50))
+ 
+ CREATE PROCEDURE bs(IN id1 int, OUT mensaje varchar(50))
  BEGIN
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
@@ -196,12 +208,11 @@ DELIMITER //
 	  SET mensaje = 'Ocurrio un error.';
 	 END;
     START TRANSACTION;
-	 DELETE FROM progamas where id = id1;
+	 DELETE FROM segmentos where id = id1;
 	COMMIT;
-   SET mensaje = 'Programa borrado con éxito.' 
+   SET mensaje = 'Segmento borrado con éxito.' 
  END;
- 
- CREATE PROCEDURE mpr(IN id1 int, IN estadoAprobacion1 varchar(50), IN categoria1 varchar(50), IN nombre1 varchar(50), IN fechaYhora1 DATETIME, OUT mensaje varchar(50))
+ CREATE PROCEDURE ms(IN id1 int, IN estadoAprobacion1 varchar(50), IN duracion1 varchar(50), IN titulo1 varchar(50), IN idP1 int, OUT mensaje varchar(50))
  BEGIN
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
@@ -209,11 +220,184 @@ DELIMITER //
 	  SET mensaje = 'Ocurrio un error.';
 	 END;
 	START TRANSACTION;
-	 UPDATE programas
-	 SET estadoAprobacion = estadoAprobacion1, categoria = categoria1, nombre = nombre1, fechaYhora = fechaYhora1
+	 UPDATE segmentos
+	 SET estadoAprobacion = estadoAprobacion1, duracion = duracion1, titulo = titulo1, idPrograma = idP1
 	 WHERE id = id1;
 	COMMIT;
-   SET mensaje = 'Datos del programa actualizados con éxito.'
- END // 
+   SET mensaje = 'Segmento actualizado con éxito.'
+ END;
  
+ 
+ 
+ CREATE PROCEDURE cpl(IN nombre1 varchar(50), IN tipo1 varchar(50), OUT mensaje varchar(50))
+ BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET mensaje = 'Ocurrio un error.';
+	 END;
+	START TRANSACTION;
+	 INSERT INTO plataforma(nombre, tipo) VALUES(nombre1, tipo1)
+	COMMIT;
+   SET mensaje = 'Plataforma ingresada con éxito.' 
+ END;
+   
+ CREATE PROCEDURE bpl(IN id1 int, OUT mensaje varchar(50))
+ BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET mensaje = 'Ocurrio un error.';
+	 END;
+    START TRANSACTION;
+	 DELETE FROM plataforma where id = id1;
+	COMMIT;
+   SET mensaje = 'Plataforma borrada con éxito.' 
+ END;
+ 
+ CREATE PROCEDURE mpl(IN id1 int, IN nombre1 varchar(50), IN tipo1 varchar(50), OUT mensaje varchar(50))
+ BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET mensaje = 'Ocurrio un error.';
+	 END;
+	START TRANSACTION;
+	 UPDATE plataforma
+	 SET nombre = nombre1, tipo = tipo1
+	 WHERE id = id1;
+	COMMIT;
+   SET mensaje = 'Datos de la plataforma actualizados con éxito.'
+ END;
+ 
+ 
+
+ 
+ CREATE PROCEDURE me(IN id1 int, IN enVivo1 varchar(50), IN idPl1 int, IN idPr1 int, OUT mensaje varchar(50))
+ BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET mensaje = 'Ocurrio un error.';
+	 END;
+	START TRANSACTION;
+	 UPDATE emision
+	 SET enVivo = enVivo1, idPl = idPl1, idPr = idPr1
+	 WHERE id = id1;
+	COMMIT;
+   SET mensaje = 'Datos de la emisión actualizados con éxito.'
+ END; 
+ 
+ 
+ 
+ 
+ CREATE PROCEDURE cc(IN formato1 varchar(50), IN rutaArchivo1 varchar(500), IN tags1 varchar(500), IN idU1 int, OUT mensaje varchar(50))
+ BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET mensaje = 'Ocurrio un error.';
+	 END;
+	START TRANSACTION;
+	 INSERT INTO contenidos(formato,rutaArchivo,tags,idUsuario) VALUES(formato1,rutaArchivo1,tags1,idU1)
+	COMMIT;
+   SET mensaje = 'Contenido subido con éxito.'
+ END; 
+ 
+ CREATE PROCEDURE bc(IN id1 int, OUT mensaje varchar(50))
+ BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET mensaje = 'Ocurrio un error.';
+	 END;
+	START TRANSACTION;
+	 DELETE FROM contenidos
+	 WHERE id = id1
+	COMMIT;
+   SET mensaje = 'Contenido borrado con éxito.'
+ END; 
+ 
+ 
+ 
+ 
+ CREATE PROCEDURE ld(IN likeOdislike1 boolean, IN idC int, IN idU int, OUT mensaje varchar(50))
+ BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET mensaje = 'Ocurrio un error.';
+	 END;
+	START TRANSACTION;
+	 IF NOT EXISTS (SELECT * FROM audiencia_con WHERE idUsuario = idU AND idContenido = idC) THEN
+	  INSERT INTO audiencia_con(likeOdislike, idContenido, idUsuario) VALUES (likeOdislike1, idC, idU)
+	 ELSE
+	  UPDATE audiencia_con
+	   SET likeOdislike = likeOdislike1
+	   WHERE idUsuario = idU AND idContenido = idC;
+	 END IF;
+	COMMIT;
+   SET mensaje = 'Valoración actualizada con éxito.'
+ END;
+ 
+ CREATE PROCEDURE bv(IN idC int, IN idU int, OUT mensaje varchar(50))
+ BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET mensaje = 'Ocurrio un error.';
+	 END;
+	START TRANSACTION;
+	 DELETE FROM audiencia_con
+	 WHERE idContenido = idC AND idUsuario = idU;
+	COMMIT;
+   SET mensaje = 'Valoración actualizada con éxito.'
+ END;
+ 
+ 
+ 
+ 
+ CREATE PROCEDURE ce(IN preguntar1 varchar(50), IN idU int, IN opciones JSON, OUT mensaje varchar(50))
+ BEGIN
+    DECLARE idE int;
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET mensaje = 'Ocurrio un error.';
+	 END;
+	START TRANSACTION;
+	 INSERT INTO encuesta(preguntar, idUsuario) VALUES (preguntar1, idU);
+	 SET idE = LAST_INSERT_ID();
+		INSERT INTO opcion_e (idEncuesta, opcion)
+     SELECT 
+        idE, opcion_valor
+     FROM 
+        JSON_TABLE(
+            opciones,
+            '$[*]' COLUMNS (
+                opcion_valor VARCHAR(50) PATH '$' 
+            )
+        ) AS jt;
+	 COMMIT;
+   SET mensaje = 'Encuesta creada con éxito.'
+ END;
+ 
+ falta corregir esto{{{{{{{{{{))(((((((
+ CREATE PROCEDURE vo(IN idO int, IN idU int, IN idE int, OUT mensaje varchar(50))
+ BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET mensaje = 'Ocurrio un error.';
+	 END;
+	START TRANSACTION;
+	 IF NOT EXISTS(SELECT * FROM votar_opcion WHERE idOpcion = idO AND idUsuario = idU) THEN
+      INSERT INTO votar_opcion(idOpcion, idUsuario) VALUES(idO, idU)
+     ELSE
+      UPDATE votar_opcion
+      SET idOpcion = idO WHERE idUsuario = idU AND idE = (SELECT idEncuesta FROM opcion_e WHERE id = idO)
+     END IF;	  
+	COMMIT;
+   SET mensaje = 'Encuesta creada con éxito.'
+ END //
  DELIMITER ;
