@@ -27,10 +27,14 @@ Proyecto en desarrollo, un sistema de automatizacion de stock para Black Iron
   
 ## Tecnologías utilizadas
 
+
+
+
 <p align="center">
-  <img width="150" height="150" alt="frontend" src="https://github.com/user-attachments/assets/bf21544b-c7a7-40c7-b402-2c7d21b3928b" />
-  <img width="150" height="150" alt="javascript-logo-javascript-icon-transparent-free-png" src="https://github.com/user-attachments/assets/a2540c70-46c0-4286-8432-12383e0356a4" />
-  <img width="150" height="150" alt="php-language-logo-hd-png-image-download-baby-elephant-clipart-qs6r" src="https://github.com/user-attachments/assets/f95035ec-8188-4241-a267-abc19f3c024e" />
+  <img width="150" height="150" alt="png-transparent-react-react-native-logos-brands-in-colors-icon-thumbnail" src="https://github.com/user-attachments/assets/153cdad2-f1c2-4ec2-ba4d-0c72453790f4" />
+  <img width="150" height="150" alt="mysql-logo-png-image-11660514413jvwkcjh4av" src="https://github.com/user-attachments/assets/fadfef91-986e-4355-a439-6a74b110b6b3" />
+  <img width="150" height="150" alt="png-transparent-java-class-file-java-platform-standard-edition-java-development-kit-java-runtime-environment-coffee-jar-text-class-orange" src="https://github.com/user-attachments/assets/2aeb76c4-07af-4f4c-8e3a-a4ea4b457717" />
+
 
 </p>
 
