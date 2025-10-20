@@ -93,13 +93,23 @@ CREATE TABLE votar_o (
     FOREIGN KEY (idOpcion) REFERENCES opcion_e(id)
 );
 
-CREATE TABLE errores{
+CREATE TABLE errores(
 	id int AUTO_INCREMENT PRIMARY KEY,
 	tipo varchar(50),
 	mensaje varchar(50),
 	idContenido int,
 	foreign key(idContenido) references contenidos(id)
-};
+);
+
+CREATE TABLE auditoria(
+	id int AUTO_INCREMENT PRIMARY KEY,
+	accion varchar(50),
+	usuario_id int,
+	tablaM varchar(50),
+	fecha datetime,
+	foreign key (usuario_id) references usuario(id)
+);
+
 
 DELIMITER // 
  CREATE PROCEDURE cpr(IN categoria1 varchar(50), IN nombre1 varchar(50), IN fechaYhora1 DATETIME, IN idP1 INT, OUT mensaje varchar(50))
@@ -110,7 +120,8 @@ DELIMITER //
 	  SET mensaje = 'Ocurrio un error.';
 	 END;
 	START TRANSACTION;
-	 INSERT INTO programas(estadoAprobacion, categoria, nombre, fechaYhora, idPlataforma) VALUES('En Revisión', categoria1, nombre1, fechaYhora1, idP1)
+	 INSERT INTO programas(estadoAprobacion, categoria, nombre, fechaYhora, idPlataforma) 
+	 VALUES('En Revisión', categoria1, nombre1, fechaYhora1, idP1)
 	COMMIT;
    SET mensaje = 'Programa ingresado con éxito.' 
  END;
@@ -170,6 +181,7 @@ DELIMITER //
 	COMMIT;
    SET mensaje = 'Usuario borrado con éxito.' 
  END;
+ 
  CREATE PROCEDURE mu(IN id1 int, IN idRol1 int, OUT mensaje varchar(50))
  BEGIN
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -184,8 +196,6 @@ DELIMITER //
 	COMMIT;
    SET mensaje = 'Rol del usuario actualizado con éxito.'
  END;
- 
- 
  
  CREATE PROCEDURE cs(IN estadoAprobacion1 varchar(50), IN duracion1 varchar(50), IN titulo1 varchar(50), IN idP1 int, OUT mensaje varchar(50))
  BEGIN
@@ -401,3 +411,12 @@ DELIMITER //
    SET mensaje = 'Encuesta creada con éxito.'
  END //
  DELIMITER ;
+
+ 
+ 
+ 
+ 
+ 
+ 
+ 
+ 
