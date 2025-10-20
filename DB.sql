@@ -110,6 +110,26 @@ CREATE TABLE auditoria(
 
 
 DELIMITER // 
+CREATE PROCEDURE s(IN tabla varchar(50), IN idU int, IN idP int, OUT mensaje varchar(50))
+ BEGIN
+	DECLARE ct LONGTEXT;
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  SET mensaje = 'Ocurrio un error.';
+	 END;
+	 IF idU IS NOT NULL THEN
+		SELECT * FROM usuario WHERE id = idU;
+	 ELSEIF idP IS NOT NULL THEN
+		SELECT * FROM programas WHERE id = idP;
+	 ELSE
+		SET ct = CONCAT('SELECT * FROM ', tabla, ';');
+		PREPARE c FROM ct;
+		EXECUTE c;
+		DEALLOCATE PREPARE c;
+	 END IF;
+   SET mensaje = 'Mostrando datos.' 
+ END;
+
  CREATE PROCEDURE cpr(IN categoria1 varchar(50), IN nombre1 varchar(50), IN fechaYhora1 DATETIME, IN idP1 INT, OUT mensaje varchar(50))
  BEGIN
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -425,5 +445,6 @@ DELIMITER //
  
 
  
+
 
 
