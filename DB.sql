@@ -121,9 +121,9 @@ DELIMITER //
 	 END;
 	START TRANSACTION;
 	 INSERT INTO programas(estadoAprobacion, categoria, nombre, fechaYhora, idPlataforma) 
-	 VALUES('En Revisión', categoria1, nombre1, fechaYhora1, idP1)
+	 VALUES('En RevisiÃ³n', categoria1, nombre1, fechaYhora1, idP1)
 	COMMIT;
-   SET mensaje = 'Programa ingresado con éxito.' 
+   SET mensaje = 'Programa ingresado con Ã©xito.' 
  END;
    
  CREATE PROCEDURE bpr(IN id1 int, OUT mensaje varchar(50))
@@ -136,7 +136,7 @@ DELIMITER //
     START TRANSACTION;
 	 DELETE FROM programas where id = id1;
 	COMMIT;
-   SET mensaje = 'Programa borrado con éxito.' 
+   SET mensaje = 'Programa borrado con Ã©xito.' 
  END;
  
  CREATE PROCEDURE mpr(IN id1 int, IN estadoAprobacion1 varchar(50), IN categoria1 varchar(50), IN nombre1 varchar(50), IN fechaYhora1 DATETIME, IN idP1 int, OUT mensaje varchar(50))
@@ -151,7 +151,7 @@ DELIMITER //
 	 SET estadoAprobacion = estadoAprobacion1, categoria = categoria1, nombre = nombre1, fechaYhora = fechaYhora1, idPlataforma = idP1
 	 WHERE id = id1;
 	COMMIT;
-   SET mensaje = 'Datos del programa actualizados con éxito.'
+   SET mensaje = 'Datos del programa actualizados con Ã©xito.'
  END;
  
  
@@ -166,7 +166,7 @@ DELIMITER //
 	START TRANSACTION;
 	 INSERT INTO usuario(email, nombre, contrasenia, idRol) VALUES(email1, nombre1, contrasenia1, idRol1)
 	COMMIT;
-   SET mensaje = 'Usuario ingresado con éxito.' 
+   SET mensaje = 'Usuario ingresado con Ã©xito.' 
  END;
  
  CREATE PROCEDURE bu(IN id1 int, OUT mensaje varchar(50))
@@ -179,7 +179,7 @@ DELIMITER //
     START TRANSACTION;
 	 DELETE FROM usuario where id = id1;
 	COMMIT;
-   SET mensaje = 'Usuario borrado con éxito.' 
+   SET mensaje = 'Usuario borrado con Ã©xito.' 
  END;
  
  CREATE PROCEDURE mu(IN id1 int, IN idRol1 int, OUT mensaje varchar(50))
@@ -194,7 +194,7 @@ DELIMITER //
 	 SET idRol = idRol1
 	 WHERE id = id1;
 	COMMIT;
-   SET mensaje = 'Rol del usuario actualizado con éxito.'
+   SET mensaje = 'Rol del usuario actualizado con Ã©xito.'
  END;
  
  CREATE PROCEDURE cs(IN estadoAprobacion1 varchar(50), IN duracion1 varchar(50), IN titulo1 varchar(50), IN idP1 int, OUT mensaje varchar(50))
@@ -207,7 +207,7 @@ DELIMITER //
 	START TRANSACTION;
 	 INSERT INTO segmentos(estadoAprobacion, duracion, titulo, idPrograma) VALUES(estadoAprobacion1, duracion1, titulo1, idP1)
 	COMMIT;
-   SET mensaje = 'Segmento ingresado con éxito.' 
+   SET mensaje = 'Segmento ingresado con Ã©xito.' 
  END;
  
  CREATE PROCEDURE bs(IN id1 int, OUT mensaje varchar(50))
@@ -220,7 +220,7 @@ DELIMITER //
     START TRANSACTION;
 	 DELETE FROM segmentos where id = id1;
 	COMMIT;
-   SET mensaje = 'Segmento borrado con éxito.' 
+   SET mensaje = 'Segmento borrado con Ã©xito.' 
  END;
  CREATE PROCEDURE ms(IN id1 int, IN estadoAprobacion1 varchar(50), IN duracion1 varchar(50), IN titulo1 varchar(50), IN idP1 int, OUT mensaje varchar(50))
  BEGIN
@@ -234,7 +234,7 @@ DELIMITER //
 	 SET estadoAprobacion = estadoAprobacion1, duracion = duracion1, titulo = titulo1, idPrograma = idP1
 	 WHERE id = id1;
 	COMMIT;
-   SET mensaje = 'Segmento actualizado con éxito.'
+   SET mensaje = 'Segmento actualizado con Ã©xito.'
  END;
  
  
@@ -249,7 +249,7 @@ DELIMITER //
 	START TRANSACTION;
 	 INSERT INTO plataforma(nombre, tipo) VALUES(nombre1, tipo1)
 	COMMIT;
-   SET mensaje = 'Plataforma ingresada con éxito.' 
+   SET mensaje = 'Plataforma ingresada con Ã©xito.' 
  END;
    
  CREATE PROCEDURE bpl(IN id1 int, OUT mensaje varchar(50))
@@ -262,7 +262,7 @@ DELIMITER //
     START TRANSACTION;
 	 DELETE FROM plataforma where id = id1;
 	COMMIT;
-   SET mensaje = 'Plataforma borrada con éxito.' 
+   SET mensaje = 'Plataforma borrada con Ã©xito.' 
  END;
  
  CREATE PROCEDURE mpl(IN id1 int, IN nombre1 varchar(50), IN tipo1 varchar(50), OUT mensaje varchar(50))
@@ -277,7 +277,7 @@ DELIMITER //
 	 SET nombre = nombre1, tipo = tipo1
 	 WHERE id = id1;
 	COMMIT;
-   SET mensaje = 'Datos de la plataforma actualizados con éxito.'
+   SET mensaje = 'Datos de la plataforma actualizados con Ã©xito.'
  END;
  
  
@@ -295,7 +295,7 @@ DELIMITER //
 	 SET enVivo = enVivo1, idPl = idPl1, idPr = idPr1
 	 WHERE id = id1;
 	COMMIT;
-   SET mensaje = 'Datos de la emisión actualizados con éxito.'
+   SET mensaje = 'Datos de la emisiÃ³n actualizados con Ã©xito.'
  END; 
  
  
@@ -311,7 +311,7 @@ DELIMITER //
 	START TRANSACTION;
 	 INSERT INTO contenidos(formato,rutaArchivo,tags,idUsuario) VALUES(formato1,rutaArchivo1,tags1,idU1)
 	COMMIT;
-   SET mensaje = 'Contenido subido con éxito.'
+   SET mensaje = 'Contenido subido con Ã©xito.'
  END; 
  
  CREATE PROCEDURE bc(IN id1 int, OUT mensaje varchar(50))
@@ -325,7 +325,7 @@ DELIMITER //
 	 DELETE FROM contenidos
 	 WHERE id = id1
 	COMMIT;
-   SET mensaje = 'Contenido borrado con éxito.'
+   SET mensaje = 'Contenido borrado con Ã©xito.'
  END; 
  
  
@@ -347,7 +347,7 @@ DELIMITER //
 	   WHERE idUsuario = idU AND idContenido = idC;
 	 END IF;
 	COMMIT;
-   SET mensaje = 'Valoración actualizada con éxito.'
+   SET mensaje = 'ValoraciÃ³n actualizada con Ã©xito.'
  END;
  
  CREATE PROCEDURE bv(IN idC int, IN idU int, OUT mensaje varchar(50))
@@ -361,7 +361,7 @@ DELIMITER //
 	 DELETE FROM audiencia_con
 	 WHERE idContenido = idC AND idUsuario = idU;
 	COMMIT;
-   SET mensaje = 'Valoración actualizada con éxito.'
+   SET mensaje = 'ValoraciÃ³n actualizada con Ã©xito.'
  END;
  
  
@@ -389,28 +389,34 @@ DELIMITER //
             )
         ) AS jt;
 	 COMMIT;
-   SET mensaje = 'Encuesta creada con éxito.'
+   SET mensaje = 'Encuesta creada con Ã©xito.'
  END;
  
- falta corregir esto{{{{{{{{{{))(((((((
  CREATE PROCEDURE vo(IN idO int, IN idU int, IN idE int, OUT mensaje varchar(50))
  BEGIN
+	DECLARE idOAntigua int;
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
 	 END;
 	START TRANSACTION;
-	 IF NOT EXISTS(SELECT * FROM votar_opcion WHERE idOpcion = idO AND idUsuario = idU) THEN
-      INSERT INTO votar_opcion(idOpcion, idUsuario) VALUES(idO, idU)
+	 IF NOT EXISTS(SELECT * FROM votar_opcion WHERE idUsuario = idU AND idOpcion IN(SELECT id FROM opcion_e WHERE idEncuesta = idE)) THEN
+      INSERT INTO votar_opcion(idOpcion, idUsuario) VALUES(idO, idU);
+	  SET mensaje = 'Voto ingresado con Ã©xito.'
      ELSE
-      UPDATE votar_opcion
-      SET idOpcion = idO WHERE idUsuario = idU AND idE = (SELECT idEncuesta FROM opcion_e WHERE id = idO)
+	  SELECT idOpcion INTO idOAntigua FROM votar_opcion WHERE idOpcion IN(SELECT id FROM opcion_e WHERE idEncuesta = idE) AND idUsuario = idU;
+	  IF idOAntigua = idO THEN
+		DELETE FROM votar_opcion 
+		WHERE idUsuario = idU AND idOpcion = idO;
+		SET mensaje = 'Voto eliminado con Ã©xito.'
+	  ELSE
+		UPDATE votar_opcion
+		SET idOpcion = idO WHERE idUsuario = idU AND idOpcion = idOAntigua;
+		SET mensaje = 'Voto actualizado con Ã©xito.'
      END IF;	  
-	COMMIT;
-   SET mensaje = 'Encuesta creada con éxito.'
+  COMMIT;
  END //
- DELIMITER ;
 
  
  
@@ -419,4 +425,5 @@ DELIMITER //
  
  
  
+
  
