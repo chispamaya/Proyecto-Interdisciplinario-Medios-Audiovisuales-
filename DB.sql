@@ -439,21 +439,23 @@ CREATE PROCEDURE s(IN tabla varchar(50), IN idU int, IN idP int, OUT mensaje var
 
   --TRIGGER DE INSERTS
 Delimiter //
-
+	
+	
 	CREATE TRIGGER trg_after_insert_segmento
-	AFTER INSERT ON segmento
+	AFTER INSERT ON segmentos 
 	FOR EACH ROW
 	BEGIN
-		INSERT INTO auditoria (accion,usuario_id,tablaM,registro_afectado_id)
+		INSERT INTO auditoria (accion,usuario_id,tablaM,registro_afectado_id,fecha)
 		VALUES (
-			'INSERT',NULL,'segemento',NEW.id,NOW());
+			'INSERT',NULL,'segmentos',NEW.id,NOW());
 	END //
 		
+
 	CREATE TRIGGER trg_after_insert_plataforma
 	AFTER INSERT ON plataforma
 	FOR EACH ROW
 	BEGIN
-		INSERT INTO auditoria (accion,usuario_id,tablaM,registro_afectado_id)
+		INSERT INTO auditoria (accion,usuario_id,tablaM,registro_afectado_id,fecha)
 		VALUES (
 			'INSERT',NULL,'plataforma',NEW.id,NOW());
 	END //
@@ -462,7 +464,7 @@ Delimiter //
 	AFTER INSERT ON programas
 	FOR EACH ROW
 	BEGIN
-		INSERT INTO auditoria (accion,usuario_id,tablaM,registro_afectado_id)
+		INSERT INTO auditoria (accion,usuario_id,tablaM,registro_afectado_id,fecha)
 		VALUES (
 			'INSERT',NULL,'programas',NEW.id,NOW());
 	END //
@@ -471,7 +473,7 @@ Delimiter //
 	AFTER INSERT ON emisiones
 	FOR EACH ROW
 	BEGIN
-		INSERT INTO auditoria (accion,usuario_id,tablaM,registro_afectado_id)
+		INSERT INTO auditoria (accion,usuario_id,tablaM,registro_afectado_id,fecha)
 		VALUES (
 			'INSERT',NULL,'emisiones',NEW.id,NOW());
 	END //
@@ -480,7 +482,7 @@ Delimiter //
 	AFTER INSERT ON rol
 	FOR EACH ROW
 	BEGIN
-		INSERT INTO auditoria (accion,usuario_id,tablaM,registro_afectado_id)
+		INSERT INTO auditoria (accion,usuario_id,tablaM,registro_afectado_id,fecha)
 		VALUES (
 			'INSERT',NULL,'rol',NEW.id,NOW());
 	END //
@@ -489,7 +491,7 @@ Delimiter //
 	AFTER INSERT ON usuario
 	FOR EACH ROW
 	BEGIN
-		INSERT INTO auditoria (accion,usuario_id,tablaM,registro_afectado_id)
+		INSERT INTO auditoria (accion,usuario_id,tablaM,registro_afectado_id,fecha)
 		VALUES (
 			'INSERT',NULL,'usuario',NEW.id,NOW());
 	END //
@@ -498,7 +500,7 @@ Delimiter //
 	AFTER INSERT ON contenidos
 	FOR EACH ROW
 	BEGIN
-		INSERT INTO auditoria (accion,usuario_id,tablaM,registro_afectado_id)
+		INSERT INTO auditoria (accion,usuario_id,tablaM,registro_afectado_id,fecha)
 		VALUES (
 			'INSERT',NULL,'contenidos',NEW.id,NOW());
 	END //
@@ -507,46 +509,48 @@ Delimiter //
 	AFTER INSERT ON audiencia_con
 	FOR EACH ROW
 	BEGIN
-		INSERT INTO auditoria (accion,usuario_id,tablaM,registro_afectado_id)
+		INSERT INTO auditoria (accion,usuario_id,tablaM,registro_afectado_id,fecha)
 		VALUES (
 			'INSERT',NULL,'audiencia_con',NEW.id,NOW());
 	END //
 	
 	CREATE TRIGGER trg_after_encuesta
-	AFTER INSERT ON audiencia_con
+	AFTER INSERT ON encuesta
 	FOR EACH ROW
 	BEGIN
-		INSERT INTO auditoria (accion,usuario_id,tablaM,registro_afectado_id)
+		INSERT INTO auditoria (accion,usuario_id,tablaM,registro_afectado_id,fecha)
 		VALUES (
 			'INSERT',NULL,'encuesta',NEW.id,NOW());
 	END //
 	
 	CREATE TRIGGER trg_after_opcion_e
-	AFTER INSERT ON audiencia_con
+	AFTER INSERT ON opcion_e
 	FOR EACH ROW
 	BEGIN
-		INSERT INTO auditoria (accion,usuario_id,tablaM,registro_afectado_id)
+		INSERT INTO auditoria (accion,usuario_id,tablaM,registro_afectado_id,fecha)
 		VALUES (
 			'INSERT',NULL,'opcion_e',NEW.id,NOW());
 	END //
 	
 	CREATE TRIGGER trg_after_votar_o
-	AFTER INSERT ON audiencia_con
+	AFTER INSERT ON votar_o
 	FOR EACH ROW
 	BEGIN
-		INSERT INTO auditoria (accion,usuario_id,tablaM,registro_afectado_id)
+		INSERT INTO auditoria (accion,usuario_id,tablaM,registro_afectado_id,fecha)
 		VALUES (
 			'INSERT',NULL,'votar_o',NEW.id,NOW());
 	END //
 	
 	CREATE TRIGGER trg_after_errores
-	AFTER INSERT ON audiencia_con
+	AFTER INSERT ON errores
 	FOR EACH ROW
 	BEGIN
-		INSERT INTO auditoria (accion,usuario_id,tablaM,registro_afectado_id)
+		INSERT INTO auditoria (accion,usuario_id,tablaM,registro_afectado_id,fecha)
 		VALUES (
 			'INSERT',NULL,'errores',NEW.id,NOW());
 	END //
+	
+
 	
 	
 -- TRIGGER UPDATE
@@ -780,6 +784,7 @@ Delimiter ;
  
 
  
+
 
 
 
