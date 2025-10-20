@@ -31,9 +31,7 @@ CREATE TABLE programas (
 CREATE TABLE emisiones (
     id INT AUTO_INCREMENT PRIMARY KEY,
     enVivo BOOLEAN,
-    idPlataforma int,
     idPrograma INT,
-	FOREIGN key(idPlataforma) references plataforma(id),
     FOREIGN KEY (idPrograma) REFERENCES programas(id)
 );
 
@@ -283,7 +281,7 @@ DELIMITER //
  
 
  
- CREATE PROCEDURE me(IN id1 int, IN enVivo1 varchar(50), IN idPl1 int, IN idPr1 int, OUT mensaje varchar(50))
+ CREATE PROCEDURE me(IN id1 int, IN enVivo1 varchar(50), IN idPr1 int, OUT mensaje varchar(50))
  BEGIN
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
@@ -292,7 +290,7 @@ DELIMITER //
 	 END;
 	START TRANSACTION;
 	 UPDATE emision
-	 SET enVivo = enVivo1, idPl = idPl1, idPr = idPr1
+	 SET enVivo = enVivo1, idPrograma = idPr1
 	 WHERE id = id1;
 	COMMIT;
    SET mensaje = 'Datos de la emisión actualizados con éxito.'
@@ -427,4 +425,5 @@ DELIMITER //
  
 
  
+
 
