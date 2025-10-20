@@ -386,7 +386,7 @@ CREATE PROCEDURE s(IN tabla varchar(50), IN idU int, IN idP int, OUT mensaje var
  
  
  
- CREATE PROCEDURE ce(IN preguntar1 varchar(50), IN idU int, IN opciones JSON, OUT mensaje varchar(50))
+ CREATE PROCEDURE cen(IN preguntar1 varchar(50), IN idU int, IN opciones JSON, OUT mensaje varchar(50))
  BEGIN
     DECLARE idE int;
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -784,6 +784,7 @@ Delimiter ;
  
 
  
+
 
 
 
