@@ -18,23 +18,14 @@ body{
   }
   .registrarse-dark {
     background: var(--background);
+    height: calc(100vh - 100px);
     display: flex;
     align-items: center;
     justify-content: center;
     flex-direction: column;
     overflow: hidden;
   }
-  
-  .header{
-    height: 100px;
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    background: var(--sideBarHeader);
-    width: 100%;
-    height: auto;
-  }
-  
+
   /* Formulario */
   .top h1{
     font-family:"TASA Explorer", sans-serif;
