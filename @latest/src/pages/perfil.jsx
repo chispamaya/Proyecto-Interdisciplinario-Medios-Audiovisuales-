@@ -1,6 +1,6 @@
 import logoImage from '../assets/logo.png'
 import '../styles/pages/perfil.css'
-
+import { ShieldCheck } from 'lucide-react';
 export default function Perfil({idUsuario}) { 
 
     const handleSubmit = (e) => {
@@ -25,7 +25,8 @@ export default function Perfil({idUsuario}) {
                     
                     <div className="datos-perfil"> 
                         <h1>Martín Romero</h1>
-                        <h2>ADMINISTRADOR</h2> 
+                        <ShieldCheck size={20} color="var(--texto)" style={{ marginRight: '10px' }} />
+                        <h2 className='adm'>ADMINISTRADOR</h2> 
                     </div>
 
                     <form className="formulario-perfil" onSubmit={handleSubmit}>

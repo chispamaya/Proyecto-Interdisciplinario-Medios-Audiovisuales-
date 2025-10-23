@@ -5,8 +5,8 @@ import { Routes, Route } from 'react-router-dom';
 import Login from './pages/Login.jsx'; 
 import { Header } from './components/layout/header.jsx';
 import AppLayout from './components/layout/AppLayout.jsx'; 
-
-// Componentes de ejemplo (usados para las rutas con Sidebar)
+import Perfil from './pages/perfil.jsx';
+import SubidaMultimedia from './pages/SubidaMultimedia.jsx';
 const DashboardPage = () => <h1>Página Principal (Dashboard)</h1>;
 // ... define el resto de tus componentes de página ...
 
@@ -21,7 +21,9 @@ function App() {
         
         <Route element={<AppLayout />}>
           
-          <Route path="/inicio" element={<DashboardPage />} /> 
+          <Route path="/perfil" element={<Perfil />} /> 
+          <Route path="/subida" element={<SubidaMultimedia />} />
+        
                     
         </Route>
       </Routes>

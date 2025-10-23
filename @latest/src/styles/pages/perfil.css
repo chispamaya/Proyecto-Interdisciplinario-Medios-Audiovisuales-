@@ -1,13 +1,9 @@
-@import url('https://fonts.googleapis.com/css2?family=Montserrat:wght@400;600;700&display=swap');
-
-/* --- VARIABLES Y ESTILOS BASE --- */
 :root {
-    --sideBarHeader: #14213d;
     --texto: #ffffff;
     --background: #212121;
     --links: #8634AA;
     --sideBarMain: #3C3C3C;
-    --danger-color: #d9534f; 
+    --danger-color: #d9534f;
     --main-text-color: #f0f0f0;
     --secondary-text-color: #a0a8b9;
     --input-bg-color: #2c2c2c;
@@ -19,39 +15,44 @@
     padding: 0;
     box-sizing: border-box;
 }
-
+.adm{
+    display: inline;
+    
+}
 body {
     font-family: 'Montserrat', sans-serif;
     background-color: #1e1e1e;
     color: var(--main-text-color);
-
-    min-height: 100vh; 
-    display: flex;
-    justify-content: center;
-    align-items: flex-start;
-    overflow: hidden; 
+    /* 💥 QUITAMOS height: 100vh y overflow: hidden del body 💥 */
+    /* Esto es manejado por el AppLayout */
+    min-height: 100vh;
 }
 
-/* --- CONTENEDOR PRINCIPAL: Flexbox para centrar todo en la pantalla --- */
+/* --- CONTENEDOR PRINCIPAL: Ahora solo es un envoltorio que centra la tarjeta --- */
 .contenedor-principal {
+    /* Ocupa todo el espacio que le da el .content-area (que es 80% o 100% del viewport) */
     width: 100%;
-    height: 100vh;
+    min-height: 100%;
+    /* Asegura que ocupe toda la altura disponible */
     display: flex;
     justify-content: center;
-    align-items: center;     padding: 2rem 1rem;
+    /* Centra la tarjeta horizontalmente */
+    align-items: flex-start;
+    /* Centra la tarjeta más hacia arriba */
+    padding: 2rem 1rem;
 }
 
-/* --- CONTENIDO PERFIL: La tarjeta central --- */
+/* --- CONTENIDO PERFIL: La tarjeta central (Desktop por defecto) --- */
 .contenido-perfil {
     width: 100%;
     max-width: 600px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    background-color: var(--background); 
+    background-color: var(--background);
     padding: 3rem 2rem;
     border-radius: 12px;
-    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5); 
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
 }
 
 
@@ -59,8 +60,9 @@ body {
     margin-bottom: 2.5rem;
     text-align: center;
 }
+
 .logo-perfil {
-    height: 180px; 
+    height: 180px;
     width: auto;
     object-fit: contain;
 }
@@ -74,12 +76,12 @@ body {
 .datos-perfil h1 {
     font-size: 2rem;
     font-weight: 700;
-    margin-bottom: 1rem; 
+    margin-bottom: 1rem;
     color: var(--texto);
 }
 
-.datos-perfil h2 { 
-    font-size: 1rem; 
+.datos-perfil h2 {
+    font-size: 1rem;
     color: var(--secondary-text-color);
     text-transform: uppercase;
     font-weight: 600;
@@ -94,25 +96,14 @@ body {
     text-align: center;
 }
 
-.nombre-usuario {
-    font-size: 1.8rem; 
-    font-weight: 700;
-    margin-bottom: 0.5rem;
-    color: var(--texto);
-}
-
-.email-usuario {
-    font-size: 1rem;
-    color: var(--secondary-text-color);
-    margin-bottom: 3rem;
-}
+/* Se eliminaron .nombre-usuario y .email-usuario porque no están en el HTML */
 
 /* Campo individual del formulario */
 .campo-form {
     width: 100%;
     text-align: left;
     margin-bottom: 2rem;
-    max-width: 400px; 
+    max-width: 400px;
 }
 
 .campo-form label {
@@ -148,15 +139,16 @@ body {
 .acciones-form-centrado {
     width: 100%;
     display: flex;
-    justify-content: center; 
+    justify-content: center;
     gap: 1.5rem;
     margin-top: 2rem;
-    flex-wrap: wrap; 
+    flex-wrap: wrap;
+    /* Importante para que los botones se apilen en móvil */
 }
 
 .acciones-form-centrado button {
     flex-grow: 0;
-    min-width: 150px; 
+    min-width: 150px;
     padding: 0.8rem 1.5rem;
     border: none;
     border-radius: 8px;
@@ -179,43 +171,76 @@ body {
 }
 
 .btn-guardar {
-    background-color: var(--links); 
+    background-color: var(--links);
     color: var(--texto);
 }
 
+/* ------------------------------------------- */
+/* --- MEDIA QUERIES --- */
+/* ------------------------------------------- */
 
 
-
+/* Tablet y móviles grandes (768px y menos) */
 @media (max-width: 768px) {
     .contenido-perfil {
-        padding: 2rem 1rem;
-        margin-top: 1rem; 
+        padding: 2rem 1.5rem;
+        /* Ajuste de padding en la tarjeta */
+        max-width: 500px;
+        /* Reducimos un poco el tamaño máximo */
+        margin-top: 1rem;
     }
 
     .logo-perfil {
-        height: 140px;
+        height: 120px;
+        /* Reducimos el logo */
     }
 
-    .nombre-usuario {
+    .datos-perfil h1 {
+        font-size: 1.75rem;
+        /* Reducimos el nombre */
+    }
+
+    .datos-perfil h2 {
+        font-size: 0.9rem;
+        /* Reducimos el rol */
+    }
+}
+
+
+/* Móviles pequeños (480px y menos) */
+@media (max-width: 480px) {
+
+    /* Hacemos que la tarjeta ocupe más espacio en pantallas muy pequeñas */
+    .contenido-perfil {
+        padding: 1.5rem 1rem;
+        margin-top: 0.5rem;
+        border-radius: 8px;
+        /* Bordes un poco menos redondeados */
+    }
+
+    .logo-contenedor {
+        margin-bottom: 1.5rem;
+    }
+
+    .logo-perfil {
+        height: 100px;
+        /* Logo más pequeño en móvil */
+    }
+
+    .datos-perfil h1 {
         font-size: 1.5rem;
     }
 
-    .email-usuario {
-        margin-bottom: 2rem;
-    }
-
-    .campo-form {
-        max-width: 100%; 
-    }
-
+    /* Forzamos que los botones se apilen verticalmente en móvil */
     .acciones-form-centrado {
-        flex-direction: column; 
+        flex-direction: column;
         gap: 0.75rem;
         margin-top: 1.5rem;
     }
 
     .acciones-form-centrado button {
         width: 100%;
+        /* Botones de ancho completo */
         min-width: unset;
         font-size: 0.9rem;
     }
