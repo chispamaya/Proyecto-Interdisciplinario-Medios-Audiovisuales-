@@ -219,9 +219,17 @@
 
 
 
+.btn-fecha{
+    background-color: var(--color-purpura-links);
+    position: static; 
+    overflow: visible; 
+    animation: none !important; 
+    transition: none !important;
+}
 
-
-
+.btn-fecha::after{
+    content: none !important; 
+}
 .btn-subir-programa::after {
     content: none !important; 
     
