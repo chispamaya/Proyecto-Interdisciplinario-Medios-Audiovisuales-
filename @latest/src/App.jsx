@@ -23,7 +23,7 @@ function App() {
           
           <Route path="/perfil" element={<Perfil />} /> 
           <Route path="/subida" element={<SubidaMultimedia />} />
-        
+          <Route path="/estado/:id" element={<EstadoAprobacion />} />
                     
         </Route>
       </Routes>
