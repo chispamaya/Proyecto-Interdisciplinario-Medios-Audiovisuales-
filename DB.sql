@@ -386,9 +386,8 @@ CREATE PROCEDURE s(IN tabla varchar(50), IN idU int, IN idP int, OUT mensaje var
  
  
  
- CREATE PROCEDURE cen(IN preguntar1 varchar(50), IN idU int, IN opciones JSON, OUT mensaje varchar(50))
+ CREATE PROCEDURE cen(IN preguntar1 varchar(50), IN idU int, OUT mensaje varchar(50), OUT idE int)
  BEGIN
-    DECLARE idE int;
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
 	  ROLLBACK;
@@ -396,19 +395,22 @@ CREATE PROCEDURE s(IN tabla varchar(50), IN idU int, IN idP int, OUT mensaje var
 	 END;
 	START TRANSACTION;
 	 INSERT INTO encuesta(preguntar, idUsuario) VALUES (preguntar1, idU);
-	 SET idE = LAST_INSERT_ID();
-		INSERT INTO opcion_e (idEncuesta, opcion)
-     SELECT 
-        idE, opcion_valor
-     FROM 
-        JSON_TABLE(
-            opciones,
-            '$[*]' COLUMNS (
-                opcion_valor VARCHAR(50) PATH '$' 
-            )
-        ) AS jt;
 	 COMMIT;
+   SET idE = LAST_INSERT_ID();
    SET mensaje = 'Encuesta creada con éxito.'
+ END;
+
+CREATE PROCEDURE co(IN idE int, IN opcion1 varchar(50), IN cont int, OUT mensaje varchar(50))
+ BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET mensaje = 'Ocurrio un error.';
+	 END;
+	START TRANSACTION;
+	 INSERT INTO opcion_e(idEncuesta, opcion) VALUES (idE, opcion1);
+	 COMMIT;
+   SET mensaje = CONCAT('Opcion ',cont, ' creada con éxito.')
  END;
  
  CREATE PROCEDURE vo(IN idO int, IN idU int, IN idE int, OUT mensaje varchar(50))
@@ -784,6 +786,7 @@ Delimiter ;
  
 
  
+
 
 
 
