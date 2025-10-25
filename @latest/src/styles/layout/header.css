@@ -3,7 +3,6 @@
     --sideBarHeader:#14213d;
   }
  .header{
-    height: 100px;
     display: flex;
     justify-content: center;
     align-items: center;

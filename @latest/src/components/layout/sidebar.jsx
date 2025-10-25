@@ -61,7 +61,7 @@ export default function SideBar({ idRol }) {
                             </li>
 
                             <li>
-                                <Link to="" className="menu-item " onClick={handleLinkClick}>
+                                <Link to="/estado/1" className="menu-item " onClick={handleLinkClick}>
 
                                     <CheckCircle size={20} color="var(--texto)" style={{ marginRight: '10px' }} />
                                     <span className="label">Estado y aprobacion</span>
@@ -69,14 +69,14 @@ export default function SideBar({ idRol }) {
                             </li>
 
                             <li>
-                                <Link to="" className="menu-item " onClick={handleLinkClick}>
+                                <Link to="parrilla" className="menu-item " onClick={handleLinkClick}>
                                         
                                     <CalendarDays size={20} color="var(--texto)" style={{ marginRight: '10px' }} />
                                     <span className="label">Parrilla semanal</span>
                                 </Link>
                             </li>
                             <li>
-                                <Link to="" className="menu-item " onClick={handleLinkClick}>
+                                <Link to="/gestion" className="menu-item " onClick={handleLinkClick}>
 
                                     <Folders size={20} color="var(--texto)" style={{ marginRight: '10px' }} />
                                     <span className="label">Gestion multimedia</span>

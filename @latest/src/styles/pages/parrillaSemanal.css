@@ -1,0 +1,196 @@
+/* --- Variables --- */
+:root {
+    --color-fondo-parrilla: #1e1e1e;
+    --color-titulo-barra: #ffffff;
+    --color-texto-titulo: #14213d;
+    --color-cabecera-dia: #3c3c3c;
+    --color-bloque-programa: #14213d;
+    --color-texto-principal: #ffffff;
+    --color-texto-hora: #a0a8b9;
+    --color-badge-envivo: #e53935;
+    --base-padding: 1.25rem; /* 20px */
+    --mobile-padding: 1rem; /* 15px */
+    --header-height: 4rem; /* 60px - 80px */
+    --scrollbar-track-color: transparent;
+    --scrollbar-thumb-color: var(--color-cabecera-dia);
+}
+
+/* --- Contenedor Principal --- */
+.parrilla-container {
+    width: 100%;
+    padding: var(--base-padding);
+    background-color: var(--color-fondo-parrilla);
+    color: var(--color-texto-principal);
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* --- Barra del Título --- */
+.parrilla-titulo-barra {
+    background-color: var(--color-titulo-barra);
+    color: var(--color-texto-titulo);
+    padding: 1rem 1.5rem;
+    border-radius: 0.5rem;
+    margin-bottom: 1.5rem;
+    width: 100%;
+    flex-shrink: 0;
+}
+.parrilla-titulo-barra h1 {
+    margin: 0;
+    font-size: 1.5rem;
+    font-weight: 700;
+}
+
+/* --- Grilla de la Parrilla (Desktop por defecto) --- */
+.parrilla-grid {
+    display: grid;
+    grid-template-columns: repeat(7, 1fr);
+    gap: 1rem;
+    flex-grow: 1;
+    min-height: 0;
+}
+
+/* Wrapper para cada día completo */
+.dia-wrapper {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    min-height: 0;
+}
+
+
+/* --- Cabecera de cada Día --- */
+.dia-columna-header {
+    background-color: var(--color-cabecera-dia);
+    padding: 0.75rem;
+    text-align: center;
+    font-weight: 600;
+    border-radius: 0.375rem;
+    margin-bottom: 0.625rem;
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    flex-shrink: 0;
+}
+
+/* --- Columna de Contenido de cada Día --- */
+.dia-columna-contenido {
+    display: flex;
+    flex-direction: column;
+    gap: 0.625rem;
+    overflow-y: auto; /* Scroll vertical DENTRO de la columna */
+    flex-grow: 1;
+    padding-bottom: 0.625rem;
+}
+
+/* --- Bloque Individual de Programa --- */
+.bloque-programa {
+    background-color: var(--color-bloque-programa);
+    padding: 1rem;
+    border-radius: 0.375rem;
+    text-align: center;
+    position: relative;
+    flex-shrink: 0;
+    transition: background-color 0.2s ease;
+}
+.bloque-programa:hover {
+     background-color: #1f2e4d;
+}
+
+.programa-nombre {
+    font-weight: 600;
+    font-size: 0.9rem;
+    margin-bottom: 0.3rem;
+}
+.programa-hora {
+    font-size: 0.8rem;
+    color: var(--color-texto-hora);
+}
+.en-vivo-badge {
+    position: absolute;
+    top: 0.3rem;
+    left: 0.3rem;
+    background-color: var(--color-badge-envivo);
+    color: white;
+    font-size: 0.65rem;
+    padding: 0.125rem 0.3rem;
+    border-radius: 0.1875rem;
+    font-weight: bold;
+}
+
+/* Estilo para scrollbars */
+.dia-columna-contenido::-webkit-scrollbar,
+.parrilla-grid::-webkit-scrollbar {
+    width: 0.5rem;
+    height: 0.5rem;
+}
+.dia-columna-contenido::-webkit-scrollbar-track,
+.parrilla-grid::-webkit-scrollbar-track {
+    background: var(--scrollbar-track-color);
+}
+.dia-columna-contenido::-webkit-scrollbar-thumb,
+.parrilla-grid::-webkit-scrollbar-thumb {
+    background-color: var(--scrollbar-thumb-color);
+    border-radius: 0.25rem;
+}
+.dia-columna-contenido, .parrilla-grid {
+    scrollbar-width: thin;
+    scrollbar-color: var(--scrollbar-thumb-color) var(--scrollbar-track-color);
+}
+
+
+/* ------------------------------------------- */
+/* --- RESPONSIVE --- */
+/* ------------------------------------------- */
+
+/* BREAKPOINT 1024px: Scroll Horizontal de la Grilla Completa */
+@media (max-width: 1024px) {
+    .parrilla-grid {
+        display: flex; /* Cambia a Flexbox para scroll horizontal */
+        overflow-x: auto;
+        overflow-y: hidden;
+        gap: 0.75rem;
+        padding-bottom: 1rem;
+        align-items: stretch;
+    }
+
+    /* El Wrapper define el ancho de la columna ahora */
+    .dia-wrapper {
+        min-width: 10rem; /* Ancho mínimo de cada columna día */
+        flex-shrink: 0;
+    }
+}
+
+
+/* BREAKPOINT Móvil (600px) - Ajusta anchos */
+@media (max-width: 600px) {
+    .parrilla-container {
+        padding: var(--mobile-padding);
+        height: calc(100vh - var(--header-height, 3.75rem) - (var(--mobile-padding) * 2));
+    }
+    .parrilla-titulo-barra h1 {
+        font-size: 1.2rem;
+    }
+
+    .parrilla-grid {
+        gap: 0.625rem;
+        padding-bottom: 0.75rem;
+    }
+
+    /* Ajustamos ancho mínimo del wrapper para móvil */
+    .dia-wrapper {
+        min-width: 8rem; /* 128px */
+    }
+
+     .bloque-programa {
+        padding: 0.625rem;
+    }
+    .programa-nombre {
+        font-size: 0.8rem;
+    }
+    .programa-hora {
+        font-size: 0.7rem;
+    }
+}
+
