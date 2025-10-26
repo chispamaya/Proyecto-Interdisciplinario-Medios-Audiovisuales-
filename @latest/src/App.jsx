@@ -11,6 +11,7 @@ import SubidaMultimedia from './pages/SubidaMultimedia.jsx';
 import EstadoAprobacion from './pages/EstadoAprobacion.jsx';
 import ParrillaSemanal from './pages/ParrillaSemanal.jsx'; 
 import GestionMultimedia from './pages/GestionMultimedia.jsx'; // Importa la nueva página
+import ReportesAudiencia from './pages/ReportesAudiencia.jsx';
 
 // ... (El resto del código como lo tienes) ...
 
@@ -27,6 +28,7 @@ function App() {
           <Route path="/estado/:id" element={<EstadoAprobacion />} />
           <Route path="/parrilla" element={<ParrillaSemanal />} />
           <Route path="/gestion" element={<GestionMultimedia />} /> 
+          <Route path="/reportes" element={<ReportesAudiencia />} />
 
         </Route>
       </Routes>
