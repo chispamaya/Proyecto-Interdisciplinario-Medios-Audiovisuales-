@@ -25,6 +25,8 @@ CREATE TABLE programas (
     nombre VARCHAR(50),
 	fechaYhora DATETIME,
 	idPlataforma int,
+	formatoArchivo VARCHAR(50),
+	rutaArchivo VARCHAR(500),
 	foreign key(idPlataforma) references plataforma(id)
 );
 
@@ -55,9 +57,21 @@ CREATE TABLE contenidos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     formato VARCHAR(50),
     rutaArchivo VARCHAR(500),
-    tags VARCHAR(500),
     idUsuario INT,
     FOREIGN KEY (idUsuario) REFERENCES usuario(id)
+);
+
+CREATE TABLE tags (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    tag VARCHAR(50)
+);
+
+CREATE TABLE contenido-tag (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    idContenido int,
+    idTag int,
+    FOREIGN KEY (idContenido) REFERENCES contenidos(id),
+	FOREIGN KEY (idTag) REFERENCES tags(id)
 );
 
 CREATE TABLE audiencia_con (
@@ -131,7 +145,7 @@ CREATE PROCEDURE s(IN tabla varchar(50), IN idU int, IN idP int, OUT mensaje var
    SET mensaje = 'Mostrando datos.' 
  END;
 
- CREATE PROCEDURE cpr(IN categoria1 varchar(50), IN nombre1 varchar(50), IN fechaYhora1 DATETIME, IN idP1 INT, OUT mensaje varchar(50))
+ CREATE PROCEDURE cpr(IN categoria1 varchar(50), IN nombre1 varchar(50), IN fechaYhora1 DATETIME, IN idP1 INT, IN formatoArchivo1 varchar(50), IN rutaArchivo1 varchar(500), OUT mensaje varchar(50))
  BEGIN
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
@@ -139,8 +153,8 @@ CREATE PROCEDURE s(IN tabla varchar(50), IN idU int, IN idP int, OUT mensaje var
 	  SET mensaje = 'Ocurrio un error.';
 	 END;
 	START TRANSACTION;
-	 INSERT INTO programas(estadoAprobacion, categoria, nombre, fechaYhora, idPlataforma) 
-	 VALUES('En Revisión', categoria1, nombre1, fechaYhora1, idP1)
+	 INSERT INTO programas(estadoAprobacion, categoria, nombre, fechaYhora, idPlataforma, formatoArchivo, rutaArchivo) 
+	 VALUES('En Revisión', categoria1, nombre1, fechaYhora1, idP1, formatoArchivo1, rutaArchivo1);
 	COMMIT;
    SET mensaje = 'Programa ingresado con éxito.' 
  END;
@@ -320,7 +334,7 @@ CREATE PROCEDURE s(IN tabla varchar(50), IN idU int, IN idP int, OUT mensaje var
  
  
  
- CREATE PROCEDURE cc(IN formato1 varchar(50), IN rutaArchivo1 varchar(500), IN tags1 varchar(500), IN idU1 int, OUT mensaje varchar(50))
+ CREATE PROCEDURE cc(IN formato1 varchar(50), IN rutaArchivo1 varchar(500), IN idU1 int, OUT mensaje varchar(50))
  BEGIN
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
@@ -328,9 +342,9 @@ CREATE PROCEDURE s(IN tabla varchar(50), IN idU int, IN idP int, OUT mensaje var
 	  SET mensaje = 'Ocurrio un error.';
 	 END;
 	START TRANSACTION;
-	 INSERT INTO contenidos(formato,rutaArchivo,tags,idUsuario) VALUES(formato1,rutaArchivo1,tags1,idU1)
+	 INSERT INTO contenidos(formato,rutaArchivo,idUsuario) VALUES(formato1,rutaArchivo1,idU1);
 	COMMIT;
-   SET mensaje = 'Contenido subido con éxito.'
+   SET mensaje = 'Contenido subido con éxito.';
  END; 
  
  CREATE PROCEDURE bc(IN id1 int, OUT mensaje varchar(50))
@@ -344,11 +358,48 @@ CREATE PROCEDURE s(IN tabla varchar(50), IN idU int, IN idP int, OUT mensaje var
 	 DELETE FROM contenidos
 	 WHERE id = id1
 	COMMIT;
-   SET mensaje = 'Contenido borrado con éxito.'
+   SET mensaje = 'Contenido borrado con éxito.';
  END; 
  
- 
- 
+ CREATE PROCEDURE ct(IN tag1 varchar(50), OUT mensaje varchar(50))
+ BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET mensaje = 'Ocurrio un error.';
+	 END;
+	START TRANSACTION;
+	 INSERT INTO tags(tag) VALUES(tag1);
+	COMMIT;
+   SET mensaje = CONCAT('Tag ', tag1, ' creado con éxito.');
+ END; 
+
+ CREATE PROCEDURE cct(IN idC1 int, IN idT1 int, OUT mensaje varchar(50))
+ BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET mensaje = 'Ocurrio un error.';
+	 END;
+	START TRANSACTION;
+	 INSERT INTO contenido-tag(idContenido, idTag) VALUES(idC1, idT1);
+	COMMIT;
+   SET mensaje = 'Tag añadido con éxito al contenido.';
+ END; 
+
+ CREATE PROCEDURE bct(IN idC1 int, OUT mensaje varchar(50))
+ BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET mensaje = 'Ocurrio un error.';
+	 END;
+	START TRANSACTION;
+	 DELETE FROM contenido-tag
+	 WHERE idContenido = idC1;
+	COMMIT;
+   SET mensaje = 'Contenido-Tag eliminado con éxito.';
+ END; 
  
  CREATE PROCEDURE ld(IN likeOdislike1 boolean, IN idC int, IN idU int, OUT mensaje varchar(50))
  BEGIN
@@ -786,6 +837,7 @@ Delimiter ;
  
 
  
+
 
 
 
