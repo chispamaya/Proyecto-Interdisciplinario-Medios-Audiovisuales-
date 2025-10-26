@@ -3,15 +3,6 @@ CREATE DATABASE softlutionANDro;
 USE softlutionANDro;
 
 
-CREATE TABLE segmentos (
-    id INT AUTO_INCREMENT PRIMARY KEY,
-    estadoAprobacion VARCHAR(50),
-    duracion FLOAT,
-    titulo VARCHAR(50),
-    idPrograma INT,
-    FOREIGN KEY (idPrograma) REFERENCES programas(id)
-);
-
 CREATE TABLE plataforma(
 	id INT AUTO_INCREMENT PRIMARY KEY,
 	nombre varchar(50),
@@ -28,6 +19,15 @@ CREATE TABLE programas (
 	formatoArchivo VARCHAR(50),
 	rutaArchivo VARCHAR(500),
 	foreign key(idPlataforma) references plataforma(id)
+);
+
+CREATE TABLE segmentos (
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    estadoAprobacion VARCHAR(50),
+    duracion FLOAT,
+    titulo VARCHAR(50),
+    idPrograma INT,
+    FOREIGN KEY (idPrograma) REFERENCES programas(id)
 );
 
 CREATE TABLE emisiones (
@@ -837,6 +837,7 @@ Delimiter ;
  
 
  
+
 
 
 
