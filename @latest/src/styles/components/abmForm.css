@@ -1,0 +1,244 @@
+/* src/styles/components/abmForm.css - AJUSTE FINAL DE COLORES Y CAMPOS */
+
+:root {
+    --color-link: #8634AA;          /* Púrpura (botones Guardar, línea divisoria, focus) */
+    --color-card-background: #14213d; /* Fondo de la tarjeta (Azul muy Oscuro) */
+    --color-text-main: #ffffff;      /* Texto principal */
+    --color-input-bg: #2a3d66;      /* Azul intermedio/grisáceo para Inputs/Selects */
+    --color-input-bg-darker: #0a101f; /* Fondo muy oscuro para Descartar */
+    --color-danger: #d9534f;        /* Rojo para acciones peligrosas/descartar */
+}
+
+/* --- Layout Principal (Sin Cambios) --- */
+.abm-form-page-content {
+    width: 100%;
+    min-height: 100%; 
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 30px; 
+    box-sizing: border-box;
+    background-color: var(--background, #212121);
+}
+
+.form-page-title {
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--color-text-main);
+    margin-bottom: 2rem;
+}
+
+.form-page-title span {
+    border-bottom: 3px solid var(--color-link);
+    padding-bottom: 5px;
+}
+
+
+/* ---------------------------------------------------- */
+/* --- Tarjeta del Formulario (APLICANDO PALETA ABM) --- */
+/* ---------------------------------------------------- */
+.abm-form-card {
+    background-color: var(--color-card-background); /* 💥 Color de la tarjeta ABM: #14213d 💥 */
+    border-radius: 15px; 
+    padding: 40px;
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.6); 
+    border: 1px solid rgba(134, 52, 170, 0.5); 
+    
+    width: 100%;
+    max-width: 450px; 
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem; 
+}
+
+/* --- Campos de Entrada (Asegurando el Contraste) --- */
+.form-group {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+}
+
+.form-group label {
+    font-size: 1.1rem;
+    font-weight: 600;
+    color: var(--color-text-main);
+    margin-bottom: 0.3rem; /* Espacio extra para que el label no esté pegado al input */
+}
+
+.form-group input,
+.form-group select {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid transparent; 
+    border-radius: 8px;
+    background-color: var(--color-input-bg); /* 💥 Color de fondo del Input: #2a3d66 💥 */
+    color: var(--color-text-main);
+    font-size: 1rem;
+    transition: border-color 0.3s, box-shadow 0.3s;
+    
+    /* Estilos del Select (Flecha) */
+    -webkit-appearance: none;
+    -moz-appearance: none;
+    appearance: none;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 20 20'%3E%3Cpath fill='%23FFFFFF' d='M9.293 12.95l.707.707L15.657 8l-1.414-1.414L10 10.828 5.757 6.586 4.343 8z'/%3E%3C/svg%3E");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 1rem auto;
+}
+
+/* 💥 MEJORA: Borde y Sombra Púrpura al hacer focus 💥 */
+.form-group input:focus,
+.form-group select:focus {
+    outline: none;
+    border-color: var(--color-link); 
+    box-shadow: 0 0 0 3px rgba(134, 52, 170, 0.4); 
+}
+
+/* ---------------------------------------------------- */
+/* --- Botones de Acción --- */
+/* ---------------------------------------------------- */
+.form-action-buttons {
+    display: flex;
+    justify-content: flex-end; 
+    gap: 1.5rem;
+    margin-top: 1.5rem;
+}
+
+.form-action-buttons button {
+    flex-grow: 0;
+    min-width: 150px; 
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s, transform 0.2s;
+    text-transform: uppercase;
+}
+.form-action-buttons button:hover {
+    transform: translateY(-1px);
+}
+
+.btn-descartar-form {
+    background-color: var(--color-input-bg-darker); 
+    color: var(--color-text-main);
+    border: 1px solid var(--color-text-main);
+}
+.btn-descartar-form:hover {
+    background-color: var(--color-danger);
+}
+
+.btn-guardar-form {
+    background-color: var(--color-link); /* 💥 Púrpura principal: #8634AA 💥 */
+    color: var(--color-text-main);
+    box-shadow: 0 4px 10px rgba(134, 52, 170, 0.3);
+}
+.btn-guardar-form:hover {
+    background-color: #6a2a87; 
+}
+
+/* --- Responsive (Sin Cambios) --- */
+@media (max-width: 600px) {
+    .abm-form-card {
+        padding: 25px;
+    }
+    .form-action-buttons {
+        flex-direction: column;
+        gap: 0.75rem;
+        justify-content: center;
+        align-items: center;
+    }
+    .form-action-buttons button {
+        width: 100%;
+        min-width: unset;
+    }
+}
+
+
+/* --- Añadir al final de src/styles/components/abmForm.css --- */
+
+/* Estilos para la tabla de info actual (image_f31200.png) */
+.form-subtitle {
+    font-size: 1.3rem;
+    font-weight: 600;
+    color: var(--color-text-main);
+    margin-top: 0;
+    margin-bottom: 0.5rem;
+    border-bottom: 1px solid var(--color-border-subtle, #4a6fa5);
+}
+
+.empleado-info-table {
+    background-color: var(--color-input-bg);
+    border-radius: 8px;
+    padding: 15px;
+    margin-bottom: 1.5rem;
+    color: var(--color-text-main);
+    font-size: 0.95rem;
+    display: flex;
+    flex-direction: column;
+    gap: 5px;
+}
+.empleado-info-table span {
+    display: block;
+    padding: 3px 0;
+}
+
+
+/* Estilos para los Permisos (Tags) */
+.permisos-tag-container {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    padding: 10px;
+    background-color: var(--color-input-bg);
+    border-radius: 8px;
+}
+
+.permiso-tag {
+    display: flex;
+    align-items: center;
+    padding: 8px 12px;
+    border: 1px solid var(--color-link);
+    border-radius: 5px;
+    background-color: transparent;
+    color: var(--color-link);
+    font-size: 0.9rem;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.permiso-tag.active {
+    background-color: var(--color-link);
+    color: var(--color-text-main);
+}
+
+.permiso-tag .close-icon {
+    margin-left: 5px;
+    font-size: 0.7rem;
+    line-height: 1;
+}
+
+/* Botón Eliminar Empleado */
+.eliminar-empleado-container {
+    text-align: center;
+    margin-top: 1rem;
+    padding-top: 1rem;
+    border-top: 1px solid var(--color-border-subtle, #4a6fa5);
+}
+.btn-eliminar-empleado {
+    background-color: var(--color-input-bg-darker);
+    color: var(--color-danger);
+    border: 1px solid var(--color-danger);
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s;
+    text-transform: uppercase;
+}
+.btn-eliminar-empleado:hover {
+    background-color: var(--color-danger);
+    color: var(--color-text-main);
+}
