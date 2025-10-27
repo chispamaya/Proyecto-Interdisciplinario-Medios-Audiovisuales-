@@ -117,7 +117,7 @@ CREATE TABLE errores(
 	id int AUTO_INCREMENT PRIMARY KEY,
 	tipo varchar(50),
 	mensaje varchar(500),
-	fechaYHora DATETIME
+	fechaYHora DATETIME,
 	idUsuario int,
 	FOREIGN KEY (idUsuario) REFERENCES usuario(id)
 );
@@ -152,376 +152,552 @@ CREATE PROCEDURE s(IN tabla varchar(50), IN idU int, IN idP int, OUT mensaje var
 		DEALLOCATE PREPARE c;
 	 END IF;
    SET mensaje = 'Mostrando datos.' 
- END;
+ END //
 
- CREATE PROCEDURE cpr(IN categoria1 varchar(50), IN nombre1 varchar(50), IN horaInicio1 TIME, IN horaFin1 TIME, IN idP1 INT, IN formatoArchivo1 varchar(50), IN rutaArchivo1 varchar(500), OUT mensaje varchar(50))
+ CREATE PROCEDURE cpr(IN categoria1 varchar(50), IN nombre1 varchar(50), IN horaInicio1 TIME, IN horaFin1 TIME, IN idP1 INT, IN formatoArchivo1 varchar(50), IN rutaArchivo1 varchar(500), IN idUs int, OUT mensaje varchar(50))
  BEGIN
+	DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
 	START TRANSACTION;
 	 INSERT INTO programas(estadoAprobacion, categoria, nombre, horaInicio, horaFin, idPlataforma, formatoArchivo, rutaArchivo) 
 	 VALUES('En Revisión', categoria1, nombre1, horaInicio1, horaFin1, idP1, formatoArchivo1, rutaArchivo1);
 	COMMIT;
-   SET mensaje = 'Programa ingresado con éxito.' 
- END;
+   SET mensaje = 'Programa ingresado con éxito.' ;
+ END //
    
- CREATE PROCEDURE bpr(IN id1 int, OUT mensaje varchar(50))
+ CREATE PROCEDURE bpr(IN id1 int, IN idUs int OUT mensaje varchar(50))
  BEGIN
+	DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
     START TRANSACTION;
 	 DELETE FROM programas where id = id1;
 	COMMIT;
-   SET mensaje = 'Programa borrado con éxito.' 
- END;
+   SET mensaje = 'Programa borrado con éxito.' ;
+ END //
  
- CREATE PROCEDURE mpr(IN id1 int, IN estadoAprobacion1 varchar(50), IN categoria1 varchar(50), IN nombre1 varchar(50), IN horaInicio1 TIME, IN horaFin1 TIME, IN idP1 int, OUT mensaje varchar(50))
+ CREATE PROCEDURE mpr(IN id1 int, IN estadoAprobacion1 varchar(50), IN categoria1 varchar(50), IN nombre1 varchar(50), IN horaInicio1 TIME, IN horaFin1 TIME, IN idP1 int, IN idUs int OUT mensaje varchar(50))
  BEGIN
+    DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
 	START TRANSACTION;
 	 UPDATE programas
 	 SET estadoAprobacion = estadoAprobacion1, categoria = categoria1, nombre = nombre1, horaInicio = horaInicio1, horaFin = horaFin1 fechaYhora1, idPlataforma = idP1
 	 WHERE id = id1;
 	COMMIT;
-   SET mensaje = 'Datos del programa actualizados con éxito.'
- END;
+   SET mensaje = 'Datos del programa actualizados con éxito.';
+ END //
  
-CREATE PROCEDURE cd(IN dia1 DATE, IN idP1 int, OUT mensaje varchar(50))
+CREATE PROCEDURE cd(IN dia1 DATE, IN idP1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
+	DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
 	START TRANSACTION;
 	 INSERT INTO dias(dia, idPrograma) 
 	 VALUES(dia1, idP1);
 	COMMIT;
-   SET mensaje = 'Dia asignado al programa con éxito.' 
- END; 
+   SET mensaje = 'Dia asignado al programa con éxito.';
+ END //
 
-CREATE PROCEDURE bd(IN id1, OUT mensaje varchar(50))
+CREATE PROCEDURE bd(IN id1, IN idUs int, OUT mensaje varchar(50))
  BEGIN
+	DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
 	START TRANSACTION;
 	 DELETE FROM dias
 	 WHERE id = id1;
 	COMMIT;
-   SET mensaje = 'Dia eliminado con éxito.' 
- END; 
+   SET mensaje = 'Dia eliminado con éxito.' ;
+ END //
 
 
- CREATE PROCEDURE cu(IN email1 varchar(50), IN nombre1 varchar(50), IN contrasenia1 varchar(50), IN idRol1 int, OUT mensaje varchar(50))
+ CREATE PROCEDURE cu(IN email1 varchar(50), IN nombre1 varchar(50), IN contrasenia1 varchar(50), IN idRol1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
+	DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
 	START TRANSACTION;
-	 INSERT INTO usuario(email, nombre, contrasenia, idRol) VALUES(email1, nombre1, contrasenia1, idRol1)
+	 INSERT INTO usuario(email, nombre, contrasenia, idRol) VALUES(email1, nombre1, contrasenia1, idRol1);
 	COMMIT;
-   SET mensaje = 'Usuario ingresado con éxito.' 
- END;
+   SET mensaje = 'Usuario ingresado con éxito.';
+ END //
  
- CREATE PROCEDURE bu(IN id1 int, OUT mensaje varchar(50))
+ CREATE PROCEDURE bu(IN id1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
+	DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
     START TRANSACTION;
 	 DELETE FROM usuario where id = id1;
 	COMMIT;
-   SET mensaje = 'Usuario borrado con éxito.' 
- END;
+   SET mensaje = 'Usuario borrado con éxito.';
+ END //
  
- CREATE PROCEDURE mu(IN id1 int, IN idRol1 int, OUT mensaje varchar(50))
+ CREATE PROCEDURE mu(IN id1 int, IN idRol1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
+	DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
 	START TRANSACTION;
 	 UPDATE usuario
 	 SET idRol = idRol1
 	 WHERE id = id1;
 	COMMIT;
-   SET mensaje = 'Rol del usuario actualizado con éxito.'
- END;
+   SET mensaje = 'Rol del usuario actualizado con éxito.';
+ END //
  
- CREATE PROCEDURE cs(IN estadoAprobacion1 varchar(50), IN duracion1 varchar(50), IN titulo1 varchar(50), IN idP1 int, OUT mensaje varchar(50))
+ CREATE PROCEDURE cs(IN estadoAprobacion1 varchar(50), IN duracion1 varchar(50), IN titulo1 varchar(50), IN idP1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
+	DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
 	START TRANSACTION;
-	 INSERT INTO segmentos(estadoAprobacion, duracion, titulo, idPrograma) VALUES(estadoAprobacion1, duracion1, titulo1, idP1)
+	 INSERT INTO segmentos(estadoAprobacion, duracion, titulo, idPrograma) VALUES(estadoAprobacion1, duracion1, titulo1, idP1);
 	COMMIT;
-   SET mensaje = 'Segmento ingresado con éxito.' 
- END;
+   SET mensaje = 'Segmento ingresado con éxito.';
+ END //
  
- CREATE PROCEDURE bs(IN id1 int, OUT mensaje varchar(50))
+ CREATE PROCEDURE bs(IN id1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
+	DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
     START TRANSACTION;
 	 DELETE FROM segmentos where id = id1;
 	COMMIT;
-   SET mensaje = 'Segmento borrado con éxito.' 
- END;
- CREATE PROCEDURE ms(IN id1 int, IN estadoAprobacion1 varchar(50), IN duracion1 varchar(50), IN titulo1 varchar(50), IN idP1 int, OUT mensaje varchar(50))
+   SET mensaje = 'Segmento borrado con éxito.' ;
+ END //
+
+ CREATE PROCEDURE ms(IN id1 int, IN estadoAprobacion1 varchar(50), IN duracion1 varchar(50), IN titulo1 varchar(50), IN idP1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
+	DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
 	START TRANSACTION;
 	 UPDATE segmentos
 	 SET estadoAprobacion = estadoAprobacion1, duracion = duracion1, titulo = titulo1, idPrograma = idP1
 	 WHERE id = id1;
 	COMMIT;
-   SET mensaje = 'Segmento actualizado con éxito.'
- END;
+   SET mensaje = 'Segmento actualizado con éxito.';
+ END //
  
  
  
- CREATE PROCEDURE cpl(IN nombre1 varchar(50), IN tipo1 varchar(50), OUT mensaje varchar(50))
+ CREATE PROCEDURE cpl(IN nombre1 varchar(50), IN tipo1 varchar(50), IN idUs int, OUT mensaje varchar(50))
  BEGIN
+	DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
 	START TRANSACTION;
-	 INSERT INTO plataforma(nombre, tipo) VALUES(nombre1, tipo1)
+	 INSERT INTO plataforma(nombre, tipo) VALUES(nombre1, tipo1);
 	COMMIT;
-   SET mensaje = 'Plataforma ingresada con éxito.' 
- END;
+   SET mensaje = 'Plataforma ingresada con éxito.'; 
+ END //
    
- CREATE PROCEDURE bpl(IN id1 int, OUT mensaje varchar(50))
+ CREATE PROCEDURE bpl(IN id1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
+	DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
     START TRANSACTION;
 	 DELETE FROM plataforma where id = id1;
 	COMMIT;
-   SET mensaje = 'Plataforma borrada con éxito.' 
- END;
+   SET mensaje = 'Plataforma borrada con éxito.';
+ END //
  
- CREATE PROCEDURE mpl(IN id1 int, IN nombre1 varchar(50), IN tipo1 varchar(50), OUT mensaje varchar(50))
+ CREATE PROCEDURE mpl(IN id1 int, IN nombre1 varchar(50), IN tipo1 varchar(50), IN idUs int, OUT mensaje varchar(50))
  BEGIN
+	DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
 	START TRANSACTION;
 	 UPDATE plataforma
 	 SET nombre = nombre1, tipo = tipo1
 	 WHERE id = id1;
 	COMMIT;
-   SET mensaje = 'Datos de la plataforma actualizados con éxito.'
- END;
+   SET mensaje = 'Datos de la plataforma actualizados con éxito.';
+ END //
  
  
 
  
- CREATE PROCEDURE me(IN id1 int, IN enVivo1 varchar(50), IN idPr1 int, OUT mensaje varchar(50))
+ CREATE PROCEDURE me(IN id1 int, IN enVivo1 varchar(50), IN idPr1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
+	DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
 	START TRANSACTION;
 	 UPDATE emision
 	 SET enVivo = enVivo1, idPrograma = idPr1
 	 WHERE id = id1;
 	COMMIT;
-   SET mensaje = 'Datos de la emisión actualizados con éxito.'
+   SET mensaje = 'Datos de la emisión actualizados con éxito.';
  END; 
  
  
  
  
- CREATE PROCEDURE cc(IN formato1 varchar(50), IN rutaArchivo1 varchar(500), IN idU1 int, OUT mensaje varchar(50))
+ CREATE PROCEDURE cc(IN formato1 varchar(50), IN rutaArchivo1 varchar(500), IN idU1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
+	DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
 	START TRANSACTION;
 	 INSERT INTO contenidos(formato,rutaArchivo,idUsuario) VALUES(formato1,rutaArchivo1,idU1);
 	COMMIT;
    SET mensaje = 'Contenido subido con éxito.';
- END; 
+ END // 
  
- CREATE PROCEDURE bc(IN id1 int, OUT mensaje varchar(50))
+ CREATE PROCEDURE bc(IN id1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
+	DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
 	START TRANSACTION;
 	 DELETE FROM contenidos
-	 WHERE id = id1
+	 WHERE id = id1;
 	COMMIT;
    SET mensaje = 'Contenido borrado con éxito.';
- END; 
+ END //
  
- CREATE PROCEDURE ct(IN tag1 varchar(50), OUT mensaje varchar(50))
+ CREATE PROCEDURE ct(IN tag1 varchar(50), IN idUs int, OUT mensaje varchar(50))
  BEGIN
+	DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
 	START TRANSACTION;
 	 INSERT INTO tags(tag) VALUES(tag1);
 	COMMIT;
    SET mensaje = CONCAT('Tag ', tag1, ' creado con éxito.');
- END; 
+ END //
 
- CREATE PROCEDURE cct(IN idC1 int, IN idT1 int, OUT mensaje varchar(50))
+ CREATE PROCEDURE cct(IN idC1 int, IN idT1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
+	DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
 	START TRANSACTION;
 	 INSERT INTO contenido_tag(idContenido, idTag) VALUES(idC1, idT1);
 	COMMIT;
    SET mensaje = 'Tag añadido con éxito al contenido.';
- END; 
+ END //
 
- CREATE PROCEDURE bct(IN idC1 int, OUT mensaje varchar(50))
+ CREATE PROCEDURE bct(IN idC1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
+	DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
 	START TRANSACTION;
 	 DELETE FROM contenido_tag
 	 WHERE idContenido = idC1;
 	COMMIT;
    SET mensaje = 'Contenido-Tag eliminado con éxito.';
- END; 
+ END //
  
- CREATE PROCEDURE ld(IN likeOdislike1 boolean, IN idC int, IN idU int, OUT mensaje varchar(50))
+ CREATE PROCEDURE ld(IN likeOdislike1 boolean, IN idC int, IN idU int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
+	DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
 	START TRANSACTION;
 	 IF NOT EXISTS (SELECT * FROM audiencia_con WHERE idUsuario = idU AND idContenido = idC) THEN
-	  INSERT INTO audiencia_con(likeOdislike, idContenido, idUsuario) VALUES (likeOdislike1, idC, idU)
+	  INSERT INTO audiencia_con(likeOdislike, idContenido, idUsuario) VALUES (likeOdislike1, idC, idU);
 	 ELSE
 	  UPDATE audiencia_con
 	   SET likeOdislike = likeOdislike1
 	   WHERE idUsuario = idU AND idContenido = idC;
 	 END IF;
 	COMMIT;
-   SET mensaje = 'Valoración actualizada con éxito.'
- END;
+   SET mensaje = 'Valoración actualizada con éxito.';
+ END //
  
- CREATE PROCEDURE bv(IN idC int, IN idU int, OUT mensaje varchar(50))
+ CREATE PROCEDURE bv(IN idC int, IN idU int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
+	DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
 	START TRANSACTION;
 	 DELETE FROM audiencia_con
 	 WHERE idContenido = idC AND idUsuario = idU;
 	COMMIT;
-   SET mensaje = 'Valoración actualizada con éxito.'
- END;
+   SET mensaje = 'Valoración actualizada con éxito.';
+ END //
  
  
  
  
- CREATE PROCEDURE cen(IN preguntar1 varchar(50), IN idU int, OUT mensaje varchar(50), OUT idE int)
+ CREATE PROCEDURE cen(IN preguntar1 varchar(50), IN idU int, OUT mensaje varchar(50), IN idUs int, OUT idE int)
  BEGIN
+	DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
 	START TRANSACTION;
 	 INSERT INTO encuesta(preguntar, idUsuario) VALUES (preguntar1, idU);
 	 COMMIT;
    SET idE = LAST_INSERT_ID();
-   SET mensaje = 'Encuesta creada con éxito.'
- END;
+   SET mensaje = 'Encuesta creada con éxito.';
+ END //
 
-CREATE PROCEDURE co(IN idE int, IN opcion1 varchar(50), IN cont int, OUT mensaje varchar(50))
+CREATE PROCEDURE co(IN idE int, IN opcion1 varchar(50), IN cont int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
+	DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
 	START TRANSACTION;
 	 INSERT INTO opcion_e(idEncuesta, opcion) VALUES (idE, opcion1);
 	 COMMIT;
-   SET mensaje = CONCAT('Opcion ',cont, ' creada con éxito.')
- END;
+   SET mensaje = CONCAT('Opcion ',cont, ' creada con éxito.');
+ END //
  
- CREATE PROCEDURE vo(IN idO int, IN idU int, IN idE int, OUT mensaje varchar(50))
+ CREATE PROCEDURE vo(IN idO int, IN idU int, IN idE int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
 	DECLARE idOAntigua int;
+	DECLARE error varchar(500);
+	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
+		GET DIAGNOSTICS CONDITION 1
+            errorC = MYSQL_ERRNO,      
+            error = MESSAGE_TEXT;
 	  ROLLBACK;
 	  SET mensaje = 'Ocurrio un error.';
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
 	START TRANSACTION;
 	 IF NOT EXISTS(SELECT * FROM votar_opcion WHERE idUsuario = idU AND idOpcion IN(SELECT id FROM opcion_e WHERE idEncuesta = idE)) THEN
       INSERT INTO votar_opcion(idOpcion, idUsuario) VALUES(idO, idU);
-	  SET mensaje = 'Voto ingresado con éxito.'
+	  SET mensaje = 'Voto ingresado con éxito.';
      ELSE
 	  SELECT idOpcion INTO idOAntigua FROM votar_opcion WHERE idOpcion IN(SELECT id FROM opcion_e WHERE idEncuesta = idE) AND idUsuario = idU;
 	  IF idOAntigua = idO THEN
 		DELETE FROM votar_opcion 
 		WHERE idUsuario = idU AND idOpcion = idO;
-		SET mensaje = 'Voto eliminado con éxito.'
+		SET mensaje = 'Voto eliminado con éxito.';
 	  ELSE
 		UPDATE votar_opcion
 		SET idOpcion = idO WHERE idUsuario = idU AND idOpcion = idOAntigua;
-		SET mensaje = 'Voto actualizado con éxito.'
+		SET mensaje = 'Voto actualizado con éxito.';
      END IF;	  
   COMMIT;
  END //
@@ -873,6 +1049,7 @@ Delimiter ;
  
 
  
+
 
 
 
