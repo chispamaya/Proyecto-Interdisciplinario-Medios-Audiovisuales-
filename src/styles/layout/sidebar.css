@@ -1,0 +1,272 @@
+* {
+
+    margin: 0;
+
+    
+
+    box-sizing: border-box;
+
+}
+
+.espacio{
+    height: 100px;
+}
+
+:root {
+
+    --sideBarHeader: #0a101f;
+
+    --texto: #d8d5d5;
+
+    --background: #212121;
+
+    --botonV: #341243;
+
+    --links: #8634aa;
+
+    --backgroundForm: #000000;
+
+}
+
+
+
+
+
+
+.app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; 
+}
+
+
+/* SIDEBAR - Desktop */
+
+.sideBar {
+    
+    background-color: var(--sideBarHeader);
+    width: 20%;
+    min-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    position: fixed;
+    top: 0;
+    left: 0;     
+        z-index: 10; /* Asegura que siempre esté por encima */
+
+}
+
+.main {
+    margin-left: 20%;
+    padding: 20px;
+}
+
+.lista {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    
+}
+
+
+
+li {
+    position: relative;
+}
+li:hover{
+    background-color: #2a4a5e;
+    border-radius: 10px;
+    width: 100%;
+}
+.lista li.perfil {
+    margin-top: 30em;
+}
+
+.material-symbols-outlined {
+    color: var(--texto);
+    position: absolute;
+    top: -4.5px;
+    left: 5px;
+}
+
+
+
+
+.sub-header .lista {
+    list-style: none;
+    display: flex;
+    gap: 40px;
+    padding: 0;
+    margin: 0;
+    margin-top: 1em;
+    margin-left: 1em;
+}
+
+.sideBar .lista li a .label {
+    font-size:0.8em; 
+    color: #ffffffdc;
+    margin-left: 1em;
+    
+}
+
+
+.lista li a {
+    color: inherit;
+    /* hereda el color del li */
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.nomostrar {
+    display: none;
+}
+
+a {
+    color: var(--texto);
+}
+
+.activo {
+    opacity: 1;
+}
+
+.no {
+    opacity: 0.5;
+}
+
+.menu {
+    display: none;
+}
+
+
+
+@media (max-width: 576px) {
+    .material-symbols-outlined {
+        color: var(--texto);
+        position: absolute;
+        top: -4.5px;
+        left: -1em;
+    }
+    .header{
+        flex: 1;
+    }
+    .main > button.menu { /* Selector más específico: apunta al <button class="menu"> dentro de <main> */
+        display: block !important; /* Fuerza la visibilidad */
+        
+        /* Mantenemos el posicionamiento fijo arriba */
+        position: fixed; 
+        top: 10px; 
+        left: 10px;
+        z-index: 30; 
+        
+        /* ... el resto de tus estilos (.menu) ... */
+        font-size: 1.5em;
+        border: none;
+        background-color: transparent;
+        color: var(--texto);
+        cursor: pointer;
+    }
+    .menu {
+        display: block;
+        font-size: 1.5em;
+        border: none;
+        background-color: transparent;
+        color: var(--texto);
+        cursor: pointer;
+        
+    }
+
+    #cerrar {
+        display: block;
+        font-size: 1.5em;
+        border: none;
+        background-color: transparent;
+        color: #ffffff;
+        cursor: pointer;
+    }
+    .sub-header {
+        visibility: hidden;
+        display: flex;
+        flex-direction: column;
+        gap: 1rem;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: var(--sideBarHeader);
+        padding: 2rem;
+        bottom: 0;
+        left: 0;
+        box-shadow: 0 0 0 100vmax rgba(0, 0, 0, .5);
+    }
+    .sub-header.visible #cerrar {
+        display: block !important;
+    }
+    .sideBar{
+    bottom: 0;
+   }
+    .sub-header.visible {
+        opacity: 1;
+        visibility: visible;
+    }
+
+    .sub-header ul li a {
+        color: rgb(255, 251, 251);
+    }
+
+}
+@media (min-width: 577px) { 
+    .label, .material-symbols-outlined{
+        font-size: 12px;
+    }
+    .material-symbols-outlined{
+        left: -0.5em;
+    }
+ }
+
+@media (min-width: 700px) {
+    .label, .material-symbols-outlined{
+        font-size: 15px;
+    }
+  }
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+p {
+    font-size: 0.8em;
+    word-wrap: break-word;
+}
+
+
+/* 💥 REGLAS DE ANULACIÓN CRÍTICAS AGREGADAS/MODIFICADAS 💥 */
+
+.sideBar button {
+    position: static; 
+    overflow: visible; 
+    animation: none !important; 
+    transition: none !important;
+}
+
+
+.sideBar button:hover {
+    animation: none !important;
+    width: auto !important; 
+}
+
+
+.menu {
+    display: none;
+}
+.sideBar button::after {
+    content: none !important; 
+    
+}
+@media (max-width: 576px) {
+    .menu {
+        display: block; 
+        animation: none !important;
+    }
+}

@@ -1,0 +1,247 @@
+:root {
+    --texto: #ffffff;
+    --background: #212121;
+    --links: #8634AA;
+    --sideBarMain: #3C3C3C;
+    --danger-color: #d9534f;
+    --main-text-color: #f0f0f0;
+    --secondary-text-color: #a0a8b9;
+    --input-bg-color: #2c2c2c;
+    --input-border-color: #444;
+}
+
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+.adm{
+    display: inline;
+    
+}
+body {
+    font-family: 'Montserrat', sans-serif;
+    background-color: #1e1e1e;
+    color: var(--main-text-color);
+    /* 💥 QUITAMOS height: 100vh y overflow: hidden del body 💥 */
+    /* Esto es manejado por el AppLayout */
+    min-height: 100vh;
+}
+
+/* --- CONTENEDOR PRINCIPAL: Ahora solo es un envoltorio que centra la tarjeta --- */
+.contenedor-principal {
+    /* Ocupa todo el espacio que le da el .content-area (que es 80% o 100% del viewport) */
+    width: 100%;
+    min-height: 100%;
+    /* Asegura que ocupe toda la altura disponible */
+    display: flex;
+    justify-content: center;
+    /* Centra la tarjeta horizontalmente */
+    align-items: flex-start;
+    /* Centra la tarjeta más hacia arriba */
+    padding: 2rem 1rem;
+}
+
+/* --- CONTENIDO PERFIL: La tarjeta central (Desktop por defecto) --- */
+.contenido-perfil {
+    width: 100%;
+    max-width: 600px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    background-color: var(--background);
+    padding: 3rem 2rem;
+    border-radius: 12px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+}
+
+
+.logo-contenedor {
+    margin-bottom: 2.5rem;
+    text-align: center;
+}
+
+.logo-perfil {
+    height: 180px;
+    width: auto;
+    object-fit: contain;
+}
+
+/* --- DATOS DE PERFIL --- */
+.datos-perfil {
+    text-align: center;
+    margin-bottom: 2rem;
+}
+
+.datos-perfil h1 {
+    font-size: 2rem;
+    font-weight: 700;
+    margin-bottom: 1rem;
+    color: var(--texto);
+}
+
+.datos-perfil h2 {
+    font-size: 1rem;
+    color: var(--secondary-text-color);
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+/* --- FORMULARIO DE PERFIL --- */
+.formulario-perfil {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+}
+
+/* Se eliminaron .nombre-usuario y .email-usuario porque no están en el HTML */
+
+/* Campo individual del formulario */
+.campo-form {
+    width: 100%;
+    text-align: left;
+    margin-bottom: 2rem;
+    max-width: 400px;
+}
+
+.campo-form label {
+    display: block;
+    margin-bottom: 0.5rem;
+    color: var(--secondary-text-color);
+    font-weight: 600;
+}
+
+.campo-form input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    background-color: var(--input-bg-color);
+    border: 1px solid var(--input-border-color);
+    border-radius: 8px;
+    color: var(--texto);
+    font-size: 1rem;
+    font-family: 'Montserrat', sans-serif;
+    transition: border-color 0.3s, box-shadow 0.3s;
+}
+
+.campo-form input:focus {
+    outline: none;
+    border-color: var(--links);
+    box-shadow: 0 0 0 3px rgba(134, 52, 170, 0.3);
+}
+
+.campo-form input::placeholder {
+    color: #777;
+}
+
+/* --- ACCIONES DEL FORMULARIO: CENTRADOS Y RESPONSIVE --- */
+.acciones-form-centrado {
+    width: 100%;
+    display: flex;
+    justify-content: center;
+    gap: 1.5rem;
+    margin-top: 2rem;
+    flex-wrap: wrap;
+    /* Importante para que los botones se apilen en móvil */
+}
+
+.acciones-form-centrado button {
+    flex-grow: 0;
+    min-width: 150px;
+    padding: 0.8rem 1.5rem;
+    border: none;
+    border-radius: 8px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.3s;
+    font-family: 'Montserrat', sans-serif;
+    font-size: 1rem;
+    text-transform: uppercase;
+}
+
+.acciones-form-centrado button:hover {
+    opacity: 0.9;
+    transform: translateY(-1px);
+}
+
+.btn-descartar {
+    background-color: var(--danger-color);
+    color: var(--texto);
+}
+
+.btn-guardar {
+    background-color: var(--links);
+    color: var(--texto);
+}
+
+/* ------------------------------------------- */
+/* --- MEDIA QUERIES --- */
+/* ------------------------------------------- */
+
+
+/* Tablet y móviles grandes (768px y menos) */
+@media (max-width: 768px) {
+    .contenido-perfil {
+        padding: 2rem 1.5rem;
+        /* Ajuste de padding en la tarjeta */
+        max-width: 500px;
+        /* Reducimos un poco el tamaño máximo */
+        margin-top: 1rem;
+    }
+
+    .logo-perfil {
+        height: 120px;
+        /* Reducimos el logo */
+    }
+
+    .datos-perfil h1 {
+        font-size: 1.75rem;
+        /* Reducimos el nombre */
+    }
+
+    .datos-perfil h2 {
+        font-size: 0.9rem;
+        /* Reducimos el rol */
+    }
+}
+
+
+/* Móviles pequeños (480px y menos) */
+@media (max-width: 480px) {
+
+    /* Hacemos que la tarjeta ocupe más espacio en pantallas muy pequeñas */
+    .contenido-perfil {
+        padding: 1.5rem 1rem;
+        margin-top: 0.5rem;
+        border-radius: 8px;
+        /* Bordes un poco menos redondeados */
+    }
+
+    .logo-contenedor {
+        margin-bottom: 1.5rem;
+    }
+
+    .logo-perfil {
+        height: 100px;
+        /* Logo más pequeño en móvil */
+    }
+
+    .datos-perfil h1 {
+        font-size: 1.5rem;
+    }
+
+    /* Forzamos que los botones se apilen verticalmente en móvil */
+    .acciones-form-centrado {
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-top: 1.5rem;
+    }
+
+    .acciones-form-centrado button {
+        width: 100%;
+        /* Botones de ancho completo */
+        min-width: unset;
+        font-size: 0.9rem;
+    }
+}

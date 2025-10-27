@@ -1,0 +1,491 @@
+/* --- Variables basadas en tu paleta --- */
+:root {
+  --texto: #ffffff;
+  --background: #212121;
+  --links: #8634AA;
+  --sideBarMain: #3C3C3C;
+  --dark-blue-card: #14213D;
+  --gris-claro-hover: #505050;
+  --rojo-oscuro: #d9534f;
+}
+
+/* ---------------------------------------------------- */
+/* --- CONTENEDOR PRINCIPAL: Sin Scroll y Full Height --- */
+/* ---------------------------------------------------- */
+.detalle-propuesta-container {
+  display: flex;
+  height: calc(100vh - 100px);
+  overflow: hidden;
+  width: 100%;
+}
+
+/* ---------------------------------------------------- */
+/* --- SIDEBAR IZQUIERDA (Catálogo de Propuestas) --- */
+/* ---------------------------------------------------- */
+.propuesta-sidebar {
+  width: 180px;
+  background-color: var(--sideBarMain);
+  padding: 10px 0;
+  flex-shrink: 0;
+  display: flex;
+  flex-direction: column;
+  overflow-y: hidden;
+}
+
+.propuesta-item {
+  display: flex;
+  align-items: center;
+  padding: 10px;
+  margin: 5px 10px;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+}
+
+.propuesta-link {
+  text-decoration: none;
+  color: inherit;
+}
+
+.propuesta-item:hover,
+.propuesta-item.active {
+  background-color: var(--gris-claro-hover);
+}
+
+.propuesta-logo-sm {
+  width: 30px;
+  height: 30px;
+  object-fit: contain;
+  margin-right: 10px;
+}
+
+.propuesta-info {
+  font-size: 0.8em;
+  color: var(--texto);
+}
+
+.propuesta-titulo {
+  font-weight: 600;
+  margin-bottom: 2px;
+}
+
+.propuesta-proponente {
+  font-size: 0.7em;
+  opacity: 0.8;
+}
+
+/* ---------------------------------------------------- */
+/* --- CONTENIDO PRINCIPAL DERECHA --- */
+/* ---------------------------------------------------- */
+.propuesta-main-content {
+  flex-grow: 1;
+  padding: 20px;
+  display: flex;
+  flex-direction: column;
+  background-color: var(--background);
+  color: var(--texto);
+  overflow: hidden;
+  min-width: 0;
+}
+
+.propuesta-header {
+  display: flex;
+  align-items: center;
+  margin-bottom: 20px;
+  flex-shrink: 0;
+}
+
+.propuesta-logo-lg {
+  width: 300px;
+  height: auto;
+  object-fit: contain;
+  margin-right: 20px;
+  flex-shrink: 0;
+}
+
+.propuesta-titulo-lg {
+  font-size: 2.5em;
+  font-weight: 700;
+  min-width: 0;
+  word-break: break-word;
+}
+
+.propuesta-proponente-lg {
+  font-size: 1.2em;
+  opacity: 0.8;
+  min-width: 0;
+  word-break: break-word;
+}
+
+/* ---------------------------------------------------- */
+/* --- DETALLES GRID (Distribución de 3 columnas) --- */
+/* ---------------------------------------------------- */
+.detalles-grid {
+  display: grid;
+  grid-template-columns: minmax(150px, 2fr) minmax(150px, 1.5fr) 1fr;
+  gap: 20px;
+  flex-grow: 1;
+  min-height: 0;
+  margin-bottom: 20px;
+}
+
+/* --- Estilos Generales de Tarjeta (Card) --- */
+.card-detalle {
+  background-color: var(--dark-blue-card);
+  padding: 20px;
+  border-radius: 8px;
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.3);
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.card-title {
+  font-size: 0.9em;
+  margin-bottom: 15px;
+  font-weight: 400;
+  opacity: 0.7;
+}
+
+
+.detalle-item {
+  display: flex;
+  align-items: center;
+  background-color: rgba(0, 0, 0, 0.2);
+  padding: 10px 15px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+}
+
+.detalle-icon {
+  color: var(--texto);
+  margin-right: 10px;
+  flex-shrink: 0;
+}
+
+.detalle-text {
+  color: var(--texto);
+  font-size: 1.1em;
+  font-weight: 500;
+  white-space: nowrap;
+}
+
+
+.fecha-card {
+  grid-row: span 2;
+  min-width: 0;
+  overflow: auto;
+}
+
+.fechas-list-wrapper {
+  flex-grow: 1;
+  overflow-y: visible;
+  padding-right: 0;
+  display: flex;
+  flex-direction: column;
+}
+
+.fecha-card::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+.fecha-card::-webkit-scrollbar-thumb {
+  background-color: var(--links);
+  border-radius: 4px;
+}
+
+
+.horarios-card {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+.horario-emision-card,
+.horario-finalizacion-card {
+  flex-grow: 1;
+  min-height: 0;
+  min-width: 0;
+}
+
+.descargar-card-wrapper {
+  display: flex;
+  align-items: flex-start;
+}
+
+.btn-descargar {
+  background-color: var(--dark-blue-card);
+  color: var(--texto);
+  padding: 15px 20px;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  font-size: 1em;
+  font-weight: 600;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  transition: opacity 0.2s;
+  height: fit-content;
+  min-width: 0;
+}
+
+.btn-descargar:hover {
+  opacity: 0.9;
+}
+
+
+/* --- BOTONES DE ACCIÓN (Inferiores) --- */
+.accion-buttons {
+  display: flex;
+  justify-content: flex-end;
+  gap: 15px;
+  padding-bottom: 20px;
+  flex-shrink: 0;
+}
+
+.btn-accion {
+  padding: 10px 25px;
+  border: none;
+  border-radius: 6px;
+  color: var(--texto);
+  font-weight: 600;
+  cursor: pointer;
+  transition: opacity 0.2s;
+  font-family: inherit;
+}
+
+.btn-accion:hover {
+  opacity: 0.8;
+}
+
+.btn-no-publicar {
+  background-color: var(--rojo-oscuro);
+}
+
+.btn-publicar {
+  background-color: var(--links);
+}
+
+
+/* ---------------------------------------------------- */
+/* --- RESPONSIVE / MEDIA QUERIES --- */
+/* ---------------------------------------------------- */
+
+/* TABLET GRANDE (900px) - Ajustes iniciales */
+@media (max-width: 900px) {
+  .propuesta-sidebar {
+    width: 150px;
+  }
+
+
+  .propuesta-header {
+    flex-wrap: wrap;
+    gap: 5px;
+    margin-bottom: 15px;
+  }
+
+  .propuesta-logo-lg {
+    width: 180px;
+    margin-right: 10px;
+  }
+
+  .propuesta-titulo-box {
+    flex-grow: 1;
+    min-width: 150px;
+  }
+
+  .propuesta-titulo-lg {
+    font-size: 1.8em;
+  }
+
+  .propuesta-proponente-lg {
+    font-size: 1em;
+  }
+
+
+  .detalles-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 15px;
+  }
+
+  .fecha-card {
+    grid-row: span 1;
+    grid-column: span 1;
+    height: auto;
+  }
+
+  .horarios-card {
+    grid-column: span 1;
+  }
+
+  .descargar-card-wrapper {
+    grid-column: 1 / -1;
+    align-items: stretch;
+  }
+
+  .btn-descargar {
+    width: 100%;
+    flex-direction: row;
+    justify-content: center;
+    gap: 10px;
+  }
+
+  .horario-emision-card,
+  .horario-finalizacion-card {
+    padding: 12px;
+  }
+
+  .horarios-card .card-title {
+    font-size: 0.8em;
+    margin-bottom: 10px;
+    white-space: normal;
+    word-break: break-word;
+  }
+
+  .horarios-card .detalle-item {
+    padding: 8px 10px;
+  }
+
+  .horarios-card .detalle-text {
+    font-size: 1em;
+  }
+
+  .horarios-card .detalle-icon {
+    margin-right: 8px;
+  }
+}
+
+/* TABLET PEQUEÑA / MÓVIL GRANDE (700px) */
+@media (max-width: 700px) {
+  .propuesta-main-content {
+    padding: 15px;
+  }
+
+  .propuesta-header {
+    flex-direction: column;
+    text-align: center;
+    gap: 5px;
+    flex-wrap: nowrap;
+  }
+
+  .propuesta-logo-lg {
+    margin: 0 0 5px 0;
+    width: 150px;
+  }
+
+  .propuesta-titulo-lg {
+    font-size: 1.6em;
+  }
+
+  .propuesta-proponente-lg {
+    font-size: 0.9em;
+  }
+
+
+
+  .detalles-grid {
+    gap: 10px;
+  }
+
+  .card-detalle {
+    padding: 15px;
+  }
+
+  .horario-emision-card,
+  .horario-finalizacion-card {
+    padding: 10px;
+  }
+
+  .horarios-card .card-title {
+    font-size: 0.7em;
+    margin-bottom: 5px;
+  }
+
+  .horarios-card .detalle-item {
+    padding: 5px 8px;
+  }
+
+  .horarios-card .detalle-text {
+    font-size: 0.9em;
+  }
+
+  .horarios-card .detalle-icon {
+    margin-right: 5px;
+  }
+}
+
+
+/* MÓVIL (600px)*/
+@media (max-width: 600px) {
+ 
+  
+  .detalle-propuesta-container {
+    flex-direction: column;
+    height: auto;
+  }
+
+  .propuesta-sidebar {
+    
+    width: 90%;
+    height: 200px;
+  
+    flex-direction: row;
+    flex-shrink: 0;
+    padding: 10px;
+  }
+
+  .propuesta-item {
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+
+    margin: 1px;
+  }
+
+  .propuesta-logo-sm {
+    margin-right: 0;
+    margin-bottom: 5px;
+  }
+
+  .propuesta-main-content {
+    width: 90%;
+    overflow: visible;
+    /* Quita el overflow hidden */
+  }
+
+  /* Ajusta el grid del contenido principal para que se apile */
+  .detalles-grid {
+    display: flex;
+    /* Cambia de grid a flex */
+    flex-direction: column;
+    gap: 15px;
+  }
+
+  /* Ajusta las tarjetas si es necesario */
+  .fecha-card,
+  .horarios-card,
+  .descargar-card-wrapper {
+    width: 100%;
+  }
+
+  .fecha-card {
+    height: auto;
+    /* Altura automática */
+    max-height: 200px;
+    /* Limita la altura con scroll */
+    overflow-y: auto;
+  }
+
+  .horarios-card {
+    flex-direction: column;
+    /* Apila las tarjetas de horario */
+    gap: 10px;
+  }
+  .accion-buttons button{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}

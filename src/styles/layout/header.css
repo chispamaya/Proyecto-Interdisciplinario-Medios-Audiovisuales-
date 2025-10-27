@@ -1,0 +1,27 @@
+ 
+ :root{
+    --sideBarHeader:#14213d;
+  }
+ .header{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background: var(--sideBarHeader);
+    width: 100%;
+    height: auto;
+  }
+
+  @media (max-width: 768px) {
+    .header {
+        /* En móvil, el Header debe ocupar todo el ancho */
+        margin-left: 0; 
+        width: 100%;
+    }
+    
+    /* Si tienes elementos específicos en el Header que necesitan ajustes, añádelos aquí.
+       Ejemplo: el logo o el botón de menú.
+    .header .logo {
+        height: 40px;
+    }
+    */
+}

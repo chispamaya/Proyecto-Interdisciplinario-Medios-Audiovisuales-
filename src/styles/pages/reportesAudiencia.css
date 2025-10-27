@@ -1,0 +1,287 @@
+/* Usamos las variables globales que ya definiste en tus otros archivos
+ (ej: gestionMultimedia.css, header.css)
+*/
+
+.reportes-container {
+    display: flex;
+    height: 100%;
+    /* Ocupa el alto del .content-area */
+    width: 100%;
+    background-color: var(--background-app, #1e1e1e);
+    color: var(--color-text-main, #ffffff);
+}
+
+/* ------------------------------------------- */
+/* --- 1. Sidebar de Toggles (Escritorio) --- */
+/* ------------------------------------------- */
+.reportes-sidebar {
+    width: 320px;
+    flex-shrink: 0;
+    background-color: var(--sideBarHeader, #14213d);
+    padding: 1.5rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+    border-right: 1px solid var(--color-border, #444);
+    /* Centra los botones de bloque */
+    align-items: center;
+}
+
+.reportes-toggle-btn {
+    display: flex;
+    /* Estilo de bloque "ancho" */
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    width: 280px;
+    height: 120px;
+    gap: 0.5rem;
+    background-color: var(--background-card, #212121);
+    color: var(--color-text-secondary, #A0A8B9);
+    border: none;
+    padding: 1rem;
+    border-radius: 8px;
+    font-size: 1.1rem;
+    font-weight: 600;
+    text-align: center;
+    cursor: pointer;
+    transition: background-color 0.2s, color 0.2s;
+}
+
+.reportes-toggle-btn:hover {
+    background-color: #2c2c2c;
+}
+
+.reportes-toggle-btn.active {
+    background-color: var(--color-primary, #8634AA);
+    color: var(--color-text-main, #ffffff);
+    box-shadow: 0 4px 10px rgba(134, 52, 170, 0.3);
+}
+
+/* ------------------------------------------- */
+/* --- 2. Contenido Principal --- */
+/* ------------------------------------------- */
+.reportes-content {
+    flex-grow: 1;
+    padding: 1.5rem 2rem;
+    display: flex;
+    flex-direction: column;
+    /* Importante para que el overflow-y funcione */
+    overflow: hidden;
+    min-width: 0;
+}
+
+.reportes-title {
+    font-size: 1.8rem;
+    font-weight: 600;
+    margin-bottom: 1.5rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-border, #444);
+}
+
+.report-content-wrapper {
+    flex-grow: 1;
+    min-height: 0;
+}
+
+/* --- Estilos comunes de tarjetas --- */
+.report-card {
+    background-color: var(--background-card, #212121);
+    border-radius: 8px;
+    border: 1px solid var(--color-border, #444);
+    padding: 1.5rem;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+}
+
+/* ------------------------------------------- */
+/* --- 3. Sección TAGS (Scroll Horizontal) --- */
+/* ------------------------------------------- */
+.tags-report-container {
+    display: flex;
+    flex-wrap: nowrap;
+    /* Fuerza a que sea una sola línea */
+    overflow-x: auto;
+    /* Habilita el scroll horizontal */
+    gap: 1rem;
+    padding-bottom: 1rem;
+    /* Espacio para la scrollbar */
+}
+
+.tag-card {
+    min-width: 220px;
+    /* Ancho mínimo de cada tarjeta */
+    flex-shrink: 0;
+}
+
+.tag-card h3 {
+    font-size: 1.2rem;
+    color: var(--color-primary, #8634AA);
+    margin-bottom: 1rem;
+}
+
+.tag-stats {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.stat-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+.stat-item.likes {
+    color: var(--color-success, #4CAF50);
+}
+
+.stat-item.dislikes {
+    color: var(--color-danger, #D9534F);
+}
+
+/* ------------------------------------------- */
+/* --- 4. Sección ENCUESTAS (Scroll Vertical) --- */
+/* ------------------------------------------- */
+.polls-report-container {
+    overflow-y: auto;
+    /* Habilita el scroll vertical */
+    overflow-x: hidden;
+    /* Previene scroll horizontal accidental */
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+    padding-right: 0.5rem;
+    /* Espacio para la scrollbar */
+}
+
+.poll-card {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.poll-card h4 {
+    font-size: 1.1rem;
+    font-weight: 600;
+}
+
+.poll-options-list {
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+
+.poll-option-info {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+    font-size: 0.9rem;
+}
+
+.option-text {
+    color: var(--color-text-main, #ffffff);
+}
+
+.option-votes {
+    color: var(--color-text-secondary, #A0A8B9);
+    font-weight: 500;
+}
+
+.poll-option-bar-bg {
+    width: 100%;
+    height: 12px;
+    background-color: #333;
+    border-radius: 6px;
+    overflow: hidden;
+}
+
+.poll-option-bar-fill {
+    height: 100%;
+    background-color: var(--color-primary, #8634AA);
+    border-radius: 6px;
+    transition: width 0.5s ease-out;
+}
+
+/* ------------------------------------------- */
+/* --- 5. Responsive (Tablets y Móviles) --- */
+/* ------------------------------------------- */
+@media (max-width: 768px) {
+    .reportes-container {
+        flex-direction: column;
+    }
+
+    .reportes-sidebar {
+        /* 💥 CAMBIO CLAVE: Los botones se apilan verticalmente en móvil 💥 */
+        flex-direction: column;
+        width: 100%;
+        border-right: none;
+        border-bottom: 1px solid var(--color-border, #444);
+        /* Revierte el centrado de escritorio para que los botones usen todo el ancho */
+        align-items: stretch;
+    }
+
+    .reportes-toggle-btn {
+        /* 💥 CAMBIOS: Revierte al estilo de botón de barra en móvil 💥 */
+        flex-direction: row;
+        /* Ícono y texto en fila */
+        justify-content: center;
+        /* Centra el contenido (ícono + texto) */
+        padding: 0.75rem;
+        font-size: 0.9rem;
+        width: 100%;
+        /* Ocupa todo el ancho disponible */
+        height: auto;
+        /* Altura automática */
+        text-align: center;
+        /* Centra el texto (complementa justify-content) */
+    }
+
+    .reportes-content {
+        padding: 1rem;
+    }
+
+    .reportes-title {
+        font-size: 1.5rem;
+    }
+}
+
+/* --- Estilos de Scrollbar (Opcional, pero recomendado) --- */
+
+.tags-report-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.polls-report-container::-webkit-scrollbar {
+    width: 8px;
+}
+
+.tags-report-container::-webkit-scrollbar,
+.polls-report-container::-webkit-scrollbar {
+    background-color: var(--background-card, #212121);
+}
+
+.tags-report-container::-webkit-scrollbar-thumb,
+.polls-report-container::-webkit-scrollbar-thumb {
+    background-color: var(--color-border, #444);
+    border-radius: 4px;
+}
+
+.tags-report-container::-webkit-scrollbar-thumb:hover,
+.polls-report-container::-webkit-scrollbar-thumb:hover {
+    background-color: #555;
+}
+
+/* --- Anulaciones de animación de 'login.css' --- */
+.reportes-toggle-btn {
+    position: static;
+    overflow: visible;
+    animation: none !important;
+    transition: background-color 0.2s, color 0.2s !important;
+    /* Mantenemos la transición de color */
+}
+
+.reportes-toggle-btn::after {
+    content: none !important;
+}

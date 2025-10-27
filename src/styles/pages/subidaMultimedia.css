@@ -1,0 +1,242 @@
+/* --- VARIABLES LOCALES (Asumiendo que usas las globales de App.css) --- */
+:root {
+    --color-gris-claro: #f0f0f0; 
+    --color-gris-tarjeta: #D9D9D9; 
+    --color-rojo-oscuro: #14213D; 
+    --color-purpura-links: #292942; 
+    --color-texto-secundario: #a0a8b9;
+    --color-fondo-oscuro: #212121;
+}
+
+/* --- CONTENEDOR PRINCIPAL DE LA PÁGINA --- */
+.subida-multimedia-container {
+    width: 100%;
+    padding: 0 1rem;
+    max-width: 1200px; /* Limita el ancho del contenido */
+    margin: 0 auto; /* Centra el contenido si la pantalla es grande */
+}
+
+.formulario-subida {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    gap: 2.5rem; /* Espacio entre las secciones del formulario */
+}
+
+/* ------------------------------------------- */
+/* --- 1. ÁREA DE CARGA DE ARCHIVOS --- */
+/* ------------------------------------------- */
+.area-carga-archivos {
+    background-color: var(--color-gris-tarjeta);
+    min-height: 350px;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    padding: 2rem;
+    border-radius: 10px;
+    text-align: center;
+}
+
+.area-carga-archivos .icon-placeholder {
+    color: #a0a0a0;
+    margin-bottom: 1rem;
+}
+.area-carga-archivos h2 {
+    font-size: 1.2rem;
+    font-weight: 600;
+    color: #444;
+    margin-bottom: 2rem;
+    max-width: 600px;
+}
+.input-group-carga {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap;
+    justify-content: center;
+}
+.input-group-carga input[type="file"] {
+    display: none; /* Oculta el input de tipo file nativo */
+}
+.btn-archivo {
+    background-color: var(--color-purpura-links);
+    color: white;
+    padding: 10px 20px;
+    border-radius: 5px;
+    cursor: pointer;
+    font-size: 0.9rem;
+    transition: background-color 0.3s;
+    flex-grow: 1;
+    min-width: 200px;
+    text-align: center;
+}
+.btn-archivo:hover {
+    background-color: var(--color-purpura-links);
+    opacity: 0.9;
+}
+
+
+/* ------------------------------------------- */
+/* --- 2. TÍTULO DEL PROGRAMA --- */
+/* ------------------------------------------- */
+.titulo-programa-box {
+    background-color: var(--color-rojo-oscuro);
+    padding: 1.5rem 2rem;
+    border-radius: 10px;
+    color: var(--color-gris-claro);
+    text-transform: uppercase;
+    font-weight: 700;
+}
+.titulo-programa-box label {
+    display: block;
+    font-size: 1.5rem;
+    margin-bottom: 10px;
+}
+.titulo-programa-box input {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border-radius: 5px;
+    border: none;
+    background-color: rgba(0, 0, 0, 0.2); /* Fondo sutilmente más oscuro */
+    color: white;
+    font-size: 1.1rem;
+}
+
+
+/* ------------------------------------------- */
+/* --- 3. DETALLES DE EMISIÓN (GRID) --- */
+/* ------------------------------------------- */
+.detalles-emision-grid {
+    display: grid;
+    /* 3 columnas para desktop, se apilan en responsive */
+    grid-template-columns: repeat(3, 1fr); 
+    gap: 2rem; 
+}
+
+.card-detalle {
+    background-color: var(--color-rojo-oscuro);
+    padding: 1.5rem;
+    border-radius: 10px;
+    color: var(--color-gris-claro);
+    min-height: 180px;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+}
+.card-detalle h3 {
+    font-size: 0.9rem;
+    text-transform: uppercase;
+    margin-bottom: 1rem;
+    font-weight: 600;
+}
+
+.input-detalle {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 10px;
+    background-color: var(--color-fondo-oscuro);
+    padding: 0.5rem;
+    border-radius: 5px;
+}
+
+.input-detalle svg {
+    color: var(--color-gris-claro);
+}
+
+.input-detalle input, .input-detalle select {
+    flex-grow: 1;
+    padding: 0.5rem;
+    background: transparent;
+    border: none;
+    color: white;
+    font-size: 1rem;
+    outline: none;
+}
+.input-detalle input[type="date"]::-webkit-calendar-picker-indicator {
+    filter: invert(1); /* Hace que el ícono de calendario sea blanco */
+    cursor: pointer;
+}
+.input-detalle input::placeholder {
+    color: var(--color-texto-secundario);
+}
+.input-detalle select {
+    -webkit-appearance: none; /* Quita el estilo nativo de select */
+    appearance: none;
+}
+
+
+/* ------------------------------------------- */
+/* --- 4. BOTÓN DE ENVÍO --- */
+/* ------------------------------------------- */
+.btn-subir-programa {
+    background-color: var(--color-purpura-links);
+    color: white;
+    padding: 1rem 2rem;
+    border: none;
+    border-radius: 8px;
+    font-size: 1.2rem;
+    font-weight: 700;
+    cursor: pointer;
+    transition: opacity 0.3s;
+    margin-bottom: 2rem;
+    width: auto;
+}
+
+
+
+/* ------------------------------------------- */
+/* --- RESPONSIVE --- */
+/* ------------------------------------------- */
+@media (max-width: 900px) {
+    /* En tablet, las 3 columnas se convierten en 2 columnas */
+    .detalles-emision-grid {
+        grid-template-columns: repeat(2, 1fr);
+    }
+}
+
+@media (max-width: 600px) {
+    /* En móvil, se apilan verticalmente */
+    body{
+        overflow-y: visible;
+    }
+    .detalles-emision-grid {
+        grid-template-columns: 1fr;
+    }
+    
+    .area-carga-archivos h2 {
+        font-size: 1rem;
+    }
+}
+
+
+.btn-subir-programa  {
+    position: static; 
+    overflow: visible; 
+    animation: none !important; 
+    transition: none !important;
+}
+
+
+
+.btn-fecha{
+    background-color: var(--color-purpura-links);
+    position: static; 
+    overflow: visible; 
+    animation: none !important; 
+    transition: none !important;
+}
+
+.btn-fecha::after{
+    content: none !important; 
+}
+.btn-subir-programa::after {
+    content: none !important; 
+    
+}
+@media (max-width: 576px) {
+    .menu {
+        display: block; 
+        animation: none !important;
+    }
+}
