@@ -7,7 +7,7 @@
 <img src="https://img.shields.io/badge/STATUS-EN%20PROCESO-red">
 </p>
 
-Proyecto en desarrollo, un sistema de automatizacion de stock para Black Iron
+Proyecto en desarrollo, Gestion De Medios Audivisuales de una Empresa 
 
 ## :hammer: Funcionalidades del proyecto
 
