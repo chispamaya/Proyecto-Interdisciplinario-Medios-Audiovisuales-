@@ -117,8 +117,7 @@ CREATE TABLE errores(
 	id int AUTO_INCREMENT PRIMARY KEY,
 	tipo varchar(50),
 	mensaje varchar(500),
-	idContenido int,
-	foreign key(idContenido) references contenidos(id)
+	fechaYHora DATETIME
 );
 
 CREATE TABLE auditoria(
@@ -872,6 +871,7 @@ Delimiter ;
  
 
  
+
 
 
 
