@@ -418,7 +418,7 @@ CREATE PROCEDURE bd(IN id1, OUT mensaje varchar(50))
 	  SET mensaje = 'Ocurrio un error.';
 	 END;
 	START TRANSACTION;
-	 INSERT INTO contenido-tag(idContenido, idTag) VALUES(idC1, idT1);
+	 INSERT INTO contenido_tag(idContenido, idTag) VALUES(idC1, idT1);
 	COMMIT;
    SET mensaje = 'Tag añadido con éxito al contenido.';
  END; 
@@ -431,7 +431,7 @@ CREATE PROCEDURE bd(IN id1, OUT mensaje varchar(50))
 	  SET mensaje = 'Ocurrio un error.';
 	 END;
 	START TRANSACTION;
-	 DELETE FROM contenido-tag
+	 DELETE FROM contenido_tag
 	 WHERE idContenido = idC1;
 	COMMIT;
    SET mensaje = 'Contenido-Tag eliminado con éxito.';
@@ -873,6 +873,7 @@ Delimiter ;
  
 
  
+
 
 
 
