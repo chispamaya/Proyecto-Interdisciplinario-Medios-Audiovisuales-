@@ -74,7 +74,7 @@ CREATE TABLE tags (
     tag VARCHAR(50)
 );
 
-CREATE TABLE contenido-tag (
+CREATE TABLE contenido_tag (
     id INT AUTO_INCREMENT PRIMARY KEY,
     idContenido int,
     idTag int,
@@ -872,6 +872,7 @@ Delimiter ;
  
 
  
+
 
 
 
