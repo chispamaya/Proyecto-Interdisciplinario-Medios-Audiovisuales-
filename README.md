@@ -9,6 +9,12 @@
 
 Proyecto en desarrollo, Gestion De Medios Audivisuales de una Empresa 
 
+Con las Funcionalidades Requeridas Por El Cliente: 
+
+Inicio De Sesión
+
+El Usuario iniciara sesion y se le asignara el rol de este donde va a poder editar cada aspecto segun su posicion.
+
 Gestión de Contenidos Multimedia
 
 Subida de Multimedia: Carga de archivos audiovisuales.
