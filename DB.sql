@@ -118,6 +118,8 @@ CREATE TABLE errores(
 	tipo varchar(50),
 	mensaje varchar(500),
 	fechaYHora DATETIME
+	idUsuario int,
+	FOREIGN KEY (idUsuario) REFERENCES usuario(id)
 );
 
 CREATE TABLE auditoria(
@@ -871,6 +873,7 @@ Delimiter ;
  
 
  
+
 
 
 
