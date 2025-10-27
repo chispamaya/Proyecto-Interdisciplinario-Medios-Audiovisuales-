@@ -151,7 +151,7 @@ CREATE PROCEDURE s(IN tabla varchar(50), IN idU int, IN idP int, OUT mensaje var
 		EXECUTE c;
 		DEALLOCATE PREPARE c;
 	 END IF;
-   SET mensaje = 'Mostrando datos.' 
+   SET mensaje = 'Mostrando datos.'; 
  END //
 
  CREATE PROCEDURE cpr(IN categoria1 varchar(50), IN nombre1 varchar(50), IN horaInicio1 TIME, IN horaFin1 TIME, IN idP1 INT, IN formatoArchivo1 varchar(50), IN rutaArchivo1 varchar(500), IN idUs int, OUT mensaje varchar(50))
@@ -175,7 +175,7 @@ CREATE PROCEDURE s(IN tabla varchar(50), IN idU int, IN idP int, OUT mensaje var
    SET mensaje = 'Programa ingresado con éxito.' ;
  END //
    
- CREATE PROCEDURE bpr(IN id1 int, IN idUs int OUT mensaje varchar(50))
+ CREATE PROCEDURE bpr(IN id1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
 	DECLARE error varchar(500);
 	DECLARE errorC varchar(50);
@@ -195,7 +195,7 @@ CREATE PROCEDURE s(IN tabla varchar(50), IN idU int, IN idP int, OUT mensaje var
    SET mensaje = 'Programa borrado con éxito.' ;
  END //
  
- CREATE PROCEDURE mpr(IN id1 int, IN estadoAprobacion1 varchar(50), IN categoria1 varchar(50), IN nombre1 varchar(50), IN horaInicio1 TIME, IN horaFin1 TIME, IN idP1 int, IN idUs int OUT mensaje varchar(50))
+ CREATE PROCEDURE mpr(IN id1 int, IN estadoAprobacion1 varchar(50), IN categoria1 varchar(50), IN nombre1 varchar(50), IN horaInicio1 TIME, IN horaFin1 TIME, IN idP1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
     DECLARE error varchar(500);
 	DECLARE errorC varchar(50);
@@ -211,7 +211,7 @@ CREATE PROCEDURE s(IN tabla varchar(50), IN idU int, IN idP int, OUT mensaje var
 	 END;
 	START TRANSACTION;
 	 UPDATE programas
-	 SET estadoAprobacion = estadoAprobacion1, categoria = categoria1, nombre = nombre1, horaInicio = horaInicio1, horaFin = horaFin1 fechaYhora1, idPlataforma = idP1
+	 SET estadoAprobacion = estadoAprobacion1, categoria = categoria1, nombre = nombre1, horaInicio = horaInicio1, horaFin = horaFin1, idPlataforma = idP1
 	 WHERE id = id1;
 	COMMIT;
    SET mensaje = 'Datos del programa actualizados con éxito.';
@@ -238,7 +238,7 @@ CREATE PROCEDURE cd(IN dia1 DATE, IN idP1 int, IN idUs int, OUT mensaje varchar(
    SET mensaje = 'Dia asignado al programa con éxito.';
  END //
 
-CREATE PROCEDURE bd(IN id1, IN idUs int, OUT mensaje varchar(50))
+CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
 	DECLARE error varchar(500);
 	DECLARE errorC varchar(50);
@@ -471,8 +471,8 @@ CREATE PROCEDURE bd(IN id1, IN idUs int, OUT mensaje varchar(50))
 	 WHERE id = id1;
 	COMMIT;
    SET mensaje = 'Datos de la emisión actualizados con éxito.';
- END; 
- 
+ END //
+
  
  
  
@@ -669,39 +669,43 @@ CREATE PROCEDURE co(IN idE int, IN opcion1 varchar(50), IN cont int, IN idUs int
    SET mensaje = CONCAT('Opcion ',cont, ' creada con éxito.');
  END //
  
- CREATE PROCEDURE vo(IN idO int, IN idU int, IN idE int, IN idUs int, OUT mensaje varchar(50))
+CREATE PROCEDURE vo(IN idO int, IN idU int, IN idE int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
-	DECLARE idOAntigua int;
-	DECLARE error varchar(500);
-	DECLARE errorC varchar(50);
-	DECLARE EXIT HANDLER FOR SQLEXCEPTION
-	 BEGIN
-		GET DIAGNOSTICS CONDITION 1
+    DECLARE idOAntigua int;
+    DECLARE error varchar(500);
+    DECLARE errorC varchar(50);
+    DECLARE EXIT HANDLER FOR SQLEXCEPTION
+     BEGIN
+        GET DIAGNOSTICS CONDITION 1
             errorC = MYSQL_ERRNO,      
             error = MESSAGE_TEXT;
-	  ROLLBACK;
-	  SET mensaje = 'Ocurrio un error.';
-	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
-	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
-	 END;
-	START TRANSACTION;
-	 IF NOT EXISTS(SELECT * FROM votar_opcion WHERE idUsuario = idU AND idOpcion IN(SELECT id FROM opcion_e WHERE idEncuesta = idE)) THEN
-      INSERT INTO votar_opcion(idOpcion, idUsuario) VALUES(idO, idU);
-	  SET mensaje = 'Voto ingresado con éxito.';
-     ELSE
-	  SELECT idOpcion INTO idOAntigua FROM votar_opcion WHERE idOpcion IN(SELECT id FROM opcion_e WHERE idEncuesta = idE) AND idUsuario = idU;
-	  IF idOAntigua = idO THEN
-		DELETE FROM votar_opcion 
-		WHERE idUsuario = idU AND idOpcion = idO;
-		SET mensaje = 'Voto eliminado con éxito.';
-	  ELSE
-		UPDATE votar_opcion
-		SET idOpcion = idO WHERE idUsuario = idU AND idOpcion = idOAntigua;
-		SET mensaje = 'Voto actualizado con éxito.';
-     END IF;	  
-  COMMIT;
- END //
-
+      ROLLBACK;
+      SET mensaje = CONCAT("Ocurrio un error."); 
+      INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
+      VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+     END;
+    START TRANSACTION;
+    IF NOT EXISTS(SELECT * FROM votar_o WHERE idUsuario = idU AND idOpcion IN(SELECT id FROM opcion_e WHERE idEncuesta = idE)) THEN 
+      INSERT INTO votar_o(idOpcion, idUsuario) VALUES(idO, idU);
+      SET mensaje = 'Voto ingresado con éxito.';
+    ELSE
+      SELECT idOpcion INTO idOAntigua 
+      FROM votar_o 
+      WHERE idOpcion IN(SELECT id FROM opcion_e WHERE idEncuesta = idE) AND idUsuario = idU;
+      IF idOAntigua = idO THEN
+        DELETE FROM votar_o
+        WHERE idUsuario = idU AND idOpcion = idO;
+        SET mensaje = 'Voto eliminado con éxito.';
+      ELSE
+        UPDATE votar_o
+        SET idOpcion = idO 
+        WHERE idUsuario = idU AND idOpcion = idOAntigua;
+        SET mensaje = 'Voto actualizado con éxito.';
+      END IF;
+    END IF;
+    COMMIT; 
+END //
+DELIMITER ;
   --TRIGGER DE INSERTS
 Delimiter //
 	
@@ -1049,6 +1053,7 @@ Delimiter ;
  
 
  
+
 
 
 
