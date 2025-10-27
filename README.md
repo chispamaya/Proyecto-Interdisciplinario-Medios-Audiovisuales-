@@ -10,42 +10,33 @@
 Proyecto en desarrollo, Gestion De Medios Audivisuales de una Empresa 
 
 Gestión de Contenidos Multimedia
+
 Subida de Multimedia: Carga de archivos audiovisuales.
-
 Estado y Aprobación: Revisión y validación de contenidos.
-
 Parrilla Semanal: Programación semanal de emisiones.
-
 Gestión Multimedia: Administración general de archivos multimedia.
 
- Paneles de Producción y Roles
+Paneles de Producción y Roles
+ 
 Panel de Productores y Editores: Acceso y herramientas para roles editoriales.
-
 Panel de Programación: Organización de la grilla de contenidos.
-
 ABM: Alta, Baja y Modificación de registros (usuarios, programas, etc.).
-
 Gestión de Roles: Asignación y control de permisos por usuario.
-
 Reportes Audiencia: Estadísticas y métricas de visualización.
 
 Control de Emisión
+
 Control de Emisión: Supervisión de transmisiones en tiempo real.
-
 Errores: Registro y seguimiento de fallos técnicos.
-
 Armado de Parrilla Horaria: Configuración detallada de la programación por horario.
 
  Usuario y Participación
+ 
 Perfil: Información y configuración del usuario.
-
 Inicio: Página principal del sitio.
-
 Encuestas: Participación del público en votaciones.
-
 Transmisión en Vivo ("EN VIVO"): Visualización de contenido en tiempo real.
-
-Opinión sobre programas: Encuestas interactivas como “¿Qué opinás sobre Bendita?”
+Opinión sobre programas con Encuestas interactivas 
 
   
 ## Tecnologías utilizadas
