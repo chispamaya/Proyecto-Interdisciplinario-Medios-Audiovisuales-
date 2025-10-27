@@ -1,0 +1,64 @@
+/* src/styles/components/abmTable.css */
+
+/* --- Estilos para la barra de título y el botón Añadir (Page Layout) --- */
+
+.abm-page-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+    padding-bottom: 0.5rem;
+    border-bottom: 2px solid var(--color-link); /* Asume que --color-link es el color primario (#8634AA) */
+}
+
+.abm-page-header h1 {
+    font-size: 2.2rem;
+    font-weight: 700;
+    color: var(--color-text-main, #ffffff);
+    margin: 0;
+}
+
+.abm-page-header h1 span {
+    /* Estilo del subrayado de las imágenes */
+    border-bottom: 3px solid var(--color-link, #8634AA);
+    padding-bottom: 5px;
+}
+
+.btn-anadir {
+    background-color: var(--color-link, #8634AA);
+    color: var(--color-text-main, #ffffff);
+    /* 💥 AJUSTE DE PADDING: Reducido para que el botón sea más pequeño y no se corte 💥 */
+    padding: 0.6rem 1.2rem; 
+    border: none;
+    border-radius: 8px;
+    font-size: 1rem;
+    font-weight: 600;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    transition: background-color 0.2s, transform 0.2s;
+    
+    /* Aseguramos que el contenido quepa y se centre correctamente */
+    white-space: nowrap; 
+    min-width: 0;
+}
+
+.btn-anadir:hover {
+    background-color: #6a2a87; 
+    transform: translateY(-1px);
+}
+/* --- Responsive para la Cabecera --- */
+@media (max-width: 600px) {
+    .abm-page-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+    .abm-page-header h1 {
+        font-size: 1.8rem;
+    }
+}
+/* No necesitamos más CSS para la tabla, ya que dependemos de gestionMultimedia.css
+   que ya implementa la lógica responsive con data-label.
+*/

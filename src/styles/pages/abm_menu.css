@@ -1,0 +1,152 @@
+/* src/styles/pages/abm_menu.css - VERSIÓN MÁS GRANDE */
+
+/* Uso de variables ya definidas en App.css, perfil.css, etc. */
+:root {
+    --color-link: #8634AA;          /* Inferencia de --links */
+    --color-card-background: #212121;  /* Inferencia de --background */
+    --color-dark-blue-card: #14213d;   /* Inferencia de --dark-blue-card */
+    --color-text-main: #ffffff;      /* Inferencia de --texto */
+}
+/* Se mantiene overflow-y: hidden; en body para el caso de que se haya incluido globalmente */
+/* Si no, se recomienda gestionar el scroll en el AppLayout o content-area */
+body{
+
+    overflow-y: hidden;}
+/* --- ESTILOS COMPACTOS Y SIN SCROLLBAR --- */
+.abm-menu-page-content {
+    /* Ocupa todo el espacio del .content-area */
+    width: 100%; 
+    min-height: 100%; 
+    
+    display: flex;
+    justify-content: center; /* Centrado horizontal */
+    
+    /* 💥 CAMBIO CLAVE: Volvemos a centrar verticalmente (center) 💥
+       Esto es más estético para una tarjeta de este tamaño y funciona si el content-area no fuerza scroll. 
+       Mantenemos `min-height: 100%` para que ocupe todo el espacio.
+    */
+    align-items: center; 
+    
+    padding: 30px; /* Usa el padding por defecto del .content-area */
+    box-sizing: border-box;
+    background-color: var(--background, #212121); 
+}
+
+.abm-card {
+    background-color: var(--color-card-background); 
+    border-radius: 15px; /* Bordes más redondeados */
+    /* 💥 AUMENTO DE TAMAÑO: Padding mucho más grande 💥 */
+    padding: 40px 60px;
+    box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+    width: 100%;
+    /* 💥 AUMENTO DE TAMAÑO: Ancho máximo incrementado 💥 */
+    max-width: 450px; 
+    text-align: center;
+    /* Al centrar verticalmente (align-items: center;), no necesitamos márgenes verticales explícitos */
+    margin: -250px 0 0 0; /* Esto subirá la tarjeta 100 píxeles. */ 
+}
+
+.abm-card-title {
+    /* 💥 AUMENTO DE TAMAÑO: Fuente más grande 💥 */
+    font-size: 2.5rem; 
+    font-weight: 700;
+    color: var(--color-text-main);
+    /* Espaciado aumentado para el título */
+    margin-bottom: 2rem; 
+    padding-bottom: 1rem;
+    border-bottom: 3px solid var(--color-link); /* Línea más gruesa */
+}
+
+.abm-options-list {
+    list-style: none;
+    padding: 0;
+    margin: 0;
+    display: flex;
+    flex-direction: column;
+    /* Espaciado entre opciones aumentado */
+    gap: 1.5rem;
+}
+
+.abm-options-list a {
+    display: block;
+    /* 💥 AUMENTO DE TAMAÑO: Padding de botón más grande 💥 */
+    padding: 18px 25px;
+    color: var(--color-text-main);
+    text-decoration: none;
+    /* 💥 AUMENTO DE TAMAÑO: Fuente del botón más grande 💥 */
+    font-size: 1.25rem;
+    font-weight: 600;
+    background-color: var(--color-dark-blue-card); 
+    border: 2px solid var(--color-link); /* Borde más grueso */
+    border-radius: 10px;
+    
+    /* Anulaciones de animación (mantener) */
+    position: static; 
+    overflow: visible; 
+    animation: none !important; 
+    transition: background-color 0.2s, transform 0.2s, box-shadow 0.2s !important;
+}
+
+.abm-options-list a:hover {
+    background-color: var(--color-link); 
+    border-color: var(--color-text-main);
+    box-shadow: 0 6px 15px rgba(134, 52, 170, 0.5);
+    transform: translateY(-2px); 
+}
+
+.abm-options-list a::after {
+    content: none !important;
+}
+
+
+/* ------------------------------------------- */
+/* --- RESPONSIVE --- */
+/* ------------------------------------------- */
+
+/* Tablets y móviles grandes (Menos de 768px) */
+@media (max-width: 768px) {
+    .abm-menu-page-content {
+        /* En móvil, volvemos a anclar arriba para evitar que la tarjeta flote si el viewport es corto */
+        align-items: flex-start;
+        padding: 1.5rem 1rem;
+    }
+
+    .abm-card {
+        max-width: 80%; /* Ocupa un buen porcentaje */
+        padding: 30px 40px;
+        margin: 1rem auto;
+    }
+    
+    .abm-card-title {
+        font-size: 2rem;
+        margin-bottom: 1.5rem;
+    }
+    
+    .abm-options-list {
+        gap: 1.25rem;
+    }
+    
+    .abm-options-list a {
+        font-size: 1.1rem;
+        padding: 15px 20px;
+    }
+}
+
+/* Móviles pequeños (Menos de 480px) */
+@media (max-width: 480px) {
+    .abm-menu-page-content {
+        padding: 1rem 0.5rem;
+    }
+    .abm-card {
+        max-width: 95%; /* Se acerca mucho a los bordes */
+        padding: 25px;
+    }
+    .abm-card-title {
+        font-size: 1.8rem;
+    }
+    
+    .abm-options-list a {
+        font-size: 1rem;
+        padding: 14px 18px;
+    }
+}
