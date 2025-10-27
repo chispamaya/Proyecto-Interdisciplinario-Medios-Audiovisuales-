@@ -14,11 +14,19 @@ CREATE TABLE programas (
     estadoAprobacion VARCHAR(50),
     categoria VARCHAR(50),
     nombre VARCHAR(50),
-	fechaYhora DATETIME,
+	horaInicio TIME,
+	horaFin TIME,
 	idPlataforma int,
 	formatoArchivo VARCHAR(50),
 	rutaArchivo VARCHAR(500),
 	foreign key(idPlataforma) references plataforma(id)
+);
+
+CREATE TABLE dias(
+    id INT AUTO_INCREMENT PRIMARY KEY,
+    dia DATE, 
+    idPrograma int,
+	foreign key(idPrograma) references programas(id)
 );
 
 CREATE TABLE segmentos (
@@ -145,7 +153,7 @@ CREATE PROCEDURE s(IN tabla varchar(50), IN idU int, IN idP int, OUT mensaje var
    SET mensaje = 'Mostrando datos.' 
  END;
 
- CREATE PROCEDURE cpr(IN categoria1 varchar(50), IN nombre1 varchar(50), IN fechaYhora1 DATETIME, IN idP1 INT, IN formatoArchivo1 varchar(50), IN rutaArchivo1 varchar(500), OUT mensaje varchar(50))
+ CREATE PROCEDURE cpr(IN categoria1 varchar(50), IN nombre1 varchar(50), IN horaInicio1 TIME, IN horaFin1 TIME, IN idP1 INT, IN formatoArchivo1 varchar(50), IN rutaArchivo1 varchar(500), OUT mensaje varchar(50))
  BEGIN
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
@@ -153,8 +161,8 @@ CREATE PROCEDURE s(IN tabla varchar(50), IN idU int, IN idP int, OUT mensaje var
 	  SET mensaje = 'Ocurrio un error.';
 	 END;
 	START TRANSACTION;
-	 INSERT INTO programas(estadoAprobacion, categoria, nombre, fechaYhora, idPlataforma, formatoArchivo, rutaArchivo) 
-	 VALUES('En Revisión', categoria1, nombre1, fechaYhora1, idP1, formatoArchivo1, rutaArchivo1);
+	 INSERT INTO programas(estadoAprobacion, categoria, nombre, horaInicio, horaFin, idPlataforma, formatoArchivo, rutaArchivo) 
+	 VALUES('En Revisión', categoria1, nombre1, horaInicio1, horaFin1, idP1, formatoArchivo1, rutaArchivo1);
 	COMMIT;
    SET mensaje = 'Programa ingresado con éxito.' 
  END;
@@ -172,7 +180,7 @@ CREATE PROCEDURE s(IN tabla varchar(50), IN idU int, IN idP int, OUT mensaje var
    SET mensaje = 'Programa borrado con éxito.' 
  END;
  
- CREATE PROCEDURE mpr(IN id1 int, IN estadoAprobacion1 varchar(50), IN categoria1 varchar(50), IN nombre1 varchar(50), IN fechaYhora1 DATETIME, IN idP1 int, OUT mensaje varchar(50))
+ CREATE PROCEDURE mpr(IN id1 int, IN estadoAprobacion1 varchar(50), IN categoria1 varchar(50), IN nombre1 varchar(50), IN horaInicio1 TIME, IN horaFin1 TIME, IN idP1 int, OUT mensaje varchar(50))
  BEGIN
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
@@ -181,13 +189,40 @@ CREATE PROCEDURE s(IN tabla varchar(50), IN idU int, IN idP int, OUT mensaje var
 	 END;
 	START TRANSACTION;
 	 UPDATE programas
-	 SET estadoAprobacion = estadoAprobacion1, categoria = categoria1, nombre = nombre1, fechaYhora = fechaYhora1, idPlataforma = idP1
+	 SET estadoAprobacion = estadoAprobacion1, categoria = categoria1, nombre = nombre1, horaInicio = horaInicio1, horaFin = horaFin1 fechaYhora1, idPlataforma = idP1
 	 WHERE id = id1;
 	COMMIT;
    SET mensaje = 'Datos del programa actualizados con éxito.'
  END;
  
- 
+CREATE PROCEDURE cd(IN dia1 DATE, IN idP1 int, OUT mensaje varchar(50))
+ BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET mensaje = 'Ocurrio un error.';
+	 END;
+	START TRANSACTION;
+	 INSERT INTO dias(dia, idPrograma) 
+	 VALUES(dia1, idP1);
+	COMMIT;
+   SET mensaje = 'Dia asignado al programa con éxito.' 
+ END; 
+
+CREATE PROCEDURE bd(IN id1, OUT mensaje varchar(50))
+ BEGIN
+	DECLARE EXIT HANDLER FOR SQLEXCEPTION
+	 BEGIN
+	  ROLLBACK;
+	  SET mensaje = 'Ocurrio un error.';
+	 END;
+	START TRANSACTION;
+	 DELETE FROM dias
+	 WHERE id = id1;
+	COMMIT;
+   SET mensaje = 'Dia eliminado con éxito.' 
+ END; 
+
 
  CREATE PROCEDURE cu(IN email1 varchar(50), IN nombre1 varchar(50), IN contrasenia1 varchar(50), IN idRol1 int, OUT mensaje varchar(50))
  BEGIN
@@ -837,6 +872,7 @@ Delimiter ;
  
 
  
+
 
 
 
