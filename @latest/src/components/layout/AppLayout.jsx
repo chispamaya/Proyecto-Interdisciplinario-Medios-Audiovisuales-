@@ -6,7 +6,7 @@ export default function AppLayout() {
   return (
     <div className="app-container-con-sidebar">
       
-      <SideBar />
+      <SideBar idRol="admin" />
       
       <div className="content-area">
         <Outlet /> 

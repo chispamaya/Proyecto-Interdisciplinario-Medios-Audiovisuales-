@@ -6,7 +6,7 @@ export default function ABMMenu() {
     return (
         <div className="abm-menu-page-content">
             <div className="abm-card">
-                <h2 className="abm-card-title">ABM DE</h2>
+                <h2 className="abm-card-title">ABM</h2>
                 <ul className="abm-options-list">
                     <li><Link to="/abm/programas">Programas</Link></li>
                     <li><Link to="/abm/segmentos">Segmentos</Link></li>
