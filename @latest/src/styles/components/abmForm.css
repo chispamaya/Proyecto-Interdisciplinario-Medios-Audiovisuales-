@@ -242,3 +242,40 @@
     background-color: var(--color-danger);
     color: var(--color-text-main);
 }
+
+
+/* --- Contenedor para alinear Título y Botón Volver --- */
+.form-header-con-volver {
+    width: 100%;
+    max-width: 900px;
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    margin-bottom: 1rem;
+}
+
+.form-header-con-volver .form-page-title {
+    align-self: center;
+}
+/* --- ESTILOS PARA EL BOTÓN DE VOLVER --- */
+.btn-volver {
+    display: inline-flex;
+    align-items: center;
+    gap: 0.5rem;
+    background-color: transparent;
+    color: var(--color-text-secondary, #a0a8b9);
+    border: 1px solid var(--color-text-secondary, #a0a8b9);
+    padding: 0.5rem 1rem;
+    border-radius: 20px;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    margin-bottom: 1.5rem;
+    align-self: flex-start;
+    transition: color 0.2s, border-color 0.2s;
+}
+
+.btn-volver:hover {
+    color: var(--color-text-main, #ffffff);
+    border-color: var(--color-text-main, #ffffff);
+}
