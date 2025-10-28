@@ -1,6 +1,18 @@
 import React, { useState } from 'react';
-import ABMFormLayout from '../../../components/abm/ABMFormLayout.jsx'; 
+
+// --- Importaciones Corregidas ---
+// 1. El layout principal que te faltaba
+import ABMPageLayout from '../../../components/abm/ABMPageLayout.jsx'; 
+// 2. El formulario para agregar (asumiendo que está en la misma carpeta)
+import ABMEmpleadosAddForm from './ABMEmpleadosAddForm.jsx';
+// 3. El formulario para editar (asumiendo que está en la misma carpeta)
+import ABMEmpleadosEditForm from './ABMEmpleadosEditForm.jsx';
+
+// Nota: No estabas usando ABMFormLayout, así que lo quité.
+// import ABMFormLayout from '../../../components/abm/ABMFormLayout.jsx'; 
+
 import '../../../styles/components/abmForm.css';
+
 // --- Datos de Ejemplo (Sin cambios) ---
 const empleadosData = [
     { id: 1, empleado: "Carlos Perez", correo: "carlos.perez@gmail.com", cargo: "Editor", permisos: "Crear, editar" },
@@ -21,7 +33,7 @@ export default function ABMEmpleados() {
     const [editingId, setEditingId] = useState(null); 
     
     const handleAdd = () => {
-        setEditingId(0); 
+        setEditingId(0); // 0 significa "agregando nuevo"
     };
 
     const handleEdit = (id) => {
@@ -29,9 +41,12 @@ export default function ABMEmpleados() {
     };
 
     const handleCancelOrSuccess = () => {
-        setEditingId(null); 
+        setEditingId(null); // Vuelve a la lista principal
     };
     
+    // --- Renderizado Condicional ---
+
+    // Estado 1: Creando un nuevo empleado
     if (editingId === 0) {
         return (
             <ABMEmpleadosAddForm 
@@ -41,6 +56,7 @@ export default function ABMEmpleados() {
         );
     }
 
+    // Estado 2: Editando un empleado existente
     if (editingId !== null) {
         return (
             <ABMEmpleadosEditForm 
@@ -52,6 +68,7 @@ export default function ABMEmpleados() {
         );
     }
     
+    // Estado 3: Mostrando la lista principal (Default)
     return (
         <ABMPageLayout
             title="ABM de Empleados"
@@ -59,7 +76,7 @@ export default function ABMEmpleados() {
             data={empleadosData}
             onAdd={handleAdd} 
             onEdit={handleEdit} 
-            onDelete={() => { console.log("Usar formulario de edición para eliminar empleado."); }}
+            onDelete={() => { console.log("La eliminación se maneja desde el formulario de edición."); }}
         />
     );
 }
