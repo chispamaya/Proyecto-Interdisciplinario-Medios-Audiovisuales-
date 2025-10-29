@@ -1,142 +1,175 @@
-/* src/styles/pages/errores.css */
+/* src/styles/pages/errores.css (Restaurado + Modificado) */
 
-/* --- Contenedor Principal --- */
-.errores-container {
-    width: 100%;
-    height: 100%;
-    padding: var(--base-padding, 1.25rem);
-    background-color: var(--background-app, #1e1e1e);
-    color: var(--color-text-main, #ffffff);
-    display: flex;
-    flex-direction: column;
+/* --- Variables --- */
+:root {
+    --color-fondo-errores: #14213d; 
+    --color-fondo-header-tabla: #0a101f; 
+    --color-borde-fila: #2a3d66; 
+    --color-texto-principal: #ffffff;
+    --color-texto-header: #a0a8b9;
+    --color-danger: #d9534f;
+    --color-warning: #FFC107;
+    --color-scrollbar-thumb: #2a3d66;
 }
 
-/* --- Cabecera con Título --- */
+/* --- 1. Contenedor Principal --- */
+.errores-container {
+    width: 100%;
+    height: 100%; 
+    padding: 1.5rem 2rem;
+    background-color: var(--color-fondo-errores);
+    color: var(--color-texto-principal);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; 
+}
+
+/* --- Título de la Página --- */
 .errores-header {
-    margin-bottom: 1.5rem;
+    margin-bottom: 1rem;
     padding-bottom: 1rem;
-    border-bottom: 2px solid var(--sideBarHeader, #14213d);
+    border-bottom: 2px solid var(--color-borde-fila);
+    flex-shrink: 0;
 }
 
 .errores-header h1 {
     font-size: 1.8rem;
     font-weight: 600;
     margin: 0;
-    color: var(--color-text-secondary, #A0A8B9);
+    color: var(--color-texto-principal);
 }
 
-/* --- Wrapper de la Tabla (¡Clave para el Scroll!) --- */
-.tabla-errores-wrapper {
+/* --- 2. Wrapper de Cabecera (NUEVO SCROLL-X) --- */
+/* Este div maneja el scroll horizontal (X) SÓLO para la cabecera */
+.header-scroll-wrapper {
+    overflow-x: auto; /* SCROLL HORIZONTAL (X) para la cabecera */
+    background-color: var(--color-fondo-header-tabla);
+    border-bottom: 2px solid var(--color-borde-fila);
+    flex-shrink: 0;
+}
+
+/* Contenido de la cabecera */
+.errores-list-header-content {
+    display: flex;
+    /* Ancho mínimo que fuerza el scroll en pantallas chicas */
+    min-width: 650px; 
+}
+
+/* --- 3. Contenedor de la Lista (SCROLL VERTICAL) --- */
+/* Este div maneja el scroll vertical (Y) si hay muchos errores */
+.errores-list-container {
+    flex-grow: 1; /* Ocupa el espacio restante */
+    overflow-y: auto; /* SCROLL VERTICAL (Y) */
+    min-height: 0; 
+}
+
+/* --- 4. Fila de Error (SCROLL HORIZONTAL INDIVIDUAL) --- */
+/* Este wrapper maneja el scroll horizontal individual de CADA fila */
+.error-row-scroll-wrapper {
+    overflow-x: auto; /* SCROLL HORIZONTAL (X) INDIVIDUAL */
+    border-bottom: 1px solid var(--color-borde-fila);
+}
+.error-row-scroll-wrapper:last-child {
+    border-bottom: none;
+}
+
+/* Contenido interno de la fila (el que se desborda) */
+.error-row-content {
+    display: flex;
+    /* Ancho mínimo que fuerza el scroll en pantallas chicas */
+    min-width: 650px; 
+}
+
+/* --- Celdas (Comunes para cabecera y contenido) --- */
+.error-cell {
+    padding: 1rem 0.8rem;
+    flex-shrink: 0; 
+    box-sizing: border-box; 
+}
+.error-cell.fecha {
+    flex-basis: 120px; 
+}
+.error-cell.tipo {
+    flex-basis: 180px; 
+}
+.error-cell.mensaje {
+    flex-basis: 100%; 
     flex-grow: 1;
-    overflow-x: auto;
-    background-color: var(--background-card, #212121);
-    border-radius: 8px;
-    padding: 0.5rem;
-}
-
-/* --- Estilos específicos para esta tabla --- */
-.tabla-gestion .mensaje-cell {
     white-space: pre-wrap; 
-    word-break: break-word;
+    word-break: break-word; 
 }
 
+/* Estilo específico para la cabecera */
+.errores-list-header-content .error-cell {
+    font-weight: 700;
+    color: var(--color-texto-header);
+    text-transform: uppercase;
+    font-size: 0.8rem;
+    padding-top: 0.8rem;
+    padding-bottom: 0.8rem;
+}
+
+/* --- Tags de Tipo de Error --- */
 .tipo-tag {
     font-weight: bold;
     padding: 0.2rem 0.6rem;
     border-radius: 12px;
     font-size: 0.8rem;
     display: inline-block;
+    border: 1px solid transparent;
 }
 
 .tipo-error {
-    color: var(--color-danger, #D9534F);
+    color: var(--color-danger);
     background-color: rgba(217, 83, 79, 0.1);
+    border-color: var(--color-danger);
 }
 
 .tipo-advertencia {
-    color: var(--color-warning, #FFC107);
+    color: var(--color-warning);
     background-color: rgba(255, 193, 7, 0.1);
+    border-color: var(--color-warning);
 }
 
-
-
-.tabla-errores-wrapper::-webkit-scrollbar {
+/* --- Estilos de Scrollbars (Aplica a los 3) --- */
+.errores-list-container::-webkit-scrollbar,
+.error-row-scroll-wrapper::-webkit-scrollbar,
+.header-scroll-wrapper::-webkit-scrollbar {
     width: 8px;
     height: 8px;
 }
-.tabla-errores-wrapper::-webkit-scrollbar-track {
-    background: var(--scrollbar-track-color, transparent);
+.errores-list-container::-webkit-scrollbar-track,
+.error-row-scroll-wrapper::-webkit-scrollbar-track,
+.header-scroll-wrapper::-webkit-scrollbar-track {
+    background: var(--color-fondo-header-tabla);
 }
-.tabla-errores-wrapper::-webkit-scrollbar-thumb {
-    background-color: var(--scrollbar-thumb-color, #3c3c3c);
+.errores-list-container::-webkit-scrollbar-thumb,
+.error-row-scroll-wrapper::-webkit-scrollbar-thumb,
+.header-scroll-wrapper::-webkit-scrollbar-thumb {
+    background-color: var(--color-scrollbar-thumb);
     border-radius: 4px;
 }
-.tabla-errores-wrapper {
+.errores-list-container,
+.error-row-scroll-wrapper,
+.header-scroll-wrapper {
     scrollbar-width: thin;
-    scrollbar-color: var(--scrollbar-thumb-color, #3c3c3c) var(--scrollbar-track-color, transparent);
+    scrollbar-color: var(--color-scrollbar-thumb) var(--color-fondo-header-tabla);
 }
 
 
-/* --- Responsive (Reutilizando el patrón de .tabla-gestion) --- */
-@media (max-width: 768px) {
+/* --- RESPONSIVE --- */
+@media (max-width: 600px) {
+    .errores-container {
+        padding: 1rem;
+    }
+
     .errores-header h1 {
         font-size: 1.5rem;
     }
-    
 
-    .tabla-gestion thead {
-        display: none;
-    }
-
-
-    .tabla-gestion tbody, .tabla-gestion tr, .tabla-gestion td {
-        display: block;
-        width: 100%;
-    }
-
-    .tabla-gestion tr {
-        margin-bottom: 1rem;
-        background-color: var(--sideBarHeader);
-        border-radius: 6px;
-        border: 1px solid var(--color-border, #444);
-    }
-
-    .tabla-gestion td {
-        text-align: right;
-        padding-left: 50%; 
-        position: relative;
-        border-bottom: 1px solid var(--color-border);
-        padding-right: 10px; 
-    }
-    .tabla-gestion td:last-child {
-        border-bottom: none;
-    }
-
-    /* Simula la etiqueta de cabecera usando ::before */
-    .tabla-gestion td::before {
-        content: attr(data-label); 
-        position: absolute;
-        left: 10px;
-        width: calc(50% - 20px);
-        padding-right: 10px;
-        white-space: nowrap;
-        text-align: left;
-        font-weight: bold;
-        color: var(--color-text-secondary);
-        font-size: 0.8rem;
-        text-transform: uppercase;
-    }
-
-    .tabla-gestion .mensaje-cell {
-         white-space: normal; 
-    }
-}
-
-@media (max-width: 380px) {
-    .errores-header h1 {
-        font-size: 1.3rem;
-    }
-    .errores-container {
-        padding: var(--mobile-padding, 1rem);
+    /* Hacemos el min-width más pequeño en móvil para no forzar tanto el scroll */
+    .errores-list-header-content,
+    .error-row-content {
+        min-width: 500px; 
     }
 }
