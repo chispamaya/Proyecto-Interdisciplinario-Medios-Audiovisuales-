@@ -1,0 +1,212 @@
+/* src/pages/espectador/EnVivo.css */
+
+/* --- Contenedor principal de la página --- */
+.envivo-page-container {
+  background-color: #333; /* Fondo gris oscuro general */
+  min-height: 100vh;
+  width: 100%;
+  display: flex; /* Para que el header y main ocupen espacio */
+  flex-direction: column;
+}
+
+/* --- Header (Barra negra superior) --- */
+.envivo-header {
+  background-color: black;
+  padding: 10px 20px;
+  border-bottom: 3px solid #00AFFF; /* Borde azul */
+  display: flex;
+  align-items: center;
+  color: white;
+  flex-shrink: 0; /* Evita que el header se achique */
+}
+
+.envivo-logo {
+  font-weight: bold;
+  margin-right: 25px;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+}
+
+.envivo-logo-icon {
+  color: #FFA500; /* Color naranja del ícono del logo */
+  font-size: 1.5rem;
+  margin-left: 5px;
+}
+
+.envivo-nav,
+.envivo-nav-active {
+  color: #aaa; /* Color grisáceo para links inactivos */
+  text-decoration: none;
+  font-size: 1rem;
+  margin: 0 10px;
+  padding: 5px 0;
+  transition: color 0.2s;
+}
+
+.envivo-nav-active {
+  color: white;
+  font-weight: bold;
+}
+
+.envivo-nav:hover {
+  color: white;
+}
+
+/* --- Área de Contenido Principal --- */
+.envivo-main-content {
+  padding: 20px;
+  flex-grow: 1; /* Ocupa el espacio restante */
+  display: flex; /* Para centrar la caja blanca si es necesario */
+  justify-content: center;
+  align-items: center; /* Centra verticalmente si hay espacio extra */
+}
+
+/* --- Contenedor Blanco "EN VIVO" --- */
+.envivo-container-white {
+  background-color: white; /* Color de fallback */
+  color: black;
+  border-radius: 8px; /* Bordes redondeados */
+  padding: 30px;
+  width: 100%; /* Ocupa el ancho disponible */
+  max-width: 1400px; /* Ancho máximo */
+  margin: 0 auto; /* Centra horizontalmente */
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); /* Sombra sutil */
+
+  /* --- Fondo con la imagen cargada --- */
+  /* !!! ASUME que has colocado 'Diseño sin título (1).png' en la carpeta 'public' de tu proyecto Vite !!! */
+  background-image: url('/Diseño sin título (1).png');
+  background-size: cover; /* Cubre toda el área */
+  background-position: center; /* Centra la imagen */
+  background-repeat: no-repeat; /* Evita repetición */
+
+  position: relative; /* Necesario para el overlay ::before */
+  overflow: hidden; /* Asegura que la imagen no se desborde */
+}
+
+/* Overlay semi-transparente sobre la imagen de fondo */
+.envivo-container-white::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  /* Ajusta la opacidad (0.7 = 70%) si la imagen es muy oscura/clara */
+  background-color: rgba(255, 255, 255, 0.75);
+  z-index: 0; /* Detrás del contenido */
+}
+
+/* Asegura que el título y el video estén sobre el overlay */
+.envivo-title,
+.envivo-content-wrapper {
+  position: relative;
+  z-index: 1;
+}
+
+/* Título "EN VIVO" */
+.envivo-title {
+  color: #B22222; /* Rojo oscuro */
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: 25px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); /* Sombra ligera para legibilidad */
+}
+
+/* Wrapper para el video (centrado) */
+.envivo-content-wrapper {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
+/* Reproductor de Video */
+.envivo-video-wrapper {
+  position: relative;
+  padding-top: 56.25%; /* Proporción 16:9 (para video responsivo) */
+  height: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  width: 75%; /* Ajusta el ancho del video dentro del contenedor blanco */
+  max-width: 900px; /* Ancho máximo para el video */
+  margin: 0 auto; /* Centra el video wrapper */
+  border: 3px solid #444; /* Borde opcional para el video */
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.envivo-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0; /* Sin borde en el iframe mismo */
+}
+
+/* --- Responsive --- */
+@media (max-width: 900px) {
+  .envivo-video-wrapper {
+    width: 90%; /* Video más ancho en pantallas medianas */
+  }
+  .envivo-container-white {
+    padding: 25px;
+  }
+  .envivo-title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .envivo-header {
+    padding: 10px 15px; /* Menos padding en el header */
+    font-size: 0.9rem;
+  }
+  .envivo-logo {
+    margin-right: 15px;
+    font-size: 1rem;
+  }
+  .envivo-nav, .envivo-nav-active {
+    margin: 0 8px;
+    font-size: 0.9rem;
+  }
+  .envivo-main-content {
+    padding: 15px; /* Menos padding general */
+  }
+  .envivo-container-white {
+    padding: 20px;
+    /* Considera 'background-size: contain;' si 'cover' corta los iconos */
+  }
+  .envivo-title {
+    font-size: 1.8rem;
+  }
+  .envivo-video-wrapper {
+    width: 95%; /* Video ocupa casi todo el ancho */
+    border-width: 2px;
+  }
+}
+
+@media (max-width: 480px) {
+  .envivo-title {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+  .envivo-video-wrapper {
+    width: 100%; /* Video ocupa todo el ancho */
+  }
+  .envivo-container-white {
+    padding: 15px;
+  }
+   .envivo-header {
+     flex-wrap: wrap; /* Permite que los links bajen si no caben */
+     justify-content: center;
+     padding: 8px;
+   }
+   .envivo-logo {
+     width: 100%;
+     justify-content: center;
+     margin-bottom: 5px;
+     margin-right: 0;
+   }
+}
