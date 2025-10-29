@@ -1,9 +1,9 @@
-
+// src/pages/programador/errores.jsx (Restaurado + Modificado)
 
 import React from 'react';
 import '../../styles/pages/errores.css'; 
 
-
+// Datos de ejemplo
 const MOCK_ERRORES_DATA = [
     {
         id: 1,
@@ -28,39 +28,68 @@ const MOCK_ERRORES_DATA = [
         fecha: '2025-09-06',
         tipo: 'Error de transcodificación',
         mensaje: 'No se pudo procesar el audio del archivo "podcast_ep12.wav". Formato no compatible.'
+    },
+    {
+        id: 5,
+        fecha: '2025-09-05',
+        tipo: 'Error',
+        mensaje: 'NullPointerException: No se pudo encontrar el ID de usuario al procesar el segmento 45.'
+    },
+    {
+        id: 6,
+        fecha: '2025-09-04',
+        tipo: 'Advertencia',
+        mensaje: 'El contenido "resumen_semanal.mov" tiene una duración de 00:00. Verifique el archivo.'
     }
 ];
 
+// Componente de Fila de Error (con su propio scroll-x)
+const ErrorRow = ({ error }) => {
+    const isError = error.tipo.toLowerCase().includes('error');
+    const tagClass = isError ? 'tipo-error' : 'tipo-advertencia';
+
+    return (
+        // 3. DIV con scroll horizontal INDIVIDUAL (restaurado)
+        <div className="error-row-scroll-wrapper">
+            <div className="error-row-content">
+                <div className="error-cell fecha">{error.fecha}</div>
+                <div className="error-cell tipo">
+                    <span className={`tipo-tag ${tagClass}`}>
+                        {error.tipo}
+                    </span>
+                </div>
+                <div className="error-cell mensaje">
+                    {error.mensaje}
+                </div>
+            </div>
+        </div>
+    );
+};
+
+// Componente Principal
 export default function Errores() {
     return (
         <div className="errores-container">
+            
+            {/* TÍTULO */}
             <header className="errores-header">
                 <h1>Errores y contenidos faltantes</h1>
             </header>
 
-            <div className="tabla-errores-wrapper">
-                <table className="tabla-gestion">
-                    <thead>
-                        <tr>
-                            <th>Fecha</th>
-                            <th>Tipo</th>
-                            <th>Mensaje</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {MOCK_ERRORES_DATA.map((error) => (
-                            <tr key={error.id}>
-                                <td data-label="Fecha">{error.fecha}</td>
-                                <td data-label="Tipo">
-                                    <span className={`tipo-tag ${error.tipo.toLowerCase().includes('error') ? 'tipo-error' : 'tipo-advertencia'}`}>
-                                        {error.tipo}
-                                    </span>
-                                </td>
-                                <td data-label="Mensaje" className="mensaje-cell">{error.mensaje}</td>
-                            </tr>
-                        ))}
-                    </tbody>
-                </table>
+            {/* 1. NUEVO Wrapper para el scroll-x de la cabecera */}
+            <div className="header-scroll-wrapper">
+                <div className="errores-list-header-content">
+                    <div className="error-cell fecha">Fecha</div>
+                    <div className="error-cell tipo">Tipo</div>
+                    <div className="error-cell mensaje">Mensaje</div>
+                </div>
+            </div>
+
+            {/* 2. DIV con SCROLL VERTICAL para toda la lista (restaurado) */}
+            <div className="errores-list-container">
+                {MOCK_ERRORES_DATA.map((error) => (
+                    <ErrorRow key={error.id} error={error} />
+                ))}
             </div>
         </div>
     );
