@@ -14,6 +14,9 @@ import {
   useDroppable,
 } from '@dnd-kit/core';
 
+// --- AÑADIDO ---
+import { X } from 'lucide-react'; // Importamos el ícono para cerrar el modal
+
 // --- Datos de Ejemplo ---
 const programasDisponibles = [
   { id: 'prog-1', nombre: 'La Parrilla' },
@@ -27,7 +30,7 @@ const programasDisponibles = [
 const diasSemana = ["DOM", "LUN", "MAR", "MIE", "JUE", "VIE", "SAB"];
 
 // --- 2. Componente "Programa Arrastrable" ---
-// Separamos el chip en su propio componente
+// (Sin cambios)
 function DraggablePrograma({ programa }) {
   const { attributes, listeners, setNodeRef } = useDraggable({
     id: programa.id,
@@ -47,13 +50,13 @@ function DraggablePrograma({ programa }) {
 }
 
 // --- 3. Componente "Celda del Día" (Receptora) ---
-// Separamos la celda en su propio componente
-function DroppableDia({ day, isOtherMonth, children }) {
+// --- MODIFICADO ---
+// Ahora recibe 'onOpenModal'
+function DroppableDia({ day, isOtherMonth, children, onOpenModal }) {
   const { setNodeRef, isOver } = useDroppable({
     id: format(day, 'yyyy-MM-dd'), // Usamos la fecha como ID
   });
 
-  // Damos un estilo diferente si un programa está encima
   const style = isOver ? { backgroundColor: '#415a77', transform: 'scale(1.02)' } : {};
 
   return (
@@ -61,9 +64,9 @@ function DroppableDia({ day, isOtherMonth, children }) {
       ref={setNodeRef}
       style={style}
       className={`dia-cell ${isOtherMonth ? 'dia-otro-mes' : ''}`}
+      onMouseUp={onOpenModal}
     >
       <span className="dia-numero">{format(day, 'dd')}</span>
-      {/* Aquí mostramos los programas asignados */}
       <div className="programas-asignados-lista">
         {children}
       </div>
@@ -71,14 +74,42 @@ function DroppableDia({ day, isOtherMonth, children }) {
   );
 }
 
+// --- AÑADIDO: Componente del Modal ---
+const DayDetailModal = ({ dayId, programs, onClose }) => {
+  return (
+    // El fondo oscuro
+    <div className="modal-overlay" onClick={onClose}>
+      {/* El contenido del modal */}
+      <div className="modal-content" onClick={(e) => e.stopPropagation()}>
+        <button className="modal-close-btn" onClick={onClose}>
+          <X size={24} />
+        </button>
+        <h3>Programas para el {dayId}</h3>
+        <div className="modal-program-list">
+          {programs.length > 0 ? (
+            programs.map(prog => (
+              <div key={prog.id} className="modal-program-item">
+                {prog.nombre}
+              </div>
+            ))
+          ) : (
+            <p>No hay programas asignados para este día.</p>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
+
+
 // --- Componente Principal de la Página ---
 export default function ArmadoParrilla() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
-
-  // --- 4. Estado para las asignaciones y el ítem activo ---
-  // Guardará { '2025-09-22': [prog-1, prog-3], '2025-09-23': [prog-2] }
   const [asignaciones, setAsignaciones] = useState({});
   const [activeDragItem, setActiveDragItem] = useState(null);
+
+  // --- AÑADIDO: Estado para el modal ---
+  const [modalDay, setModalDay] = useState(null); // null = cerrado
 
   // --- Lógica del Calendario (sin cambios) ---
   const generateCalendarDays = () => {
@@ -93,41 +124,39 @@ export default function ArmadoParrilla() {
   const goToNextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
   const goToPrevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
 
-  // --- 5. Lógica de Drag and Drop ---
-  
-  // Se dispara cuando empezamos a arrastrar
+  // --- AÑADIDO: Funciones para manejar el modal ---
+  const handleOpenModal = (dayId) => {
+    setModalDay(dayId);
+  };
+  const handleCloseModal = () => {
+    setModalDay(null);
+  };
+
+  // --- Lógica de Drag and Drop (sin cambios) ---
   function handleDragStart(event) {
-    // Guardamos los datos del programa que estamos arrastrando
     setActiveDragItem(event.active.data.current);
   }
 
-  // Se dispara cuando soltamos el ítem
   function handleDragEnd(event) {
     const { active, over } = event;
-    setActiveDragItem(null); // Limpiamos el ítem activo
+    setActiveDragItem(null);
 
-    // Si no lo soltamos sobre una celda válida (over), no hacemos nada
     if (!over) {
       return;
     }
 
-    const diaId = over.id; // ej: '2025-09-22'
-    const programa = active.data.current; // ej: { id: 'prog-1', nombre: 'La Parrilla' }
+    const diaId = over.id;
+    const programa = active.data.current;
 
-    // Actualizamos el estado de asignaciones
     setAsignaciones(prev => {
-      // Obtenemos la lista actual de programas para ese día, o un array vacío
       const programasDelDia = prev[diaId] || [];
-      
-      // Evitamos duplicados
+
       if (programasDelDia.find(p => p.id === programa.id)) {
         return prev;
       }
 
-      // Creamos la nueva lista para ese día
       const nuevaListaDia = [...programasDelDia, programa];
 
-      // Devolvemos el estado actualizado
       return {
         ...prev,
         [diaId]: nuevaListaDia,
@@ -136,11 +165,10 @@ export default function ArmadoParrilla() {
   }
 
   return (
-    // --- 6. Envolvemos TODO en DndContext ---
     <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="armado-parrilla-container">
-        
-        {/* 1. Lista de Programas (Ahora usa el componente Draggable) */}
+
+        {/* Barra de Programas (sin cambios) */}
         <div className="programas-disponibles-bar">
           <h3>Programas disponibles</h3>
           <div className="programas-lista">
@@ -151,7 +179,7 @@ export default function ArmadoParrilla() {
           </div>
         </div>
 
-        {/* 2. Contenedor del Calendario (sin cambios) */}
+        {/* Contenedor del Calendario (sin cambios) */}
         <div className="calendario-container">
           <div className="calendario-header">
             <button className="flecha" onClick={goToPrevMonth}>&lt;</button>
@@ -167,24 +195,24 @@ export default function ArmadoParrilla() {
             ))}
           </div>
 
-          {/* 3. Grilla de Días (Ahora usa el componente Droppable) */}
+          {/* Grilla de Días (MODIFICADO) */}
           <div className="calendario-grid-body">
             {calendarDays.map(day => {
               const diaId = format(day, 'yyyy-MM-dd');
-              const programasDelDia = asignaciones[diaId] || []; // Obtenemos los programas de ese día
+              const programasDelDia = asignaciones[diaId] || [];
 
               return (
                 <DroppableDia
                   key={diaId}
                   day={day}
                   isOtherMonth={!isSameMonth(day, currentMonth)}
+                  // --- MODIFICADO: Pasamos la función al DroppableDia ---
+                  onOpenModal={() => handleOpenModal(diaId)}
                 >
-                  {/* Renderizamos los programas asignados dentro de la celda */}
+                  {/* Renderizado de los chips (sin cambios) */}
                   {programasDelDia.map(prog => (
                     <div key={prog.id} className="programa-chip-asignado">
                       {prog.nombre}
-                      {/* Opcional: Botón para borrarlo */}
-                      {/* <button onClick={() => borrarPrograma(diaId, prog.id)}>X</button> */}
                     </div>
                   ))}
                 </DroppableDia>
@@ -194,7 +222,16 @@ export default function ArmadoParrilla() {
         </div>
       </div>
 
-      {/* --- 7. El "Clon" que se muestra al arrastrar --- */}
+      {/* --- AÑADIDO: Renderizado condicional del modal --- */}
+      {modalDay && (
+        <DayDetailModal
+          dayId={modalDay}
+          programs={asignaciones[modalDay] || []}
+          onClose={handleCloseModal}
+        />
+      )}
+
+      {/* Drag Overlay (sin cambios) */}
       <DragOverlay>
         {activeDragItem ? (
           <div className="programa-chip chip-en-overlay">

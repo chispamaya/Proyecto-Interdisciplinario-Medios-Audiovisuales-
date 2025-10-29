@@ -83,9 +83,13 @@
   border-radius: 8px;
   padding: 8px;
   transition: background-color 0.2s;
+  display: flex;
+    flex-direction: column;
+    overflow: hidden;
 }
 .dia-cell .dia-numero {
   font-weight: 600;
+  flex-shrink: 0; /* <-- AÑADE ESTO */
 }
 .dia-otro-mes {
   background-color: #132236; /* Más oscuro */
@@ -108,6 +112,9 @@
   flex-direction: column;
   gap: 4px;
   margin-top: 8px;
+  flex-grow: 1;     /* Ocupa el espacio restante en la celda */
+    overflow-y: auto; /* Permite scroll si hay muchos programas */
+    min-height: 0;
 }
 
 /* Estilo del chip una vez que fue soltado en el calendario */
@@ -121,6 +128,7 @@
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+  user-select: none; /* <-- ¡AÑADE ESTA LÍNEA! */
 }
 .flecha{
 position: static;
@@ -132,3 +140,114 @@ transition: none !important;
 content: none !important;
 }
 
+@media (max-width: 768px) {
+
+    /* 1. Achicamos los paddings (espacios) generales */
+    .armado-parrilla-container {
+        padding: 1rem; /* Era 2rem */
+    }
+
+    .calendario-container {
+        padding: 0.5rem; /* Era 2rem */
+    }
+
+    /* 2. Achicamos el título del mes y las flechas */
+    .calendario-header h2 {
+        font-size: 1.5rem; /* Era 2rem */
+    }
+
+    .calendario-header button {
+        font-size: 2rem; /* Era 2.5rem */
+        padding: 0 0.5rem; /* Era 0 1rem */
+    }
+
+    /* 3. Hacemos la grilla de días más compacta */
+    .calendario-grid-header, .calendario-grid-body {
+        gap: 3px; /* Era 5px */
+    }
+
+    .dia-header-cell {
+        font-size: 0.75rem; /* Achicamos texto (DOM, LUN...) */
+        padding-bottom: 0.5rem;
+    }
+
+    .dia-cell {
+        min-height: 80px; /* Celdas más bajas (era 120px) */
+        padding: 4px; /* Menos padding interno */
+    }
+
+    .dia-cell .dia-numero {
+        font-size: 0.9rem;
+    }
+
+    /* 4. Achicamos los chips de programas */
+    .programa-chip {
+        padding: 0.4rem 0.8rem;
+        font-size: 0.8rem;
+    }
+
+    .programa-chip-asignado {
+        font-size: 0.7rem;
+        padding: 2px 4px; /* Más chico para que entre */
+    }
+}
+
+/* --- Estilos para el Modal de Programas --- */
+
+.modal-overlay {
+  position: fixed; /* Ocupa toda la pantalla */
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.6); /* Fondo oscuro semitransparente */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 2000; /* Por encima de todo */
+}
+
+.modal-content {
+  background-color: #1b263b; /* Mismo color que el calendario */
+  padding: 2rem;
+  border-radius: 12px;
+  width: 90%;
+  max-width: 500px;
+  max-height: 80vh;
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  box-shadow: 0 5px 20px rgba(0, 0, 0, 0.4);
+}
+
+.modal-close-btn {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: none;
+  border: none;
+  color: #a0a8b9;
+  cursor: pointer;
+}
+.modal-close-btn:hover {
+  color: #ffffff;
+}
+
+.modal-content h3 {
+  color: #ffffff;
+  margin-top: 0;
+  margin-bottom: 1.5rem;
+}
+
+.modal-program-list {
+  overflow-y: auto; /* Scroll si la lista de programas es muy larga */
+}
+
+.modal-program-item {
+  background-color: #0d1b2a;
+  color: #e0e1dd;
+  padding: 0.75rem 1rem;
+  border-radius: 6px;
+  font-size: 1rem;
+  margin-bottom: 0.5rem;
+}

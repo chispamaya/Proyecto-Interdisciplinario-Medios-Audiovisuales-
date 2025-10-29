@@ -15,10 +15,9 @@ body{
 /* 2. Área de Contenido (SOLUCIÓN AL PROBLEMA DE SUPERPOSICIÓN) */
 .content-area {
     /* 💥 REGLA CRÍTICA: Empuja el contenido el 20% hacia la derecha 💥 */
-    
     /* 💥 REGLA CRÍTICA: Asegura que el contenido ocupe el espacio restante (80%) 💥 */
     width: 80%; 
-    
+    min-width: 0; /* <-- Y AÑADE ESTO */
     /* Para evitar que el contenido "suba" a pesar del margen */
     min-height: 100vh; 
     
