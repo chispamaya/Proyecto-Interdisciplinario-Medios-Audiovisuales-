@@ -1,9 +1,9 @@
-// src/pages/Errores.jsx
+
 
 import React from 'react';
-import '../../styles/pages/errores.css'; // Crearemos este archivo CSS a continuación
+import '../../styles/pages/errores.css'; 
 
-// Datos de ejemplo, inspirados en tu imagen. En una app real, vendrían de una API.
+
 const MOCK_ERRORES_DATA = [
     {
         id: 1,
@@ -34,14 +34,11 @@ const MOCK_ERRORES_DATA = [
 export default function Errores() {
     return (
         <div className="errores-container">
-            {/* Título de la página */}
             <header className="errores-header">
                 <h1>Errores y contenidos faltantes</h1>
             </header>
 
-            {/* Envoltorio de la tabla para permitir el scroll horizontal */}
             <div className="tabla-errores-wrapper">
-                {/* Reutilizamos la clase .tabla-gestion para mantener la consistencia visual */}
                 <table className="tabla-gestion">
                     <thead>
                         <tr>
@@ -53,10 +50,8 @@ export default function Errores() {
                     <tbody>
                         {MOCK_ERRORES_DATA.map((error) => (
                             <tr key={error.id}>
-                                {/* Usamos data-label para la vista responsive */}
                                 <td data-label="Fecha">{error.fecha}</td>
                                 <td data-label="Tipo">
-                                    {/* Aplicamos una clase especial para los errores para poder darles color */}
                                     <span className={`tipo-tag ${error.tipo.toLowerCase().includes('error') ? 'tipo-error' : 'tipo-advertencia'}`}>
                                         {error.tipo}
                                     </span>
