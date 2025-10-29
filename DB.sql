@@ -47,9 +47,21 @@ CREATE TABLE emisiones (
 
 CREATE TABLE rol (
     id INT AUTO_INCREMENT PRIMARY KEY,
-    nombre VARCHAR(50),
-    departamento VARCHAR(50),
-    permisos VARCHAR(50)
+    nombre VARCHAR(50)
+);
+
+CREATE TABLE permisos(
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	tipoPermiso varchar(50),
+	rolPerteneciente varchar(50)
+);
+
+CREATE TABLE permisos_rol(
+	id INT AUTO_INCREMENT PRIMARY KEY,
+	idRol int,
+	idPermiso int,
+	FOREIGN KEY (idRol) REFERENCES rol(id),
+	FOREIGN KEY (idPermiso) REFERENCES permisos(id)
 );
 
 CREATE TABLE usuario (
@@ -1046,13 +1058,86 @@ Delimiter //
 
 Delimiter ;
  
- 
- 
- 
- 
- 
+--1 
+INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
+--2
+INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
+--3
+INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
+--4
+INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
+--5
+INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
+--6
+INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
+--7
+INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
+
+--8
+INSERT INTO rol (nombre) VALUES ('Administrador');   
+
+
+--9
+INSERT INTO rol (nombre) VALUES ('Programador');
+--10
+INSERT INTO rol (nombre) VALUES ('Programador');
+--11
+INSERT INTO rol (nombre) VALUES ('Programador');
+
+--12
+INSERT INTO rol (nombre) VALUES ('Espectador');
+
 
  
+INSERT INTO permisos (tipoPermiso, rolPerteneciente) VALUES ('SUBIR_CONTENIDO', 'Productor/Editor');
+INSERT INTO permisos (tipoPermiso, rolPerteneciente) VALUES ('ESTADO-APROBACION', 'Productor/Editor'); 
+INSERT INTO permisos (tipoPermiso, rolPerteneciente) VALUES ('VER_PARRILLA', 'Productor/Editor'); 
+ 
+INSERT INTO permisos (tipoPermiso, rolPerteneciente) VALUES ('HACER-TODO', 'Administrador');  
+
+INSERT INTO permisos (tipoPermiso, rolPerteneciente) VALUES ('ARMAR_PARRILLA', 'Programador'); 
+INSERT INTO permisos (tipoPermiso, rolPerteneciente) VALUES ('CONTROLAR_EMISION', 'Programador');
+
+INSERT INTO permisos (tipoPermiso, rolPerteneciente) VALUES ('HACER-NADA', 'Espectador');
+
+
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (1, 1); 
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (1, 2); 
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (1, 3); 
+
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (2, 1); 
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (2, 2); 
+
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (3, 1); 
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (3, 3); 
+
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (4, 2); 
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (4, 3); 
+
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (5, 1); 
+
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (6, 2); 
+
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (7, 3); 
+
+
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (8, 4); 
+
+
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (9, 5); 
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (9, 6); 
+
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (10, 5); 
+
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (11, 6); 
+
+
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7); 
+
+
+
+
+
 
 
 
