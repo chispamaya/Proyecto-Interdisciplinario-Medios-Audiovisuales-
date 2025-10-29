@@ -28,7 +28,7 @@
 /* --- Wrapper de la Tabla (¡Clave para el Scroll!) --- */
 .tabla-errores-wrapper {
     flex-grow: 1;
-    overflow-x: auto; /* Habilita el scroll horizontal si la tabla no cabe */
+    overflow-x: auto;
     background-color: var(--background-card, #212121);
     border-radius: 8px;
     padding: 0.5rem;
@@ -36,8 +36,8 @@
 
 /* --- Estilos específicos para esta tabla --- */
 .tabla-gestion .mensaje-cell {
-    white-space: pre-wrap; /* Respeta los saltos de línea y espacios */
-    word-break: break-word; /* Evita que texto largo rompa el layout */
+    white-space: pre-wrap; 
+    word-break: break-word;
 }
 
 .tipo-tag {
@@ -59,7 +59,7 @@
 }
 
 
-/* --- Scrollbar customizada (consistente con tu app) --- */
+
 .tabla-errores-wrapper::-webkit-scrollbar {
     width: 8px;
     height: 8px;
@@ -83,12 +83,12 @@
         font-size: 1.5rem;
     }
     
-    /* Ocultamos la cabecera original en pantallas pequeñas */
+
     .tabla-gestion thead {
         display: none;
     }
 
-    /* Hacemos que la tabla se comporte como bloques apilados */
+
     .tabla-gestion tbody, .tabla-gestion tr, .tabla-gestion td {
         display: block;
         width: 100%;
@@ -103,10 +103,10 @@
 
     .tabla-gestion td {
         text-align: right;
-        padding-left: 50%; /* Espacio para la etiqueta simulada */
+        padding-left: 50%; 
         position: relative;
         border-bottom: 1px solid var(--color-border);
-        padding-right: 10px; /* Asegura que el texto no se pegue al borde */
+        padding-right: 10px; 
     }
     .tabla-gestion td:last-child {
         border-bottom: none;
@@ -114,7 +114,7 @@
 
     /* Simula la etiqueta de cabecera usando ::before */
     .tabla-gestion td::before {
-        content: attr(data-label); /* Usa el atributo data-label del <td> */
+        content: attr(data-label); 
         position: absolute;
         left: 10px;
         width: calc(50% - 20px);
@@ -128,7 +128,7 @@
     }
 
     .tabla-gestion .mensaje-cell {
-         white-space: normal; /* Asegura que el texto fluya normalmente en móvil */
+         white-space: normal; 
     }
 }
 
