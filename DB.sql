@@ -146,26 +146,27 @@ CREATE TABLE auditoria(
 
 
 DELIMITER // 
-CREATE PROCEDURE s(IN tabla varchar(50), IN idU int, IN idP int, OUT mensaje varchar(50))
+CREATE PROCEDURE s(IN tabla VARCHAR(50), IN idU INT, IN idP INT, OUT mensaje VARCHAR(50))
  BEGIN
-	DECLARE ct LONGTEXT;
+	
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
 	  SET mensaje = 'Ocurrio un error.';
 	 END;
+	 
 	 IF idU IS NOT NULL THEN
 		SELECT * FROM usuario WHERE id = idU;
 	 ELSEIF idP IS NOT NULL THEN
 		SELECT * FROM programas WHERE id = idP;
 	 ELSE
-		SET ct = CONCAT('SELECT * FROM ', tabla, ';');
-		PREPARE c FROM ct;
+		SET @ct = CONCAT('SELECT * FROM ', tabla, ';');
+		PREPARE c FROM @ct; 
 		EXECUTE c;
 		DEALLOCATE PREPARE c;
 	 END IF;
    SET mensaje = 'Mostrando datos.'; 
  END //
-
+ 
  CREATE PROCEDURE cpr(IN categoria1 varchar(50), IN nombre1 varchar(50), IN horaInicio1 TIME, IN horaFin1 TIME, IN idP1 INT, IN formatoArchivo1 varchar(50), IN rutaArchivo1 varchar(500), IN idUs int, OUT mensaje varchar(50))
  BEGIN
 	DECLARE error varchar(500);
@@ -272,7 +273,7 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
  END //
 
 
- CREATE PROCEDURE cu(IN email1 varchar(50), IN nombre1 varchar(50), IN contrasenia1 varchar(50), IN idRol1 int, IN idUs int, OUT mensaje varchar(50))
+ CREATE PROCEDURE cu(IN email1 varchar(50), IN nombre1 varchar(50), IN contrasenia1 varchar(255), IN idRol1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
 	DECLARE error varchar(500);
 	DECLARE errorC varchar(50);
@@ -334,7 +335,7 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
    SET mensaje = 'Rol del usuario actualizado con éxito.';
  END //
  
- CREATE PROCEDURE cs(IN estadoAprobacion1 varchar(50), IN duracion1 varchar(50), IN titulo1 varchar(50), IN idP1 int, IN idUs int, OUT mensaje varchar(50))
+ CREATE PROCEDURE cs(IN estadoAprobacion1 varchar(50), IN duracion1 FLOAT, IN titulo1 varchar(50), IN idP1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
 	DECLARE error varchar(500);
 	DECLARE errorC varchar(50);
@@ -374,7 +375,7 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
    SET mensaje = 'Segmento borrado con éxito.' ;
  END //
 
- CREATE PROCEDURE ms(IN id1 int, IN estadoAprobacion1 varchar(50), IN duracion1 varchar(50), IN titulo1 varchar(50), IN idP1 int, IN idUs int, OUT mensaje varchar(50))
+ CREATE PROCEDURE ms(IN id1 int, IN estadoAprobacion1 varchar(50), IN duracion1 FLOAT, IN titulo1 varchar(50), IN idP1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
 	DECLARE error varchar(500);
 	DECLARE errorC varchar(50);
@@ -463,7 +464,7 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
  
 
  
- CREATE PROCEDURE me(IN id1 int, IN enVivo1 varchar(50), IN idPr1 int, IN idUs int, OUT mensaje varchar(50))
+ CREATE PROCEDURE me(IN id1 int, IN enVivo1 BOOLEAN, IN idPr1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
 	DECLARE error varchar(500);
 	DECLARE errorC varchar(50);
@@ -478,7 +479,7 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
 	START TRANSACTION;
-	 UPDATE emision
+	 UPDATE emisiones
 	 SET enVivo = enVivo1, idPrograma = idPr1
 	 WHERE id = id1;
 	COMMIT;
@@ -1133,6 +1134,7 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (11, 6);
 
 
 INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7); 
+
 
 
 
