@@ -52,8 +52,7 @@ CREATE TABLE rol (
 
 CREATE TABLE permisos(
 	id INT AUTO_INCREMENT PRIMARY KEY,
-	tipoPermiso varchar(50),
-	rolPerteneciente varchar(50)
+	tipoPermiso varchar(50)
 );
 
 CREATE TABLE permisos_rol(
@@ -1134,6 +1133,7 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (11, 6);
 
 
 INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7); 
+
 
 
 
