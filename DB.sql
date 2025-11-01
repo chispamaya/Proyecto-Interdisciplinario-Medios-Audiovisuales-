@@ -717,6 +717,14 @@ CREATE PROCEDURE vo(IN idO int, IN idU int, IN idE int, IN idUs int, OUT mensaje
     END IF;
     COMMIT; 
 END //
+
+ CREATE PROCEDURE vp(IN nombreRol varchar(50), OUT mensaje varchar(50))
+ BEGIN
+	 SELECT tipoPermiso FROM permisos WHERE id IN
+	(SELECT idPermiso FROM permisos_rol WHERE idRol IN
+	(SELECT id FROM rol WHERE nombre = nombreRol));
+   SET mensaje = 'Mostrando permisos para el rol pedido...';
+ END //
 DELIMITER ;
   --TRIGGER DE INSERTS
 Delimiter //
@@ -1058,47 +1066,46 @@ Delimiter //
 
 Delimiter ;
  
--- 1 
-INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
--- 2
-INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
--- 3
-INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
--- 4
-INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
--- 5
-INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
--- 6
-INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
--- 7
+
 INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
 
--- 8
+INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
+
+INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
+
+INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
+
+INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
+
+INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
+
+INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
+
+
 INSERT INTO rol (nombre) VALUES ('Administrador');   
 
 
--- 9
-INSERT INTO rol (nombre) VALUES ('Programador');
--- 10
-INSERT INTO rol (nombre) VALUES ('Programador');
--- 11
 INSERT INTO rol (nombre) VALUES ('Programador');
 
--- 12
+INSERT INTO rol (nombre) VALUES ('Programador');
+
+INSERT INTO rol (nombre) VALUES ('Programador');
+
+
 INSERT INTO rol (nombre) VALUES ('Espectador');
 
 
  
-INSERT INTO permisos (tipoPermiso, rolPerteneciente) VALUES ('SUBIR_CONTENIDO', 'Productor/Editor');
-INSERT INTO permisos (tipoPermiso, rolPerteneciente) VALUES ('ESTADO-APROBACION', 'Productor/Editor'); 
-INSERT INTO permisos (tipoPermiso, rolPerteneciente) VALUES ('VER_PARRILLA', 'Productor/Editor'); 
+INSERT INTO permisos (tipoPermiso) VALUES ('SUBIR_CONTENIDO');
+INSERT INTO permisos (tipoPermiso) VALUES ('ESTADO-APROBACION'); 
+INSERT INTO permisos (tipoPermiso) VALUES ('VER_PARRILLA'); 
  
-INSERT INTO permisos (tipoPermiso, rolPerteneciente) VALUES ('HACER-TODO', 'Administrador');  
+INSERT INTO permisos (tipoPermiso) VALUES ('HACER-TODO');  
 
-INSERT INTO permisos (tipoPermiso, rolPerteneciente) VALUES ('ARMAR_PARRILLA', 'Programador'); 
-INSERT INTO permisos (tipoPermiso, rolPerteneciente) VALUES ('CONTROLAR_EMISION', 'Programador');
+INSERT INTO permisos (tipoPermiso) VALUES ('ARMAR_PARRILLA'); 
+INSERT INTO permisos (tipoPermiso) VALUES ('CONTROLAR_EMISION');
 
-INSERT INTO permisos (tipoPermiso, rolPerteneciente) VALUES ('HACER-NADA', 'Espectador');
+INSERT INTO permisos (tipoPermiso) VALUES ('HACER-NADA');
 
 
 INSERT INTO permisos_rol (idRol, idPermiso) VALUES (1, 1); 
@@ -1133,6 +1140,7 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (11, 6);
 
 
 INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7); 
+
 
 
 
