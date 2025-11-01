@@ -1058,33 +1058,33 @@ Delimiter //
 
 Delimiter ;
  
---1 
+-- 1 
 INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
---2
+-- 2
 INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
---3
+-- 3
 INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
---4
+-- 4
 INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
---5
+-- 5
 INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
---6
+-- 6
 INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
---7
+-- 7
 INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
 
---8
+-- 8
 INSERT INTO rol (nombre) VALUES ('Administrador');   
 
 
---9
+-- 9
 INSERT INTO rol (nombre) VALUES ('Programador');
---10
+-- 10
 INSERT INTO rol (nombre) VALUES ('Programador');
---11
+-- 11
 INSERT INTO rol (nombre) VALUES ('Programador');
 
---12
+-- 12
 INSERT INTO rol (nombre) VALUES ('Espectador');
 
 
@@ -1133,6 +1133,7 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (11, 6);
 
 
 INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7); 
+
 
 
 
