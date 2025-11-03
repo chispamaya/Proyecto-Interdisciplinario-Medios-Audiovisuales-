@@ -1,0 +1,84 @@
+/* src/styles/layout/EspectadorLayout.css */
+
+/* --- Contenedor principal de la página --- */
+.envivo-page-container {
+  background-color: #333; /* Fondo gris oscuro general */
+  min-height: 100vh;
+  width: 100%;
+  display: flex; /* Para que el header y main ocupen espacio */
+  flex-direction: column;
+}
+
+/* --- Header (Barra negra superior) --- */
+.envivo-header {
+  background-color: black;
+  padding: 10px 20px;
+  border-bottom: 3px solid #00AFFF; /* Borde azul */
+  display: flex;
+  align-items: center;
+  color: white;
+  flex-shrink: 0; /* Evita que el header se achique */
+}
+
+.envivo-logo {
+  font-weight: bold;
+  margin-right: 25px;
+  font-size: 1.2rem;
+  display: flex;
+  align-items: center;
+}
+
+.envivo-logo-icon {
+  color: #FFA500; /* Color naranja del ícono del logo */
+  font-size: 1.5rem;
+  margin-left: 5px;
+}
+
+.envivo-nav,
+.envivo-nav-active {
+  color: #aaa; /* Color grisáceo para links inactivos */
+  text-decoration: none;
+  font-size: 1rem;
+  margin: 0 10px;
+  padding: 5px 0;
+  transition: color 0.2s;
+}
+
+.envivo-nav-active {
+  color: white;
+  font-weight: bold;
+}
+
+.envivo-nav:hover {
+  color: white;
+}
+
+/* --- Responsive del Header --- */
+@media (max-width: 768px) {
+  .envivo-header {
+    padding: 10px 15px;
+    font-size: 0.9rem;
+  }
+  .envivo-logo {
+    margin-right: 15px;
+    font-size: 1rem;
+  }
+  .envivo-nav, .envivo-nav-active {
+    margin: 0 8px;
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+   .envivo-header {
+     flex-wrap: wrap;
+     justify-content: center;
+     padding: 8px;
+   }
+   .envivo-logo {
+     width: 100%;
+     justify-content: center;
+     margin-bottom: 5px;
+     margin-right: 0;
+   }
+}

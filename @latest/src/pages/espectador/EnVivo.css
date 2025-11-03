@@ -1,0 +1,265 @@
+/* src/pages/espectador/EnVivo.css */
+/* ❌ (Todos los estilos de .envivo-header, .envivo-logo, etc. se eliminaron) */
+
+/* --- Área de Contenido Principal (En Vivo) --- */
+.envivo-main-content {
+  padding: 20px;
+  flex-grow: 1; 
+  display: flex; 
+  justify-content: center;
+  align-items: center; 
+}
+
+/* --- Contenedor Blanco "EN VIVO" --- */
+.envivo-container-white {
+  background-color: white; 
+  color: black;
+  border-radius: 8px; 
+  padding: 30px;
+  width: 100%; 
+  max-width: 1400px; 
+  margin: 0 auto; 
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); 
+  background-image: url('/Diseño sin título (1).png');
+  background-size: cover; 
+  background-position: center; 
+  background-repeat: no-repeat; 
+  position: relative; 
+  overflow: hidden; 
+}
+
+.envivo-container-white::before {
+  content: '';
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(255, 255, 255, 0.75);
+  z-index: 0; 
+}
+
+.envivo-title,
+.envivo-content-wrapper {
+  position: relative;
+  z-index: 1;
+}
+
+.envivo-title {
+  color: #B22222; 
+  text-align: center;
+  font-size: 2.5rem;
+  font-weight: bold;
+  margin-top: 0;
+  margin-bottom: 25px;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); 
+}
+
+.envivo-content-wrapper {
+   display: flex;
+   justify-content: center;
+   align-items: center;
+}
+
+.envivo-video-wrapper {
+  position: relative;
+  padding-top: 56.25%; 
+  height: 0;
+  overflow: hidden;
+  border-radius: 8px;
+  width: 75%; 
+  max-width: 900px; 
+  margin: 0 auto; 
+  border: 3px solid #444; 
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+}
+
+.envivo-iframe {
+  position: absolute;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  border: 0; 
+}
+
+/* --- Responsive (En Vivo) --- */
+@media (max-width: 900px) {
+  .envivo-video-wrapper {
+    width: 90%; 
+  }
+  .envivo-container-white {
+    padding: 25px;
+  }
+  .envivo-title {
+    font-size: 2rem;
+  }
+}
+
+@media (max-width: 768px) {
+  .envivo-main-content {
+    padding: 15px; 
+  }
+  .envivo-container-white {
+    padding: 20px;
+  }
+  .envivo-title {
+    font-size: 1.8rem;
+  }
+  .envivo-video-wrapper {
+    width: 95%; 
+    border-width: 2px;
+  }
+}
+
+@media (max-width: 480px) {
+  .envivo-title {
+    font-size: 1.5rem;
+    margin-bottom: 15px;
+  }
+  .envivo-video-wrapper {
+    width: 100%; 
+  }
+  .envivo-container-white {
+    padding: 15px;
+  }
+}
+
+
+/* =================================================
+===         ESTILOS PARA ENCUESTAS          ===
+=================================================
+*/
+
+.encuestas-main-content {
+  padding: 20px;
+  flex-grow: 1;
+  display: flex;
+  justify-content: center;
+  align-items: flex-start; 
+}
+
+.poll-card-container {
+  background-color: #4a2a61; 
+  padding: 1.5rem;
+  border-radius: 12px;
+  width: 100%;
+  max-width: 450px;
+  color: white;
+  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+  margin-top: 2rem; 
+}
+
+.poll-program-image {
+  width: 100%;
+  border-radius: 8px;
+  margin-bottom: 1.5rem;
+  background-color: #222; 
+}
+
+.poll-form {
+  width: 100%;
+}
+
+.poll-question {
+  font-size: 1.25rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 1.5rem;
+  color: #f0f0f0;
+}
+
+.poll-options-list {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem; 
+}
+
+.poll-option {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  background-color: #8634AA; 
+  padding: 1rem;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: background-color 0.2s;
+  position: relative; 
+}
+
+.poll-option:hover {
+  background-color: #9b4bc7;
+}
+
+.poll-option-text {
+  font-weight: 600;
+  font-size: 1rem;
+}
+
+.poll-option input[type="radio"] {
+  opacity: 0;
+  position: absolute;
+  width: 0;
+  height: 0;
+}
+
+.poll-custom-radio {
+  width: 24px;
+  height: 24px;
+  border: 2px solid white;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  margin-left: 1rem;
+}
+
+.poll-custom-radio::after {
+  content: '';
+  width: 14px;
+  height: 14px;
+  background-color: white;
+  border-radius: 50%;
+  transform: scale(0); 
+  transition: transform 0.15s ease-in-out;
+}
+
+.poll-option input[type="radio"]:checked + .poll-custom-radio::after {
+  transform: scale(1);
+}
+
+.poll-submit-btn {
+  width: 100%;
+  padding: 1rem;
+  margin-top: 1.5rem;
+  background-color: #FFA500; 
+  color: black;
+  font-size: 1.1rem;
+  font-weight: 700;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: opacity 0.2s;
+}
+
+.poll-submit-btn:hover {
+  opacity: 0.9;
+}
+
+/* Responsive para Encuestas */
+@media (max-width: 480px) {
+  .encuestas-main-content {
+    padding: 15px;
+  }
+  .poll-card-container {
+    padding: 1rem;
+    margin-top: 1rem;
+  }
+  .poll-question {
+    font-size: 1.1rem;
+  }
+  .poll-option-text {
+    font-size: 0.9rem;
+  }
+}
