@@ -1,47 +1,98 @@
 package com.example.demo.repository;
+
 import com.example.demo.dto.Usuario;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
+import org.springframework.jdbc.core.simple.SimpleJdbcCall;
 import org.springframework.stereotype.Repository;
 
-// Marcar la clase repository
+import java.sql.ResultSet;
+import java.sql.SQLException;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 @Repository
 public class UsuarioRepository {
-	
-	@Autowired
+
+    @Autowired
     private JdbcTemplate jdbcTemplate;
 
-   public void crearUsuario(Usuario usuario) {
-      
-       String sql = "CALL cu(?, ?, ?, ?)"; 
-       
-       
-       jdbcTemplate.update(sql, 
-           usuario.getEmail(),
-           usuario.getNombre(),
-           usuario.getContrasenia(),
-           usuario.getIdRol()
-       );
-   }
+    // --- MÉTODOS DE ESCRITURA (CUD) USANDO SimpleJdbcCall ---
 
- 
-   public void borrarUsuario(Long idUsuario) {
-       String sql = "CALL bu(?)";
+    public String crearUsuario(Usuario usuario, Long idUsuarioAuditoria) {
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate).withProcedureName("cu");
+
+        Map<String, Object> inParams = new HashMap<>();
+        inParams.put("email1", usuario.getEmail());
+        inParams.put("nombre1", usuario.getNombre());
+        inParams.put("contrasenia1", usuario.getContrasenia());
+        inParams.put("idRol1", usuario.getIdRol());
+        inParams.put("idUs", idUsuarioAuditoria);
+
+        Map<String, Object> outParams = jdbcCall.execute(inParams);
+        return (String) outParams.get("mensaje");
+    }
+
+    public String borrarUsuario(Long idUsuarioAEliminar, Long idUsuarioAuditoria) {
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate).withProcedureName("bu");
+
+        Map<String, Object> inParams = new HashMap<>();
+        inParams.put("id1", idUsuarioAEliminar);
+        inParams.put("idUs", idUsuarioAuditoria);
+
+        Map<String, Object> outParams = jdbcCall.execute(inParams);
+        return (String) outParams.get("mensaje");
+    }
+
+
+    public String modificarRolDeUsuario(Long idUsuarioAModificar, Long idNuevoRol, Long idUsuarioAuditoria) {
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate).withProcedureName("mu");
+
+        Map<String, Object> inParams = new HashMap<>();
+        inParams.put("id1", idUsuarioAModificar);
+        inParams.put("idRol1", idNuevoRol);
+        inParams.put("idUs", idUsuarioAuditoria);
+
+        Map<String, Object> outParams = jdbcCall.execute(inParams);
+        return (String) outParams.get("mensaje");
+    }
+
+  
+    public Usuario buscarUsuarioPorId(Long idUsuarioBuscado) {
        
-       jdbcTemplate.update(sql, idUsuario);
-   }
+        String sql = "CALL s('usuario', ?, null, @mensaje)"; 
+        
+        try {
+            return jdbcTemplate.queryForObject(sql, new UsuarioRowMapper(), idUsuarioBuscado);
+        } catch (Exception e) {
+            
+            return null; 
+        }
+    }
 
    
-   public void modificarUsuario(Usuario usuario) {
-       String sql = "CALL mu(?, ?, ?, ?, ?)"; 
+    public List<Usuario> listarTodosLosUsuarios() {
+        String sql = "CALL s('usuario', null, null, @mensaje)";
+        
        
-       jdbcTemplate.update(sql, 
-           usuario.getId(),
-           usuario.getEmail(),
-           usuario.getNombre(),
-           usuario.getContrasenia(),
-           usuario.getIdRol()
-       );
-   }
-	
+        return jdbcTemplate.query(sql, new UsuarioRowMapper());
+    }
+}
+
+class UsuarioRowMapper implements RowMapper<Usuario> {
+    @Override
+    public Usuario mapRow(ResultSet rs, int rowNum) throws SQLException {
+        Usuario usuario = new Usuario();
+        
+        // Mapeamos columna por columna
+        usuario.setId(rs.getLong("id"));
+        usuario.setEmail(rs.getString("email"));
+        usuario.setNombre(rs.getString("nombre"));
+        usuario.setContrasenia(rs.getString("contrasenia"));
+        usuario.setIdRol(rs.getLong("idRol"));
+        
+        return usuario;
+    }
 }
