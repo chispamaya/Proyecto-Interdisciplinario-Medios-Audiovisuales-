@@ -145,7 +145,7 @@ CREATE TABLE auditoria(
 
 
 DELIMITER // 
-CREATE PROCEDURE s(IN tabla VARCHAR(50), IN idU INT, IN idP INT, OUT mensaje VARCHAR(50))
+CREATE PROCEDURE s(IN tabla VARCHAR(50), IN id1 INT, OUT mensaje VARCHAR(50))
  BEGIN
 	
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
@@ -153,10 +153,14 @@ CREATE PROCEDURE s(IN tabla VARCHAR(50), IN idU INT, IN idP INT, OUT mensaje VAR
 	  SET mensaje = 'Ocurrio un error.';
 	 END;
 	 
-	 IF idU IS NOT NULL THEN
-		SELECT * FROM usuario WHERE id = idU;
-	 ELSEIF idP IS NOT NULL THEN
-		SELECT * FROM programas WHERE id = idP;
+	 IF tabla = 'usuario' THEN
+		SELECT * FROM usuario WHERE id = id1;
+	 ELSEIF tabla = 'programas' THEN
+		SELECT * FROM programas WHERE id = id1;
+	 ELSEIF tabla = 'encuesta' THEN
+		 SELECT e.id, preguntar, e.idUsuario, o.id, o.opcion
+		 FROM encuesta e JOIN opcion_e o ON e.id = o.idEncuesta
+		 WHERE e.id = id1;
 	 ELSE
 		SET @ct = CONCAT('SELECT * FROM ', tabla, ';');
 		PREPARE c FROM @ct; 
@@ -1140,6 +1144,7 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (11, 6);
 
 
 INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7); 
+
 
 
 
