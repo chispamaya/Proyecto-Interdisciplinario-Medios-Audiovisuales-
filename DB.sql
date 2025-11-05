@@ -226,7 +226,7 @@ CREATE PROCEDURE s(IN tabla VARCHAR(50), IN id1 INT, OUT mensaje VARCHAR(50))
    SET mensaje = 'Programa borrado con éxito.' ;
  END //
  
- CREATE PROCEDURE mpr(IN id1 int, IN estadoAprobacion1 varchar(50), IN categoria1 varchar(50), IN nombre1 varchar(50), IN horaInicio1 TIME, IN horaFin1 TIME, IN idP1 int, IN idUs int, OUT mensaje varchar(50))
+ CREATE PROCEDURE mpr(IN id1 int, IN estadoAprobacion1 varchar(50), IN categoria1 varchar(50), IN nombre1 varchar(50), IN horaInicio1 TIME, IN horaFin1 TIME, IN idP1 int, IN formatoArchivo1 varchar(50), IN rutaArchivo1 varchar(500), IN idUs int, OUT mensaje varchar(50))
  BEGIN
     DECLARE error varchar(500);
 	DECLARE errorC varchar(50);
@@ -1148,6 +1148,7 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (11, 6);
 
 
 INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7); 
+
 
 
 
