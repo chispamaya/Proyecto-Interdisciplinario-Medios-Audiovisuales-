@@ -1,6 +1,7 @@
 package com.example.demo.repository;
 
-import com.example.demo.dto.Encuesta; //
+import com.example.demo.dto.Encuesta;
+import com.example.demo.dto.EncuestaResultado; 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
@@ -22,13 +23,9 @@ public class EncuestaRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    // --- MÉTODO DE ESCRITURA (CUD) USANDO SimpleJdbcCall ---
-    // (Llama al SP 'cen')
-
     /**
-     * Llama al procedimiento almacenado 'cen' para crear una nueva encuesta.
-     * Procedimiento: cen(IN preguntar1, IN idU, OUT mensaje, IN idUs, OUT idE)
-     *
+     * Llama al SP 'cen' para crear una encuesta y DEVUELVE el ID nuevo.
+     * SP: cen(IN preguntar1, IN idU, OUT mensaje, IN idUs, OUT idE)
      */
     public Long crearEncuesta(Encuesta encuesta, Long idUsuarioAuditoria) {
         
@@ -39,7 +36,7 @@ public class EncuestaRepository {
                         new SqlParameter("idU", Types.BIGINT),
                         new SqlParameter("idUs", Types.BIGINT),
                         new SqlOutParameter("mensaje", Types.VARCHAR),
-                        new SqlOutParameter("idE", Types.BIGINT) // El ID que queremos recuperar
+                        new SqlOutParameter("idE", Types.BIGINT) 
                 );
 
         Map<String, Object> inParams = new HashMap<>();
@@ -49,41 +46,41 @@ public class EncuestaRepository {
 
         Map<String, Object> outParams = jdbcCall.execute(inParams);
         
-        // Devolvemos el ID de la encuesta creada
         return (Long) outParams.get("idE");
     }
 
-    // --- MÉTODOS DE LECTURA (R) USANDO JdbcTemplate + RowMapper ---
-    // (Igual que tu UsuarioRepository usa 's')
-
+    
     /**
-     * Lista todas las encuestas llamando al procedimiento 's'.
-     * (Igual que tu método 'listarTodosLosUsuarios')
+     * Llama a "CALL s('encuesta', ID, @mensaje)" para traer la encuesta,
+     * sus opciones y el conteo de votos, TAL CUAL lo hace tu SP.
+     * SP: s(IN tabla, IN id1, OUT mensaje)
      */
-    public List<Encuesta> listarTodasLasEncuestas() {
-        // Llama al procedimiento 's' pasando 'encuesta' como nombre de la tabla
-        String sql = "CALL s('encuesta', null, null, @mensaje)";
+    public List<EncuestaResultado> buscarEncuestaConOpcionesYVotos(Long idEncuesta) {
         
-        // Usa el RowMapper para convertir cada fila en un objeto Encuesta
-        return jdbcTemplate.query(sql, new EncuestaRowMapper());
+        String sql = "CALL s('encuesta', ?, @mensaje)";
+        
+        // Usa el NUEVO RowMapper que traduce el resultado del JOIN
+        return jdbcTemplate.query(sql, new EncuestaResultadoRowMapper(), idEncuesta);
     }
-
 }
 
 /**
- * Mapea una fila del ResultSet de la tabla 'encuesta' a un DTO 'Encuesta'.
- * (Igual que tu clase 'UsuarioRowMapper')
+ * El "TRADUCTOR" NUEVO para el resultado del JOIN del SP 's'
+ * (Traduce la fila combinada a un DTO 'EncuestaResultado')
  */
-class EncuestaRowMapper implements RowMapper<Encuesta> {
+class EncuestaResultadoRowMapper implements RowMapper<EncuestaResultado> {
     @Override
-    public Encuesta mapRow(ResultSet rs, int rowNum) throws SQLException {
-        Encuesta encuesta = new Encuesta();
+    public EncuestaResultado mapRow(ResultSet rs, int rowNum) throws SQLException {
+        EncuestaResultado dto = new EncuestaResultado();
         
-        // Mapeamos columna por columna
-        encuesta.setId(rs.getLong("id"));
-        encuesta.setPreguntar(rs.getString("preguntar"));
-        encuesta.setIdUsuario(rs.getLong("idUsuario"));
+        // Mapeamos los alias del SELECT de tu SP 's'
+        dto.setIdEncuesta(rs.getLong("idEncuesta"));
+        dto.setPreguntar(rs.getString("preguntar"));
+        dto.setIdCreador(rs.getLong("idCreador"));
+        dto.setIdOpcion(rs.getLong("idOpcion"));
+        dto.setOpcion(rs.getString("opcion"));
+        dto.setTotalVotos(rs.getLong("totalVotos"));
         
-        return encuesta;
+        return dto;
     }
 }
