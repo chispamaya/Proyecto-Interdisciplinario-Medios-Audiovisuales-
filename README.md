@@ -9,40 +9,36 @@
 
 Proyecto en desarrollo, Gestion De Medios Audivisuales de una Empresa 
 
-Con las Funcionalidades Requeridas Por El Cliente: 
+## :hammer: Funcionalidades requeridas por el cliente
 
-Inicio De Sesión
+## :hammer: Funcionalidades del Proyecto
 
-El Usuario iniciara sesion y se le asignara el rol de este donde va a poder editar cada aspecto segun su posicion.
+### 🔑 Autenticación y Perfiles
+* `Funcionalidad 1`: Inicio de sesión y asignación de roles.
+* `Funcionalidad 2`: Gestión del perfil de usuario.
+* `Funcionalidad 3`: Página de inicio (Home).
 
-Gestión de Contenidos Multimedia
+### 🎬 Gestión de Contenidos Multimedia
+* `Funcionalidad 4`: Subida de archivos multimedia.
+* `Funcionalidad 5`: Revisión, estado y aprobación de contenidos.
+* `Funcionalidad 6`: Administración general de archivos multimedia.
 
-Subida de Multimedia: Carga de archivos audiovisuales.
-Estado y Aprobación: Revisión y validación de contenidos.
-Parrilla Semanal: Programación semanal de emisiones.
-Gestión Multimedia: Administración general de archivos multimedia.
+### ⚙️ Paneles de Administración y Producción
+* `Funcionalidad 7`: Panel de productores y editores.
+* `Funcionalidad 8`: Panel de programación (Organización de grilla).
+* `Funcionalidad 9`: ABM (Alta, Baja y Modificación de registros).
+* `Funcionalidad 10`: Gestión de roles y permisos.
+* `Funcionalidad 11`: Reportes y estadísticas de audiencia.
 
-Paneles de Producción y Roles
- 
-Panel de Productores y Editores: Acceso y herramientas para roles editoriales.
-Panel de Programación: Organización de la grilla de contenidos.
-ABM: Alta, Baja y Modificación de registros (usuarios, programas, etc.).
-Gestión de Roles: Asignación y control de permisos por usuario.
-Reportes Audiencia: Estadísticas y métricas de visualización.
+### 📡 Control de Emisión
+* `Funcionalidad 12`: Armado de la parrilla horaria detallada.
+* `Funcionalidad 13`: Supervisión de la transmisión "EN VIVO".
+* `Funcionalidad 14`: Registro y seguimiento de errores de transmisión.
 
-Control de Emisión
-
-Control de Emisión: Supervisión de transmisiones en tiempo real.
-Errores: Registro y seguimiento de fallos técnicos.
-Armado de Parrilla Horaria: Configuración detallada de la programación por horario.
-
- Usuario y Participación
- 
-Perfil: Información y configuración del usuario.
-Inicio: Página principal del sitio.
-Encuestas: Participación del público en votaciones.
-Transmisión en Vivo ("EN VIVO"): Visualización de contenido en tiempo real.
-Opinión sobre programas con Encuestas interactivas 
+### 👤 Interacción y Audiencia
+* `Funcionalidad 15`: Visualización de la transmisión "EN VIVO".
+* `Funcionalidad 16`: Participación en encuestas interactivas.
+* `Funcionalidad 17`: Sistema de opinión sobre programas. 
 
   
 ## Tecnologías utilizadas
