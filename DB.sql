@@ -158,9 +158,18 @@ CREATE PROCEDURE s(IN tabla VARCHAR(50), IN id1 INT, OUT mensaje VARCHAR(50))
 	 ELSEIF tabla = 'programas' AND id1 IS NOT NULL THEN
 		SELECT * FROM programas WHERE id = id1;
 	 ELSEIF tabla = 'encuesta' AND id1 IS NOT NULL THEN
-		 SELECT e.id, preguntar, e.idUsuario, o.id, o.opcion
-		 FROM encuesta e JOIN opcion_e o ON e.id = o.idEncuesta
-		 WHERE e.id = id1;
+	    SELECT 
+	        e.id AS idEncuesta, 
+	        e.preguntar, 
+	        e.idUsuario AS idCreador, 
+	        o.id AS idOpcion, 
+	        o.opcion,
+	        COUNT(v.idOpcion) AS totalVotos
+	    FROM encuesta e
+	    JOIN opcion_e o ON e.id = o.idEncuesta
+	    LEFT JOIN votar_o v ON o.id = v.idOpcion
+	    WHERE e.id = id1
+	    GROUP BY e.id, e.preguntar, e.idUsuario, o.id, o.opcion;
 	 ELSE
 		SET @ct = CONCAT('SELECT * FROM ', tabla, ';');
 		PREPARE c FROM @ct; 
@@ -1144,6 +1153,7 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (11, 6);
 
 
 INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7); 
+
 
 
 
