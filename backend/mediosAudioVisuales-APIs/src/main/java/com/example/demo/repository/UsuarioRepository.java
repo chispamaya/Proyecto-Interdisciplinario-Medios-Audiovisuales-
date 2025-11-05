@@ -22,6 +22,7 @@ public class UsuarioRepository {
     // --- MÉTODOS DE ESCRITURA (CUD) USANDO SimpleJdbcCall ---
 
     public String crearUsuario(Usuario usuario, Long idUsuarioAuditoria) {
+    	
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate).withProcedureName("cu");
 
         Map<String, Object> inParams = new HashMap<>();
@@ -62,10 +63,10 @@ public class UsuarioRepository {
   
     public Usuario buscarUsuarioPorId(Long idUsuarioBuscado) {
        
-        String sql = "CALL s('usuario', ?, null, @mensaje)"; 
-        
+    	String sql = "CALL s('usuario', ?, @mensaje)";
+    	
         try {
-            return jdbcTemplate.queryForObject(sql, new UsuarioRowMapper(), idUsuarioBuscado);
+        	return jdbcTemplate.queryForObject(sql, new UsuarioRowMapper(), idUsuarioBuscado);        
         } catch (Exception e) {
             
             return null; 
@@ -74,8 +75,7 @@ public class UsuarioRepository {
 
    
     public List<Usuario> listarTodosLosUsuarios() {
-        String sql = "CALL s('usuario', null, null, @mensaje)";
-        
+    	String sql = "SELECT * FROM usuario";        
        
         return jdbcTemplate.query(sql, new UsuarioRowMapper());
     }

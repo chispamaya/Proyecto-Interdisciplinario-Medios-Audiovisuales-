@@ -62,8 +62,7 @@ public class PlataformaRepository {
 
    
     public List<Plataforma> listarTodasLasPlataformas() {
-        String sql = "CALL s('plataforma', null, null, @mensaje)";
-        
+    	String sql = "CALL s('plataforma', null, @mensaje)";        
         return jdbcTemplate.query(sql, new PlataformaRowMapper());
     }
 

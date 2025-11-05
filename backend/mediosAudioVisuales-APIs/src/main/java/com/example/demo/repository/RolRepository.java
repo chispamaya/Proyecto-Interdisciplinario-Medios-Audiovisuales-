@@ -17,7 +17,7 @@ public class RolRepository {
     private JdbcTemplate jdbcTemplate;
 
     public List<Rol> listarTodosLosRoles() {
-        String sql = "CALL s('rol', null, null, @mensaje)";
+        String sql = "CALL s('rol', null, @mensaje)";
         
         return jdbcTemplate.query(sql, new RolRowMapper());
     }

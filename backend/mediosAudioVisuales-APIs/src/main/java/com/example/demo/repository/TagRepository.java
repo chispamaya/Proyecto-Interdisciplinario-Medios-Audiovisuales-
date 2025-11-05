@@ -39,8 +39,7 @@ public class TagRepository {
 
 
     public List<Tag> listarTodosLosTags() {
-        String sql = "CALL s('tags', null, null, @mensaje)";
-        
+    	String sql = "CALL s('tags', null, @mensaje)";        
         return jdbcTemplate.query(sql, new TagRowMapper());
     }
 

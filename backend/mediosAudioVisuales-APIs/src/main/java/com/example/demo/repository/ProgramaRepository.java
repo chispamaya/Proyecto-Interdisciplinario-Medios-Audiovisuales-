@@ -73,16 +73,14 @@ public class ProgramaRepository {
  
     public List<Programa> listarTodosLosProgramas() {
    
-        String sql = "CALL s('programas', null, null, @mensaje)";
-        
+    	String sql = "SELECT * FROM programas";        
         return jdbcTemplate.query(sql, new ProgramaRowMapper());
     }
 
    
     public Programa buscarProgramaPorId(Long idProgramaBuscado) {
         
-        String sql = "CALL s('programas', null, ?, @mensaje)";
-        
+    	String sql = "CALL s('programas', ?, @mensaje)";        
         try {
             return jdbcTemplate.queryForObject(sql, new ProgramaRowMapper(), idProgramaBuscado);
         } catch (Exception e) {
@@ -101,8 +99,19 @@ class ProgramaRowMapper implements RowMapper<Programa> {
         programa.setEstadoAprobacion(rs.getString("estadoAprobacion"));
         programa.setCategoria(rs.getString("categoria"));
         programa.setNombre(rs.getString("nombre"));
-        programa.setHoraInicio(rs.getTime("horaInicio").toLocalTime()); 
-        programa.setHoraFin(rs.getTime("horaFin").toLocalTime());      
+        
+        java.sql.Time sqlHoraInicio = rs.getTime("horaInicio");
+        
+        if (sqlHoraInicio != null) {
+            programa.setHoraInicio(sqlHoraInicio.toLocalTime()); 
+        }
+
+        java.sql.Time sqlHoraFin = rs.getTime("horaFin");
+        
+        if (sqlHoraFin != null) {
+            programa.setHoraFin(sqlHoraFin.toLocalTime());       
+        }
+        
         programa.setIdPlataforma(rs.getLong("idPlataforma"));
         programa.setFormatoArchivo(rs.getString("formatoArchivo"));
         programa.setRutaArchivo(rs.getString("rutaArchivo"));

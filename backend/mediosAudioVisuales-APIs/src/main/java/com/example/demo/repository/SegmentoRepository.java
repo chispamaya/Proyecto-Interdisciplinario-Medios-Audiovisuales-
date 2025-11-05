@@ -63,7 +63,7 @@ public class SegmentoRepository {
 
   
     public List<Segmento> listarTodosLosSegmentos() {
-        String sql = "CALL s('segmentos', null, null, @mensaje)";
+        String sql = "CALL s('segmentos', null, @mensaje)";
         
         return jdbcTemplate.query(sql, new SegmentoRowMapper());
     }
