@@ -1,17 +1,15 @@
-// src/App.jsx - VERSIÓN CORREGIDA
+// src/App.jsx
 
 import './styles/App.css';
 import { Routes, Route } from 'react-router-dom';
 
-// ❌ NO importamos el Header global aquí
-
 // --- Layouts ---
 import AppLayout from './components/layout/AppLayout.jsx';
-import EspectadorLayout from './components/layout/EspectadorLayout.jsx'; // 1. Importa el nuevo layout
+import EspectadorLayout from './components/layout/EspectadorLayout.jsx'; 
 
 // --- Pages ---
 import Login from './pages/Login.jsx';
-import Perfil from './pages/Perfil.jsx';
+import Perfil from './pages/Perfil.jsx'; // 
 import ReportesAudiencia from './pages/admin/ReportesAudiencia.jsx';
 import SubidaMultimedia from './pages/editor-productor/SubidaMultimedia.jsx';
 import EstadoAprobacion from './pages/editor-productor/EstadoAprobacion.jsx';
@@ -26,54 +24,57 @@ import ABMPlataformas from './pages/admin/abm/ABMPlataformas.jsx';
 import ABMEmpleados from './pages/admin/abm/ABMEmpleados.jsx';
 import Errores from './pages/programador/errores.jsx';
 
-// --- Pages Espectador (Nuevas) ---
+// --- Pages Espectador ---
 import EnVivo from './pages/espectador/EnVivo.jsx';
 import EncuestasEspectador from './pages/espectador/EncuestasEspectador.jsx';
 
-// --- Context ---
+// --- 💥 1. IMPORTAR NUEVAS COSAS 💥 ---
 import { ParrillaProvider } from './context/ParrillaContext';
-
+// import { FeedProvider } from './context/FeedContext.jsx'; // <--- No lo usamos por ahora
+import CrearPublicacion from './pages/admin/CrearPublicacion.jsx'; // <--- NUEVO
 
 function App() {
   return (
     <>
-      <ParrillaProvider>
-        {/* ❌ El <Header /> global se elimina de aquí */}
+      {/* 💥 2. SACAMOS EL FEEDPROVIDER POR AHORA 💥 */}
+      {/* <FeedProvider> */}
+        <ParrillaProvider>
+          <Routes>
+            {/* --- Ruta de Login (Sin layout) --- */}
+            <Route path="/" element={<Login />} />
 
-        <Routes>
-          {/* --- Ruta de Login (Sin layout) --- */}
-          <Route path="/" element={<Login />} />
+            {/* --- Rutas de Espectador --- */}
+            <Route element={<EspectadorLayout />}>
+              <Route path="/en-vivo" element={<EnVivo />} />
+              <Route path="/encuestas-espectador" element={<EncuestasEspectador />} />
+            </Route>
 
-          {/* --- 2. RUTAS DE ESPECTADOR --- */}
-          {/* Usan el EspectadorLayout (header negro) */}
-          <Route element={<EspectadorLayout />}>
-            <Route path="/en-vivo" element={<EnVivo />} />
-            <Route path="/encuestas-espectador" element={<EncuestasEspectador />} />
-          </Route>
+            {/* --- Rutas de Admin --- */}
+            <Route element={<AppLayout />}>
+              <Route path="/perfil" element={<Perfil />} />
+              <Route path="/subida" element={<SubidaMultimedia />} />
+              <Route path="/estado/:id" element={<EstadoAprobacion />} />
+              <Route path="/parrilla" element={<ParrillaSemanal />} />
+              <Route path="/gestion" element={<GestionMultimedia />} />
+              <Route path="/reportes" element={<ReportesAudiencia />} />
 
-          {/* --- 3. RUTAS DE ADMIN --- */}
-          {/* Usan el AppLayout (header azul + sidebar) */}
-          <Route element={<AppLayout />}>
-            <Route path="/perfil" element={<Perfil />} />
-            <Route path="/subida" element={<SubidaMultimedia />} />
-            <Route path="/estado/:id" element={<EstadoAprobacion />} />
-            <Route path="/parrilla" element={<ParrillaSemanal />} />
-            <Route path="/gestion" element={<GestionMultimedia />} />
-            <Route path="/reportes" element={<ReportesAudiencia />} />
+              <Route path="/abm" element={<ABMMenu />} />
+              <Route path="/abm/programas" element={<ABMProgramas />} />
+              <Route path="/abm/segmentos" element={<ABMSegmentos />} />
+              <Route path="/abm/plataformas" element={<ABMPlataformas />} />
+              <Route path="/abm/empleados" element={<ABMEmpleados />} />
+              
+              <Route path="/armadoParrilla" element={<ArmadoParrilla />} />
+              <Route path="/controlEmision" element={<ControlEmision />} />
+              <Route path="/errores" element={<Errores />} />
 
-            <Route path="/abm" element={<ABMMenu />} />
-            <Route path="/abm/programas" element={<ABMProgramas />} />
-            <Route path="/abm/segmentos" element={<ABMSegmentos />} />
-            <Route path="/abm/plataformas" element={<ABMPlataformas />} />
-            <Route path="/abm/empleados" element={<ABMEmpleados />} />
-            
-            <Route path="/armadoParrilla" element={<ArmadoParrilla />} />
-            <Route path="/controlEmision" element={<ControlEmision />} />
-            <Route path="/errores" element={<Errores />} />
-          </Route>
+              {/* 💥 3. AÑADIR LA NUEVA RUTA DEL ADMIN 💥 */}
+              <Route path="/admin/crear-publicacion" element={<CrearPublicacion />} />
+            </Route>
 
-        </Routes>
-      </ParrillaProvider>
+          </Routes>
+        </ParrillaProvider>
+      {/* </FeedProvider> */}
     </>
   );
 }

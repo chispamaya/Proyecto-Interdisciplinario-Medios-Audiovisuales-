@@ -1,265 +1,337 @@
-/* src/pages/espectador/EnVivo.css */
-/* ❌ (Todos los estilos de .envivo-header, .envivo-logo, etc. se eliminaron) */
+/* =================================================
+   --- PALETA DE COLORES Y VARIABLES GLOBALES ---
+   ================================================= */
+:root {
+    /* Colores base (tomados del layout) */
+    --espectador-bg: #333;             
+    --espectador-header-accent: #00AFFF; 
+    --espectador-header-accent-hover: #008fcc;
+    
+    /* Colores de UI (nuevos) */
+    --espectador-card-bg: #222;       
+    --espectador-border: #444;       
+    --espectador-text-primary: #f5f5f5; 
+    --espectador-text-secondary: #aaa;   
+    --espectador-live-red: #e53935;     
+    --espectador-like-blue: #3498db;  /* Azul para Like */
+    --espectador-dislike-red: #e74c3c; /* Rojo para Dislike */
 
-/* --- Área de Contenido Principal (En Vivo) --- */
+    /* Tipografía */
+    --font-primary: 'Inter', sans-serif;
+}
+
+/* =================================================
+   --- PÁGINA "EN VIVO" (SIN CAMBIOS) ---
+   ================================================= */
+
 .envivo-main-content {
-  padding: 20px;
-  flex-grow: 1; 
-  display: flex; 
-  justify-content: center;
-  align-items: center; 
-}
-
-/* --- Contenedor Blanco "EN VIVO" --- */
-.envivo-container-white {
-  background-color: white; 
-  color: black;
-  border-radius: 8px; 
-  padding: 30px;
-  width: 100%; 
-  max-width: 1400px; 
-  margin: 0 auto; 
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3); 
-  background-image: url('/Diseño sin título (1).png');
-  background-size: cover; 
-  background-position: center; 
-  background-repeat: no-repeat; 
-  position: relative; 
-  overflow: hidden; 
-}
-
-.envivo-container-white::before {
-  content: '';
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background-color: rgba(255, 255, 255, 0.75);
-  z-index: 0; 
-}
-
-.envivo-title,
-.envivo-content-wrapper {
-  position: relative;
-  z-index: 1;
+    padding: 2rem;
+    width: 100%;
+    box-sizing: border-box;
+    max-width: 1400px;
+    margin: 0 auto;
 }
 
 .envivo-title {
-  color: #B22222; 
-  text-align: center;
-  font-size: 2.5rem;
-  font-weight: bold;
-  margin-top: 0;
-  margin-bottom: 25px;
-  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.1); 
+    font-size: 1.2rem;
+    color: var(--espectador-live-red);
+    font-weight: 700;
+    text-transform: uppercase;
+    text-align: left;
+    margin: 0 0 1rem 0;
+    display: flex;
+    align-items: center;
+    text-shadow: 0 0 10px rgba(229, 57, 53, 0.5);
 }
 
-.envivo-content-wrapper {
-   display: flex;
-   justify-content: center;
-   align-items: center;
+.envivo-title::before {
+    content: '•';
+    font-size: 2.5rem;
+    line-height: 1rem;
+    margin-right: 0.5rem;
+    color: var(--espectador-live-red);
+    animation: pulse 1.5s infinite;
+}
+
+@keyframes pulse {
+    0% { opacity: 1; }
+    50% { opacity: 0.3; }
+    100% { opacity: 1; }
+}
+
+.envivo-container-white {
+    background-color: transparent;
+    color: inherit;
+    border-radius: 0;
+    padding: 0;
+    width: 100%;
+    max-width: 100%;
+    box-shadow: none;
+    background-image: none;
+    position: static;
+}
+.envivo-container-white::before {
+    content: none;
 }
 
 .envivo-video-wrapper {
-  position: relative;
-  padding-top: 56.25%; 
-  height: 0;
-  overflow: hidden;
-  border-radius: 8px;
-  width: 75%; 
-  max-width: 900px; 
-  margin: 0 auto; 
-  border: 3px solid #444; 
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2);
+    position: relative;
+    padding-top: 56.25%; 
+    height: 0;
+    overflow: hidden;
+    border-radius: 12px;
+    width: 100%; 
+    max-width: 100%; 
+    margin: 0; 
+    border: 2px solid var(--espectador-border); 
+    background-color: #000;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
 }
 
 .envivo-iframe {
-  position: absolute;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  border: 0; 
-}
-
-/* --- Responsive (En Vivo) --- */
-@media (max-width: 900px) {
-  .envivo-video-wrapper {
-    width: 90%; 
-  }
-  .envivo-container-white {
-    padding: 25px;
-  }
-  .envivo-title {
-    font-size: 2rem;
-  }
-}
-
-@media (max-width: 768px) {
-  .envivo-main-content {
-    padding: 15px; 
-  }
-  .envivo-container-white {
-    padding: 20px;
-  }
-  .envivo-title {
-    font-size: 1.8rem;
-  }
-  .envivo-video-wrapper {
-    width: 95%; 
-    border-width: 2px;
-  }
-}
-
-@media (max-width: 480px) {
-  .envivo-title {
-    font-size: 1.5rem;
-    margin-bottom: 15px;
-  }
-  .envivo-video-wrapper {
-    width: 100%; 
-  }
-  .envivo-container-white {
-    padding: 15px;
-  }
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    border: 0;
 }
 
 
 /* =================================================
-===         ESTILOS PARA ENCUESTAS          ===
-=================================================
-*/
+   --- PÁGINA "FORO / ENCUESTAS" (ESTILO "X") ---
+   ================================================= */
 
-.encuestas-main-content {
-  padding: 20px;
-  flex-grow: 1;
-  display: flex;
-  justify-content: center;
-  align-items: flex-start; 
+/* --- Contenedor Principal (El Feed) --- */
+.encuestas-feed-container {
+    width: 100%;
+    max-width: 700px; /* Ancho típico de un feed */
+    margin: 0 auto;
+    padding: 2rem 1rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
-.poll-card-container {
-  background-color: #4a2a61; 
-  padding: 1.5rem;
-  border-radius: 12px;
-  width: 100%;
-  max-width: 450px;
-  color: white;
-  box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-  margin-top: 2rem; 
+/* --- Tarjeta de Post (Estilo Tweet) --- */
+.post-card {
+    background-color: var(--espectador-card-bg);
+    border: 1px solid var(--espectador-border);
+    border-radius: 12px;
+    padding: 1.25rem;
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
 }
 
-.poll-program-image {
-  width: 100%;
-  border-radius: 8px;
-  margin-bottom: 1.5rem;
-  background-color: #222; 
+/* --- Header del Post --- */
+.post-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 0.75rem;
 }
-
-.poll-form {
-  width: 100%;
+.post-avatar {
+    width: 48px;
+    height: 48px;
+    border-radius: 50%;
+    object-fit: cover;
+    border: 1px solid var(--espectador-border);
 }
-
-.poll-question {
-  font-size: 1.25rem;
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: 1.5rem;
-  color: #f0f0f0;
+.post-user-info {
+    display: flex;
+    flex-direction: column;
+    line-height: 1.3;
 }
-
-.poll-options-list {
-  display: flex;
-  flex-direction: column;
-  gap: 0.75rem; 
+.post-user-info strong {
+    font-size: 1rem;
+    color: var(--espectador-text-primary);
 }
-
-.poll-option {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  background-color: #8634AA; 
-  padding: 1rem;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: background-color 0.2s;
-  position: relative; 
-}
-
-.poll-option:hover {
-  background-color: #9b4bc7;
-}
-
-.poll-option-text {
-  font-weight: 600;
-  font-size: 1rem;
-}
-
-.poll-option input[type="radio"] {
-  opacity: 0;
-  position: absolute;
-  width: 0;
-  height: 0;
-}
-
-.poll-custom-radio {
-  width: 24px;
-  height: 24px;
-  border: 2px solid white;
-  border-radius: 50%;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  flex-shrink: 0;
-  margin-left: 1rem;
-}
-
-.poll-custom-radio::after {
-  content: '';
-  width: 14px;
-  height: 14px;
-  background-color: white;
-  border-radius: 50%;
-  transform: scale(0); 
-  transition: transform 0.15s ease-in-out;
-}
-
-.poll-option input[type="radio"]:checked + .poll-custom-radio::after {
-  transform: scale(1);
-}
-
-.poll-submit-btn {
-  width: 100%;
-  padding: 1rem;
-  margin-top: 1.5rem;
-  background-color: #FFA500; 
-  color: black;
-  font-size: 1.1rem;
-  font-weight: 700;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  transition: opacity 0.2s;
-}
-
-.poll-submit-btn:hover {
-  opacity: 0.9;
-}
-
-/* Responsive para Encuestas */
-@media (max-width: 480px) {
-  .encuestas-main-content {
-    padding: 15px;
-  }
-  .poll-card-container {
-    padding: 1rem;
-    margin-top: 1rem;
-  }
-  .poll-question {
-    font-size: 1.1rem;
-  }
-  .poll-option-text {
+.post-user-info span {
     font-size: 0.9rem;
-  }
+    color: var(--espectador-text-secondary);
+}
+
+/* --- Cuerpo del Post --- */
+.post-body {
+    padding-left: calc(48px + 0.75rem); /* Alinea con el header */
+    margin-top: -1rem; /* Sube un poco para pegarse */
+    display: flex;
+    flex-direction: column;
+    gap: 1rem;
+}
+.post-text {
+    font-size: 1rem;
+    color: var(--espectador-text-primary);
+    line-height: 1.5;
+    white-space: pre-wrap; /* Respeta saltos de línea y espacios */
+}
+.post-main-image {
+    width: 100%;
+    border-radius: 12px;
+    border: 1px solid var(--espectador-border);
+    object-fit: cover;
+    max-height: 400px;
+}
+
+/* --- Barra de Rating (Like/Dislike) --- */
+.rating-bar {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    width: 100%;
+}
+.rating-progress-bar {
+    flex-grow: 1;
+    height: 10px;
+    background-color: var(--espectador-dislike-red);
+    border-radius: 5px;
+    overflow: hidden;
+}
+.rating-progress-bar .progress {
+    height: 100%;
+    background-color: var(--espectador-like-blue);
+    border-radius: 5px;
+    transition: width 0.5s ease;
+}
+.rating-btn {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    font-size: 0.9rem;
+    font-weight: 600;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.rating-btn.like {
+    color: var(--espectador-like-blue);
+}
+.rating-btn.dislike {
+    color: var(--espectador-dislike-red);
+}
+.rating-btn:hover {
+    opacity: 0.8;
+}
+
+/* --- Encuesta (Estilo X) --- */
+.poll-form-x {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.poll-options-list-x {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+.poll-option-x {
+    display: flex;
+    border: 2px solid var(--espectador-border);
+    border-radius: 8px;
+    padding: 0.8rem 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.poll-option-x:hover {
+    background-color: #333;
+}
+.poll-option-text-x {
+    font-size: 1rem;
+    font-weight: 500;
+    color: var(--espectador-text-primary);
+}
+.poll-option-x input[type="radio"] {
+    display: none; /* Ocultamos el radio nativo */
+}
+.poll-submit-btn-x {
+    background: var(--espectador-header-accent);
+    color: white;
+    padding: 0.75rem 1rem;
+    border: none;
+    border-radius: 20px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: all 0.2s;
+    width: 100px; /* Botón más chico */
+    align-self: flex-start;
+}
+.poll-submit-btn-x:hover {
+    background: var(--espectador-header-accent-hover);
+}
+
+/* --- Footer del Post (Acciones) --- */
+.post-footer {
+    display: flex;
+    /* 💥 CAMBIO: Alinea los íconos restantes a la derecha 💥 */
+    justify-content: flex-end; 
+    padding-top: 0.75rem;
+    border-top: 1px solid var(--espectador-border);
+    margin-left: calc(48px + 0.75rem); /* Alinea con el cuerpo */
+}
+.footer-icon {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    background: none;
+    border: none;
+    color: var(--espectador-text-secondary);
+    font-size: 0.85rem;
+    cursor: pointer;
+    transition: color 0.2s;
+}
+.footer-icon:hover {
+    color: var(--espectador-header-accent); /* Se pone azul al pasar */
+}
+
+/* 💥 ELIMINAMOS TODOS LOS ESTILOS .new-post-* 💥 */
+
+
+/* =================================================
+   --- RESPONSIVE DESIGN (PARA EL FEED) ---
+   ================================================= */
+@media (max-width: 768px) {
+    .envivo-main-content {
+        padding: 1.5rem;
+    }
+    .encuestas-feed-container {
+        padding: 1.5rem 0.5rem;
+    }
+}
+
+@media (max-width: 480px) {
+    .envivo-main-content {
+        padding: 1rem;
+    }
+    .envivo-title {
+        font-size: 1rem;
+    }
+    
+    .encuestas-feed-container {
+        padding: 1rem 0;
+    }
+    
+    .post-card {
+        padding: 1rem;
+        border-radius: 0; /* Ocupa todo el ancho en móvil */
+        border-left: 0;
+        border-right: 0;
+    }
+    .post-avatar {
+        width: 40px;
+        height: 40px;
+    }
+    .post-body, .post-footer {
+        padding-left: 0;
+        margin-left: 0;
+    }
+    .post-text, .poll-option-text-x {
+        font-size: 0.95rem;
+    }
+    .footer-icon span {
+        display: none; /* Oculta contadores en móvil */
+    }
+    .post-footer {
+        padding-top: 0.5rem;
+    }
 }

@@ -13,10 +13,12 @@ import {
     AlertTriangle,// Errores
     Calendar,     // Armado de Parrilla
     UserCog,      // Gestión de Roles (ABM)
-    BarChart      // Reportes Audiencia
+    BarChart,     // Reportes Audiencia
+    PlusSquare    // 💥 NUEVO: Para Crear Publicación
 } from 'lucide-react';
 
 // --- Enlaces para Editor y Productor ---
+// (Sin cambios)
 const EditorLinks = ({ onClick }) => (
     <>
         <p className="panel-titulo">Panel de productores y editores</p>
@@ -48,6 +50,7 @@ const EditorLinks = ({ onClick }) => (
 );
 
 // --- Enlaces para el Programador ---
+// (Sin cambios)
 const ProgramadorLinks = ({ onClick }) => (
     <>
         <p className="panel-titulo">Panel de programacion</p>
@@ -73,6 +76,7 @@ const ProgramadorLinks = ({ onClick }) => (
 );
 
 // --- Enlaces solo para el Admin ---
+// (💥 MODIFICADO 💥)
 const AdminLinks = ({ onClick }) => (
     <>
         <p className="panel-titulo">ABM</p>
@@ -82,6 +86,7 @@ const AdminLinks = ({ onClick }) => (
                 <span className="label">Gestión de Roles</span>
             </Link>
         </li>
+        
         <p className="panel-titulo">REPORTES</p>
         <li>
             <Link to="/reportes" className="menu-item" onClick={onClick}>
@@ -89,11 +94,21 @@ const AdminLinks = ({ onClick }) => (
                 <span className="label">Reportes Audiencia</span>
             </Link>
         </li>
+
+        {/* 💥 NUEVO LINK AÑADIDO AQUÍ 💥 */}
+        <p className="panel-titulo">FORO</p>
+        <li>
+            <Link to="/admin/crear-publicacion" className="menu-item" onClick={onClick}>
+                <PlusSquare size={20} color="var(--texto)" style={{ marginRight: '10px' }} />
+                <span className="label">Crear Publicación</span>
+            </Link>
+        </li>
     </>
 );
 
 
 // --- Componente Principal del SideBar ---
+// (Sin cambios en la lógica)
 export default function SideBar({ idRol }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuClasses = `sub-header ${isMenuOpen ? 'visible' : ''}`;
@@ -102,7 +117,6 @@ export default function SideBar({ idRol }) {
         setIsMenuOpen(false);
     };
 
-    // Función para renderizar los enlaces según el rol
     const renderRoleLinks = () => {
         switch (idRol) {
             case 'admin':
@@ -124,20 +138,14 @@ export default function SideBar({ idRol }) {
 
     return (
         <>
-            {/* 💥 YA NO ESTÁ ENVUELTO EN <main> 💥 */}
-        
-            {/* Botón de Menú Hamburguesa (ahora controla el 'sub-header') */}
             {!isMenuOpen && (
                 <button className="menu" onClick={() => setIsMenuOpen(true)}>
                     <i className="bi bi-list"></i>
                 </button>
             )}
             
-            {/* Sidebar */}
             <aside className="sideBar">
-                {/* Esta 'nav' es la sidebar real en desktop, y el menú modal en móvil */}
                 <nav className={menuClasses}>
-                    {/* Botón de Cerrar en Móvil */}
                     <button className="menu btn-cerrar-movil" onClick={() => setIsMenuOpen(false)}>
                         <i className="bi bi-x-lg"></i>
                     </button>
@@ -149,9 +157,7 @@ export default function SideBar({ idRol }) {
                                 <span className="label">Perfil</span>
                             </Link>
                         </li>
-
                         {renderRoleLinks()}
-                        
                     </ul>
                 </nav>
             </aside>

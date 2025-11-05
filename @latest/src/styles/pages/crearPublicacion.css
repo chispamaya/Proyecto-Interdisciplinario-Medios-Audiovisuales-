@@ -1,0 +1,133 @@
+/* src/styles/pages/crearPublicacion.css */
+
+/* Usamos las variables de abmForm.css */
+:root {
+    --color-input-bg: #2a3d66;
+    --color-text-main: #ffffff;
+    --color-danger: #d9534f;
+    --color-link: #8634AA;
+    --color-border: #4a5a8a;
+}
+
+/* Checkbox para "Añadir Encuesta" */
+.form-group-checkbox {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.5rem 0;
+}
+.form-group-checkbox input[type="checkbox"] {
+    width: 20px;
+    height: 20px;
+    accent-color: var(--color-link); /* Color del check */
+    cursor: pointer;
+}
+.form-group-checkbox label {
+    margin-bottom: 0; /* Anula el label por defecto */
+    font-weight: 600;
+    cursor: pointer;
+}
+
+/* Caja que aparece cuando se activa la encuesta */
+.poll-creator-box {
+    border: 1px solid var(--color-border);
+    border-radius: 8px;
+    padding: 1.5rem;
+    margin-top: 1rem;
+    background-color: rgba(0,0,0,0.1);
+}
+.poll-creator-label {
+    font-weight: 600;
+    color: var(--color-text-main);
+    display: block;
+    margin-bottom: 1rem;
+}
+
+
+/* Textarea para la pregunta */
+.poll-textarea {
+    width: 100%;
+    padding: 0.8rem 1rem;
+    border: 1px solid transparent; 
+    border-radius: 8px;
+    background-color: var(--color-input-bg);
+    color: var(--color-text-main);
+    font-size: 1rem;
+    font-family: 'Inter', sans-serif;
+    resize: vertical; 
+    min-height: 80px;
+}
+
+.poll-textarea:focus {
+    outline: none;
+    border-color: var(--color-link); 
+    box-shadow: 0 0 0 3px rgba(134, 52, 170, 0.4); 
+}
+
+/* Contenedor para la lista de opciones de encuesta */
+.poll-options-creator {
+    display: flex;
+    flex-direction: column;
+    gap: 0.75rem;
+}
+
+.poll-option-input-group {
+    display: flex;
+    gap: 0.5rem;
+}
+
+.poll-option-input-group input {
+    /* El input ya tiene estilos de abmForm.css */
+    flex-grow: 1;
+}
+
+/* Botón para eliminar opción */
+.btn-remove-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-shrink: 0;
+    width: 45px;
+    height: 45px;
+    border: 1px solid var(--color-danger);
+    background-color: transparent;
+    color: var(--color-danger);
+    border-radius: 8px;
+    font-weight: 700;
+    font-size: 1rem;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-remove-option:hover {
+    background-color: var(--color-danger);
+    color: var(--color-text-main);
+}
+.btn-remove-option:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    background-color: transparent;
+    color: var(--color-danger);
+}
+
+/* Botón para añadir opción */
+.btn-add-option {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 100%;
+    margin-top: 1rem;
+    padding: 0.75rem 1rem;
+    background-color: transparent;
+    border: 2px dashed var(--color-link);
+    color: var(--color-link);
+    font-weight: 600;
+    font-size: 0.9rem;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+.btn-add-option:hover {
+    background-color: rgba(134, 52, 170, 0.1);
+    color: var(--color-text-main);
+    border-style: solid;
+}
