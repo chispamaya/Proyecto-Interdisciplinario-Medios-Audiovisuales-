@@ -3,13 +3,8 @@
     box-sizing: border-box;
 }
 
-/* ... (resto de estilos) ... */
-
 :root {
-
-    /* 💥 ASEGÚRATE QUE ESTE COLOR SEA #14213d 💥 */
     --sideBarHeader: #14213d; 
-
     --texto: #d8d5d5;
     --background: #212121;
     --botonV: #341243;
@@ -17,8 +12,13 @@
     --backgroundForm: #000000;
 }
 
-/* ... (demás estilos) ... */
+.app {
+    display: flex;
+    flex-direction: column;
+    height: 100vh; 
+}
 
+/* SIDEBAR - Desktop */
 .sideBar {
     background-color: var(--sideBarHeader);
     width: 20%;
@@ -26,262 +26,211 @@
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    /* 💥 CLAVE: La sidebar es FIJA y está a la izquierda */
+    
+    /* Esto está BIEN, se queda fijo */
     position: fixed;
     top: 0;
     left: 0;     
     z-index: 11; 
 }
-/* ... (resto de estilos de la sidebar) ... */
     
+/* 💥 REGLA ".main" ELIMINADA POR COMPLETO 💥 */
+/* Ya no existe el <main> que la usaba */
     
-    
-    
-    .app {
-        display: flex;
-        flex-direction: column;
-        height: 100vh; 
-    }
-    
-    
-    /* SIDEBAR - Desktop */
-    
-    .sideBar {
-        
-        background-color: var(--sideBarHeader);
-        width: 20%;
-        min-height: 100vh;
-        display: flex;
-        flex-direction: column;
-        justify-content: space-between;
-        position: fixed;
-        top: 0;
-        left: 0;     
-            z-index: 11; /* Asegura que siempre esté por encima */
-    
-    }
-    
-    .main {
-        margin-left: 20%;
-        padding: 20px;
-    }
-    
-    .lista {
-        list-style: none;
-        display: flex;
-        flex-direction: column;
-        height: 100%;
-        
-    }
-    
-    
-    
-    li {
-        position: relative;
-    }
-    li:hover{
-        background-color: #2a4a5e;
-        border-radius: 10px;
-        width: 100%;
-    }
-    .lista li.perfil {
-        margin-top: 30em;
-    }
-    
+.lista {
+    list-style: none;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+li {
+    position: relative;
+}
+li:hover{
+    background-color: #2a4a5e;
+    border-radius: 10px;
+    width: 100%;
+}
+.lista li.perfil {
+    margin-top: 30em; /* Esto es mucho, pero lo dejamos como estaba */
+}
+
+.material-symbols-outlined {
+    color: var(--texto);
+    position: absolute;
+    top: -4.5px;
+    left: 5px;
+}
+
+/* Esta regla ahora aplica al <nav> dentro del <aside> */
+.sub-header .lista {
+    list-style: none;
+    display: flex;
+    gap: 40px;
+    padding: 0;
+    margin: 0;
+    margin-top: 1em;
+    margin-left: 1em;
+}
+
+.sideBar .lista li a .label {
+    font-size:0.8em; 
+    color: #ffffffdc;
+    margin-left: 1em;
+}
+
+.lista li a {
+    color: inherit;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.nomostrar {
+    display: none;
+}
+
+a {
+    color: var(--texto);
+}
+
+.activo {
+    opacity: 1;
+}
+
+.no {
+    opacity: 0.5;
+}
+
+.menu {
+    display: none;
+}
+
+@media (max-width: 576px) {
     .material-symbols-outlined {
         color: var(--texto);
         position: absolute;
         top: -4.5px;
-        left: 5px;
+        left: -1em;
+    }
+    .header{
+        flex: 1;
     }
     
-    
-    
-    
-    .sub-header .lista {
-        list-style: none;
-        display: flex;
-        gap: 40px;
-        padding: 0;
-        margin: 0;
-        margin-top: 1em;
-        margin-left: 1em;
-    }
-    
-    .sideBar .lista li a .label {
-        font-size:0.8em; 
-        color: #ffffffdc;
-        margin-left: 1em;
-        
-    }
-    
-    
-    .lista li a {
-        color: inherit;
-        /* hereda el color del li */
-        text-decoration: none;
-        font-weight: bold;
-    }
-    
-    .nomostrar {
-        display: none;
-    }
-    
-    a {
+    /* El botón hamburguesa ahora está solo */
+    .menu {
+        display: block;
+        position: fixed; 
+        top: 10px; 
+        left: 10px;
+        z-index: 30; 
+        font-size: 1.5em;
+        border: none;
+        background-color: transparent;
         color: var(--texto);
+        cursor: pointer;
     }
-    
-    .activo {
-        opacity: 1;
+
+    /* El botón de cerrar (dentro del modal) */
+    .btn-cerrar-movil {
+        display: block;
+        font-size: 1.5em;
+        border: none;
+        background-color: transparent;
+        color: #ffffff;
+        cursor: pointer;
     }
-    
-    .no {
-        opacity: 0.5;
-    }
-    
-    .menu {
+
+    /* El <aside> en móvil está oculto */
+    .sideBar {
         display: none;
     }
-    
-    
-    
-    @media (max-width: 576px) {
-        .material-symbols-outlined {
-            color: var(--texto);
-            position: absolute;
-            top: -4.5px;
-            left: -1em;
-        }
-        .header{
-            flex: 1;
-        }
-        .main > button.menu { /* Selector más específico: apunta al <button class="menu"> dentro de <main> */
-            display: block !important; /* Fuerza la visibilidad */
-            
-            /* Mantenemos el posicionamiento fijo arriba */
-            position: fixed; 
-            top: 10px; 
-            left: 10px;
-            z-index: 30; 
-            
-            /* ... el resto de tus estilos (.menu) ... */
-            font-size: 1.5em;
-            border: none;
-            background-color: transparent;
-            color: var(--texto);
-            cursor: pointer;
-        }
-        .menu {
-            display: block;
-            font-size: 1.5em;
-            border: none;
-            background-color: transparent;
-            color: var(--texto);
-            cursor: pointer;
-            
-        }
-    
-        #cerrar {
-            display: block;
-            font-size: 1.5em;
-            border: none;
-            background-color: transparent;
-            color: #ffffff;
-            cursor: pointer;
-        }
-        .sub-header {
-            visibility: hidden;
-            display: flex;
-            flex-direction: column;
-            gap: 1rem;
-            position: fixed;
-            top: 0;
-            left: 0;
-            background-color: var(--sideBarHeader);
-            padding: 2rem;
-            bottom: 0;
-            left: 0;
-            box-shadow: 0 0 0 100vmax rgba(0, 0, 0, .5);
-            z-index: 12; /* <-- AÑADE ESTA LÍNEA */
-            overflow: hidden; /* <-- ¡AÑADE ESTA LÍNEA! */
-        }
-        .sub-header.visible #cerrar {
-            display: block !important;
-        }
-        .sideBar{
+
+    /* El <nav> se convierte en el modal */
+    .sub-header {
+        display: flex;
+        visibility: hidden;
+        flex-direction: column;
+        gap: 1rem;
+        position: fixed;
+        top: 0;
+        left: 0;
+        background-color: var(--sideBarHeader);
+        padding: 2rem;
         bottom: 0;
-       }
-        .sub-header.visible {
-            opacity: 1;
-            visibility: visible;
-        }
-    
-        .sub-header ul li a {
-            color: rgb(255, 251, 251);
-        }
-        .sub-header .lista {
-            flex-grow: 1;     /* Hace que la lista ocupe todo el espacio vertical restante */
-            overflow-y: auto; /* ¡AÑADE EL SCROLL VERTICAL! */
-            
-            /* Ajustes para que se vea bien */
-            padding-bottom: 2rem; /* Un poco de espacio al final de la lista */
-            margin-left: 0; /* Anula el margen de la versión de escritorio */
-            gap: 20px;        /* Un espacio más apropiado para la lista móvil */
-        }
-    
-    }
-    @media (min-width: 577px) { 
-        .label, .material-symbols-outlined{
-            font-size: 12px;
-        }
-        .material-symbols-outlined{
-            left: -0.5em;
-        }
-     }
-    
-    @media (min-width: 700px) {
-        .label, .material-symbols-outlined{
-            font-size: 15px;
-        }
-      }
-    
-    img {
-        max-width: 100%;
-        height: auto;
+        /* left: 0; (ya estaba) */
+        width: 100%; /* Ocupa todo el ancho */
+        box-shadow: 0 0 0 100vmax rgba(0, 0, 0, .5);
+        z-index: 12;
+        overflow: hidden;
     }
     
-    p {
-        font-size: 0.8em;
-        word-wrap: break-word;
+    .sub-header.visible {
+        opacity: 1;
+        visibility: visible;
     }
-    
-    
-    /* 💥 REGLAS DE ANULACIÓN CRÍTICAS AGREGADAS/MODIFICADAS 💥 */
-    
-    .sideBar button {
-        position: static; 
-        overflow: visible; 
-        animation: none !important; 
-        transition: none !important;
+
+    .sub-header ul li a {
+        color: rgb(255, 251, 251);
     }
-    
-    
-    .sideBar button:hover {
-        animation: none !important;
-        width: auto !important; 
+    .sub-header .lista {
+        flex-grow: 1;
+        overflow-y: auto;
+        padding-bottom: 2rem;
+        margin-left: 0;
+        gap: 20px;
     }
-    
-    
+}
+
+@media (min-width: 577px) { 
+    /* Esta regla se asegura que el <nav> (que es el .sub-header) se vea en desktop */
+    .sub-header {
+        visibility: visible;
+    }
+
+    .label, .material-symbols-outlined{
+        font-size: 12px;
+    }
+    .material-symbols-outlined{
+        left: -0.5em;
+    }
+ }
+
+@media (min-width: 700px) {
+    .label, .material-symbols-outlined{
+        font-size: 15px;
+    }
+  }
+
+img {
+    max-width: 100%;
+    height: auto;
+}
+
+p {
+    font-size: 0.8em;
+    word-wrap: break-word;
+}
+
+.sideBar button {
+    position: static; 
+    overflow: visible; 
+    animation: none !important; 
+    transition: none !important;
+}
+
+.sideBar button:hover {
+    animation: none !important;
+    width: auto !important; 
+}
+
+.sideBar button::after {
+    content: none !important; 
+}
+
+@media (max-width: 576px) {
     .menu {
-        display: none;
+        display: block; 
+        animation: none !important;
     }
-    .sideBar button::after {
-        content: none !important; 
-        
-    }
-    @media (max-width: 576px) {
-        .menu {
-            display: block; 
-            animation: none !important;
-        }
-    }
+}

@@ -17,10 +17,8 @@ import {
 } from 'lucide-react';
 
 // --- Enlaces para Editor y Productor ---
-// (Basado en tu código anterior, agrupados bajo "PANEL DE PRODUCTORES")
 const EditorLinks = ({ onClick }) => (
     <>
-        {/* Este es el título que se ve en el sidebar del Admin */}
         <p className="panel-titulo">Panel de productores y editores</p>
         <li>
             <Link to="/subida" className="menu-item" onClick={onClick}>
@@ -50,10 +48,8 @@ const EditorLinks = ({ onClick }) => (
 );
 
 // --- Enlaces para el Programador ---
-// (Basado en la imagen de Kevin Pintasso)
 const ProgramadorLinks = ({ onClick }) => (
     <>
-        {/* Título para el panel del Admin */}
         <p className="panel-titulo">Panel de programacion</p>
         <li>
             <Link to="/controlEmision" className="menu-item" onClick={onClick}>
@@ -62,7 +58,6 @@ const ProgramadorLinks = ({ onClick }) => (
             </Link>
         </li>
         <li>
-            {/* ¡Nuevo link basado en tu imagen! */}
             <Link to="/errores" className="menu-item" onClick={onClick}>
                 <AlertTriangle size={20} color="var(--texto)" style={{ marginRight: '10px' }} />
                 <span className="label">Errores</span>
@@ -78,7 +73,6 @@ const ProgramadorLinks = ({ onClick }) => (
 );
 
 // --- Enlaces solo para el Admin ---
-// (Basado en la imagen de Facundo Bekar)
 const AdminLinks = ({ onClick }) => (
     <>
         <p className="panel-titulo">ABM</p>
@@ -88,15 +82,6 @@ const AdminLinks = ({ onClick }) => (
                 <span className="label">Gestión de Roles</span>
             </Link>
         </li>
-        {/* Puedes añadir más links de ABM aquí, ej:
-        <li>
-            <Link to="/abm-empleados" className="menu-item" onClick={onClick}>
-                <Users size={20} ... />
-                <span className="label">ABM Empleados</span>
-            </Link>
-        </li>
-        */}
-        
         <p className="panel-titulo">REPORTES</p>
         <li>
             <Link to="/reportes" className="menu-item" onClick={onClick}>
@@ -119,66 +104,57 @@ export default function SideBar({ idRol }) {
 
     // Función para renderizar los enlaces según el rol
     const renderRoleLinks = () => {
-        // Asumiendo que idRol es un string: 'admin', 'programador', 'editor'
         switch (idRol) {
-            
-            // EL ADMIN VE TODO:
             case 'admin':
                 return (
                     <>
-                        {/* Incluye los enlaces de Admin, Editor y Programador */}
                         <AdminLinks onClick={handleLinkClick} />
                         <EditorLinks onClick={handleLinkClick} />
                         <ProgramadorLinks onClick={handleLinkClick} />
                     </>
                 );
-            
             case 'programador':
                 return <ProgramadorLinks onClick={handleLinkClick} />;
-            
             case 'editor':
             case 'productor':
             default:
-                // Muestra los enlaces de editor por defecto
                 return <EditorLinks onClick={handleLinkClick} />;
         }
     };
 
     return (
         <>
-            <main className="main">
-                {/* Botón de Menú Hamburguesa (sin cambios) */}
-                {!isMenuOpen && (
-                    <button className="menu" onClick={() => setIsMenuOpen(true)}>
-                        <i className="bi bi-list"></i>
+            {/* 💥 YA NO ESTÁ ENVUELTO EN <main> 💥 */}
+        
+            {/* Botón de Menú Hamburguesa (ahora controla el 'sub-header') */}
+            {!isMenuOpen && (
+                <button className="menu" onClick={() => setIsMenuOpen(true)}>
+                    <i className="bi bi-list"></i>
+                </button>
+            )}
+            
+            {/* Sidebar */}
+            <aside className="sideBar">
+                {/* Esta 'nav' es la sidebar real en desktop, y el menú modal en móvil */}
+                <nav className={menuClasses}>
+                    {/* Botón de Cerrar en Móvil */}
+                    <button className="menu btn-cerrar-movil" onClick={() => setIsMenuOpen(false)}>
+                        <i className="bi bi-x-lg"></i>
                     </button>
-                )}
-                
-                {/* Sidebar */}
-                <aside className="sideBar">
-                    <nav className={menuClasses}>
-                        {/* Botón de Cerrar en Móvil (sin cambios) */}
-                        <button className="menu btn-cerrar-movil" onClick={() => setIsMenuOpen(false)}>
-                            <i className="bi bi-x-lg"></i>
-                        </button>
 
-                        <ul className="lista">
-                            
-                            {/* Link de PERFIL (común para todos) */}
-                            <li>
-                                <Link to="/perfil" className="menu-item " onClick={handleLinkClick}>
-                                    <Users size={20} color="var(--texto)" style={{ marginRight: '10px' }} />
-                                    <span className="label">Perfil</span>
-                                </Link>
-                            </li>
+                    <ul className="lista">
+                        <li>
+                            <Link to="/perfil" className="menu-item " onClick={handleLinkClick}>
+                                <Users size={20} color="var(--texto)" style={{ marginRight: '10px' }} />
+                                <span className="label">Perfil</span>
+                            </Link>
+                        </li>
 
-                            {/* Aquí se cargan los links según el rol */}
-                            {renderRoleLinks()}
-                            
-                        </ul>
-                    </nav>
-                </aside>
-            </main>
+                        {renderRoleLinks()}
+                        
+                    </ul>
+                </nav>
+            </aside>
         </>
     );
 }

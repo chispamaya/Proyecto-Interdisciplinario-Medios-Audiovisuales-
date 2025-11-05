@@ -13,47 +13,41 @@ body{
     width: 100%;
 }
 
-/* 2. Área de Contenido (Ahora es flexible) */
+/* 2. Área de Contenido (Ajuste clave) */
 .content-area {
-    /* 💥 1. QUITAMOS 'width: 80%' 💥 */
-    /* width: 80%; */ 
+    /* 💥 CAMBIO: Usa ancho y margen 💥 */
+    width: 80%;
+    margin-left: 20%; /* <-- ESTO EMPUJA EL CONTENIDO y elimina el espacio */
     
-    /* 💥 2. AÑADIMOS 'flex-grow: 1' 💥 */
-    /* Esto hace que ocupe el espacio restante (100% - 20% de la sidebar) */
-    flex-grow: 1; 
-    
-    min-width: 0; /* Previene desbordamiento */
+    min-width: 0; 
     min-height: 100vh; 
     
-    /* 💥 3. QUITAMOS EL PADDING de aquí 💥 */
-    /* padding: 30px; */ 
-
-    /* 4. Mantenemos esto para apilar Header y main */
     display: flex;
     flex-direction: column;
 
-    /* 5. Fondo azul para que "pegue" con el header */
     background-color: #14213d; /* var(--sideBarHeader) */
 }
 
 /* Wrapper para el contenido de la página (Outlet) */
 .page-content-wrapper {
     flex-grow: 1; 
-    padding: 30px; /* Padding para el contenido */
+    
+    /* 💥 CAMBIO: Quita el espacio azul de arriba */
+    padding: 0; 
+    
     overflow-y: auto; 
-    /* 💥 Fondo gris para las páginas (Perfil, ABM, etc.) */
     background-color: #212121; /* var(--background) */
 }
 
 /* Media query para móvil */
 @media (max-width: 576px) {
     .content-area {
-        /* En móvil, la sidebar no está, así que el content-area ocupa todo */
+        /* En móvil, el sidebar no está, así que el content-area ocupa todo */
         width: 100%;
-        padding-left: 0; /* Reseteo por si acaso */
+        margin-left: 0; /* 💥 Resetea el margen en móvil */
     }
     
     .page-content-wrapper {
-        padding: 15px;
+        padding: 0; /* Mantiene el padding en 0 */
     }
 }
