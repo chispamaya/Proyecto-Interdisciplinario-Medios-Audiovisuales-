@@ -6,39 +6,47 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
 import java.time.LocalDate;
+import java.util.List;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import static org.junit.jupiter.api.Assertions.*;
 
-/**
- * Prueba de INTEGRACIÓN para DiaRepository.
- */
 @SpringBootTest
-public class DiaRepositoryTests {
+class DiaRepositoryTests {
 
     @Autowired
     private DiaRepository diaRepository;
 
-
-    private static final Long ID_USUARIO_AUDITORIA = 1L;
-    private static final Long ID_PROGRAMA_PRUEBA = 1L;
+    // IDs de prueba (Deben existir en la BD por el Paso 0)
+    private static final Long ID_USUARIO_AUDITORIA = 8L; // Admin
+    private static final Long ID_PROGRAMA_PRUEBA = 1L;   // Programa de prueba
 
     @Test
-    void testCrearDia() {
+    void probarCrearListarYBorrarDia() {
         System.out.println("--- Probando DiaRepository ---");
 
-        // 1. Preparamos el DTO
-        Dia dia = new Dia();
-        dia.setDia(LocalDate.now()); // Asigna la fecha de hoy
-        dia.setIdPrograma(ID_PROGRAMA_PRUEBA);
+        // 1. Probamos CREAR (SP 'cd')
+        System.out.println("Probando SP 'cd' (crearDia)...");
+        Dia nuevoDia = new Dia();
+        nuevoDia.setDia(LocalDate.now()); // Usamos el día de hoy
+        nuevoDia.setIdPrograma(ID_PROGRAMA_PRUEBA);
 
-        // 2. Llamamos al SP 'cd'
-        String msgCrear = diaRepository.crearDia(dia, ID_USUARIO_AUDITORIA);
-
-        // 3. Verificamos el mensaje de éxito del SP 'cd'
+        String msgCrear = diaRepository.crearDia(nuevoDia, ID_USUARIO_AUDITORIA);
         assertEquals("Dia asignado al programa con éxito.", msgCrear);
-        System.out.println("Prueba 'cd' (Crear Dia) exitosa.");
 
-        // NOTA: No probamos 'bd' (borrar) porque 'cd' no nos devuelve
-        // el ID del día que acaba de crear.
+        // 2. Probamos LISTAR (SP 's')
+        System.out.println("Probando SP 's' (listarTodosLosDias)...");
+        List<Dia> lista = diaRepository.listarTodosLosDias();
+        assertNotNull(lista);
+        assertTrue(lista.size() > 0);
+        System.out.println("Dias encontrados: " + lista.size());
+
+        // 3. Probamos BORRAR (SP 'bd')
+        Long idParaBorrar = lista.get(lista.size() - 1).getId();
+        System.out.println("Probando SP 'bd' (borrarDia) con ID: " + idParaBorrar);
+        
+        String msgBorrar = diaRepository.borrarDia(idParaBorrar, ID_USUARIO_AUDITORIA);
+        assertEquals("Dia eliminado con éxito.", msgBorrar);
+
+        System.out.println("--- PRUEBA DE DIA COMPLETADA ---");
     }
 }

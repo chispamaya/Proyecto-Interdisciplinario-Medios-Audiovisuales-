@@ -8,28 +8,24 @@ import org.springframework.boot.test.context.SpringBootTest;
 import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.assertNotNull;
-import static org.junit.jupiter.api.Assertions.assertTrue;
 
-/**
- * Prueba de INTEGRACIÓN para AuditoriaRepository.
- */
 @SpringBootTest
-public class AuditoriaRepositoryTests {
+class AuditoriaRepositoryTests {
 
     @Autowired
     private AuditoriaRepository auditoriaRepository;
 
     @Test
-    void testObtenerTodasLasAuditorias() {
-        System.out.println("--- Probando AuditoriaRepository ---");
+    void probarListarAuditorias() {
+        System.out.println("--- Probando AuditoriaRepository (SP 's') ---");
 
-        // 1. Llamamos al SP 's' para leer la tabla
-        List<Auditoria> auditorias = auditoriaRepository.obtenerTodasLasAuditorias();
+        // Simplemente llamamos al método de listar
+        List<Auditoria> listaDeAuditorias = auditoriaRepository.obtenerTodasLasAuditorias();
 
-        // 2. Verificamos que la lista no sea nula (que el RowMapper funcionó)
-        assertNotNull(auditorias, "La lista de auditorías no puede ser nula.");
-        
-        // Esta prueba es simple: solo verifica que la tabla (llena por triggers) se puede leer.
-        System.out.println("Prueba 's' (Leer Auditoria) exitosa. Registros encontrados: " + auditorias.size());
+        // Verificamos que la lista no sea nula.
+        // (Puede estar vacía si no se han ejecutado otras pruebas que disparen los triggers)
+        assertNotNull(listaDeAuditorias);
+
+        System.out.println("Prueba de listado de auditoría exitosa. Registros encontrados: " + listaDeAuditorias.size());
     }
 }

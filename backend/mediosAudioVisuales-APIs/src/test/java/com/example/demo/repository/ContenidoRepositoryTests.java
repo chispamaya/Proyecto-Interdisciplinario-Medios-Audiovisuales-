@@ -5,39 +5,49 @@ import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
 
-import static org.junit.jupiter.api.Assertions.assertEquals;
+import java.util.List;
 
-/**
- * Prueba de INTEGRACIÓN para ContenidoRepository.
- */
+import static org.junit.jupiter.api.Assertions.*;
+
 @SpringBootTest
-public class ContenidoRepositoryTests {
+class ContenidoRepositoryTests {
 
     @Autowired
     private ContenidoRepository contenidoRepository;
 
-    // --- IDs de prueba ---
-    private static final Long ID_USUARIO_AUDITORIA = 1L; // Usuario que ejecuta
-    private static final Long ID_USUARIO_PRUEBA = 1L;    // Dueño del contenido (asumir que existe)
+    // IDs de prueba (Deben existir en la BD)
+    private static final Long ID_USUARIO_AUDITORIA = 8L; // Admin
+    private static final Long ID_USUARIO_CREADOR = 1L;   // Productor/Editor
 
     @Test
-    void testCrearContenido() {
+    void probarCrearListarYBorrarContenido() {
         System.out.println("--- Probando ContenidoRepository ---");
 
-        // 1. Preparamos el DTO
-        Contenido c = new Contenido();
-        c.setFormato("mp4_test_junit");
-        c.setRutaArchivo("/junit/test.mp4");
-        c.setIdUsuario(ID_USUARIO_PRUEBA);
+        // 1. Probamos CREAR (SP 'cc')
+        System.out.println("Probando SP 'cc' (crearContenido)...");
+        Contenido nuevoContenido = new Contenido();
+        nuevoContenido.setFormato("mp3");
+        nuevoContenido.setRutaArchivo("/audio/test-" + System.currentTimeMillis() + ".mp3");
+        nuevoContenido.setIdUsuario(ID_USUARIO_CREADOR);
 
-        // 2. Llamamos al SP 'cc'
-        String msgCrear = contenidoRepository.crearContenido(c, ID_USUARIO_AUDITORIA);
-        
-        // 3. Verificamos el mensaje de éxito del SP 'cc'
+        String msgCrear = contenidoRepository.crearContenido(nuevoContenido, ID_USUARIO_AUDITORIA);
         assertEquals("Contenido subido con éxito.", msgCrear);
-        System.out.println("Prueba 'cc' (Crear Contenido) exitosa.");
 
-        // NOTA: No probamos 'bc' (borrar) aquí porque 'cc' no nos devuelve
-        // el ID del contenido que acaba de crear. 
+        // 2. Probamos LISTAR (SP 's')
+        System.out.println("Probando SP 's' (listarTodosLosContenidos)...");
+        List<Contenido> lista = contenidoRepository.listarTodosLosContenidos();
+        assertNotNull(lista);
+        assertTrue(lista.size() > 0);
+        System.out.println("Contenidos encontrados: " + lista.size());
+
+        // 3. Probamos BORRAR (SP 'bc')
+        // Obtenemos el ID del contenido que acabamos de crear
+        Long idParaBorrar = lista.get(lista.size() - 1).getId();
+        System.out.println("Probando SP 'bc' (borrarContenido) con ID: " + idParaBorrar);
+        
+        String msgBorrar = contenidoRepository.borrarContenido(idParaBorrar, ID_USUARIO_AUDITORIA);
+        assertEquals("Contenido borrado con éxito.", msgBorrar);
+
+        System.out.println("--- PRUEBA DE CONTENIDO COMPLETADA ---");
     }
 }
