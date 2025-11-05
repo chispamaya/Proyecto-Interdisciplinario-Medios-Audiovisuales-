@@ -3,26 +3,57 @@
 body{
     margin: 0;
     padding: 0;
-    font-family: 'Inter', sans-serif; /* Usamos 'Inter' como ejemplo */
+    font-family: 'Inter', sans-serif;
+    background-color: #212121; /* Fondo gris oscuro general */
 }
 
 .app-container-con-sidebar {
-    display: flex; /* Ayuda a estructurar el Sidebar al lado del contenido, aunque el Sidebar sea fixed */
+    display: flex; 
     min-height: 100vh;
     width: 100%;
 }
 
-/* 2. Área de Contenido (SOLUCIÓN AL PROBLEMA DE SUPERPOSICIÓN) */
+/* 2. Área de Contenido (Ahora es flexible) */
 .content-area {
-    /* 💥 REGLA CRÍTICA: Empuja el contenido el 20% hacia la derecha 💥 */
-    /* 💥 REGLA CRÍTICA: Asegura que el contenido ocupe el espacio restante (80%) 💥 */
-    width: 80%; 
-    min-width: 0; /* <-- Y AÑADE ESTO */
-    /* Para evitar que el contenido "suba" a pesar del margen */
+    /* 💥 1. QUITAMOS 'width: 80%' 💥 */
+    /* width: 80%; */ 
+    
+    /* 💥 2. AÑADIMOS 'flex-grow: 1' 💥 */
+    /* Esto hace que ocupe el espacio restante (100% - 20% de la sidebar) */
+    flex-grow: 1; 
+    
+    min-width: 0; /* Previene desbordamiento */
     min-height: 100vh; 
     
-    /* Espaciado interno para que el contenido no pegue a los bordes */
-    padding: 30px; 
+    /* 💥 3. QUITAMOS EL PADDING de aquí 💥 */
+    /* padding: 30px; */ 
+
+    /* 4. Mantenemos esto para apilar Header y main */
+    display: flex;
+    flex-direction: column;
+
+    /* 5. Fondo azul para que "pegue" con el header */
+    background-color: #14213d; /* var(--sideBarHeader) */
+}
+
+/* Wrapper para el contenido de la página (Outlet) */
+.page-content-wrapper {
+    flex-grow: 1; 
+    padding: 30px; /* Padding para el contenido */
+    overflow-y: auto; 
+    /* 💥 Fondo gris para las páginas (Perfil, ABM, etc.) */
+    background-color: #212121; /* var(--background) */
+}
+
+/* Media query para móvil */
+@media (max-width: 576px) {
+    .content-area {
+        /* En móvil, la sidebar no está, así que el content-area ocupa todo */
+        width: 100%;
+        padding-left: 0; /* Reseteo por si acaso */
+    }
     
-    /* Si tienes un Header fijo, quizás necesites un padding-top adicional */
+    .page-content-wrapper {
+        padding: 15px;
+    }
 }

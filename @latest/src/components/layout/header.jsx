@@ -1,5 +1,5 @@
 import logoImage from '../../assets/logo.png';
-import '../../styles/layout/header.css';
+import '../../styles/layout/header.css'; // <-- Importa el CSS
 
 
 export function Header() {

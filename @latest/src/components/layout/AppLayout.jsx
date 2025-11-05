@@ -1,19 +1,26 @@
 import React from 'react';
-import { Outlet } from 'react-router-dom'; // 👈 Necesario para rutas anidadas
-import SideBar from './sidebar.jsx'; // Importa tu SideBar
+import { Outlet } from 'react-router-dom'; 
+import SideBar from './sidebar.jsx'; 
+import { Header } from './header.jsx'; // 1. Importa el Header
 
 export default function AppLayout() {
   return (
     <div className="app-container-con-sidebar">
       
+      {/* 2. La Sidebar es un item flex (ya no es 'fixed') */}
       <SideBar idRol="admin" />
       
+      {/* 3. El content-area es el otro item flex (ocupa el resto) */}
       <div className="content-area">
-        <Outlet /> 
+        
+        {/* 4. El Header está DENTRO de content-area */}
+        <Header /> 
+
+        {/* 5. El Outlet (tu página) está en un 'main' con fondo gris */}
+        <main className="page-content-wrapper">
+          <Outlet /> 
+        </main>
       </div>
     </div>
   );
 }
-
-// ### ¿Qué es `Outlet`?
-// `Outlet` es un componente de React Router. Cuando usas rutas anidadas, el `Outlet` marca dónde debe renderizarse el **componente de la ruta hija**. En este caso, si la ruta es `/inicio`, el `Outlet` se reemplaza por el contenido de la página de inicio.
