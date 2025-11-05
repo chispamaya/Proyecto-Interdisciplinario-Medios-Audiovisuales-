@@ -13,8 +13,8 @@ import {
     AlertTriangle,// Errores
     Calendar,     // Armado de Parrilla
     UserCog,      // Gestión de Roles (ABM)
-    BarChart,     // Reportes Audiencia
-    PlusSquare    // 💥 NUEVO: Para Crear Publicación
+    BarChart     // Reportes Audiencia
+    // 💥 PlusSquare ELIMINADO 💥
 } from 'lucide-react';
 
 // --- Enlaces para Editor y Productor ---
@@ -95,14 +95,7 @@ const AdminLinks = ({ onClick }) => (
             </Link>
         </li>
 
-        {/* 💥 NUEVO LINK AÑADIDO AQUÍ 💥 */}
-        <p className="panel-titulo">FORO</p>
-        <li>
-            <Link to="/admin/crear-publicacion" className="menu-item" onClick={onClick}>
-                <PlusSquare size={20} color="var(--texto)" style={{ marginRight: '10px' }} />
-                <span className="label">Crear Publicación</span>
-            </Link>
-        </li>
+        {/* 💥 LINK ELIMINADO 💥 */}
     </>
 );
 

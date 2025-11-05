@@ -31,7 +31,7 @@ import EncuestasEspectador from './pages/espectador/EncuestasEspectador.jsx';
 // --- 💥 1. IMPORTAR NUEVAS COSAS 💥 ---
 import { ParrillaProvider } from './context/ParrillaContext';
 // import { FeedProvider } from './context/FeedContext.jsx'; // <--- No lo usamos por ahora
-import CrearPublicacion from './pages/admin/CrearPublicacion.jsx'; // <--- NUEVO
+// import CrearPublicacion from './pages/admin/CrearPublicacion.jsx'; // <--- ELIMINADO
 
 function App() {
   return (
@@ -68,8 +68,8 @@ function App() {
               <Route path="/controlEmision" element={<ControlEmision />} />
               <Route path="/errores" element={<Errores />} />
 
-              {/* 💥 3. AÑADIR LA NUEVA RUTA DEL ADMIN 💥 */}
-              <Route path="/admin/crear-publicacion" element={<CrearPublicacion />} />
+              {/* 💥 3. RUTA ELIMINADA 💥 */}
+              {/* <Route path="/admin/crear-publicacion" element={<CrearPublicacion />} /> */}
             </Route>
 
           </Routes>
