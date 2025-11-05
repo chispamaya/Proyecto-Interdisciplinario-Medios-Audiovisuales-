@@ -1154,9 +1154,8 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (11, 6);
 
 INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7); 
 
-INSERT IGNORE INTO plataforma (id, nombre, tipo) VALUES (1, 'PlataformaPrueba', 'TV');
 
-INSERT IGNORE INTO programas (id, nombre, idPlataforma) VALUES (1, 'ProgramaDePrueba', 1);
+
 
 
 
