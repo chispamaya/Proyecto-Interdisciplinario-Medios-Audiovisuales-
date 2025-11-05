@@ -157,6 +157,8 @@ CREATE PROCEDURE s(IN tabla VARCHAR(50), IN id1 INT, OUT mensaje VARCHAR(50))
 		SELECT * FROM usuario WHERE id = id1;
 	 ELSEIF tabla = 'programas' AND id1 IS NOT NULL THEN
 		SELECT * FROM programas WHERE id = id1;
+	 ELSEIF tabla = 'rol' THEN
+		 SELECT DISTINCT nombre FROM rol;
 	 ELSEIF tabla IN('Productor/Editor', 'Programador', 'Administrador') THEN
 		 SELECT tipoPermiso FROM permisos WHERE id IN
 		(SELECT idPermiso FROM permisos_rol WHERE idRol IN
@@ -1146,6 +1148,7 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (11, 6);
 
 
 INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7); 
+
 
 
 
