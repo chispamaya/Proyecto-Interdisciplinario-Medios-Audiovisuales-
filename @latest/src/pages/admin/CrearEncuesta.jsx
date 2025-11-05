@@ -1,17 +1,17 @@
-// src/pages/admin/CrearPublicacion.jsx
+// src/pages/admin/CrearEncuesta.jsx
 
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 
 // 1. Importamos los estilos del ABM (para el layout) y los nuevos
 import '../../styles/components/abmForm.css'; 
-import '../../styles/pages/crearPublicacion.css'; // <--- Este es el próximo archivo
+import '../../styles/pages/crearPublicacion.css'; // <--- Importamos el CSS
 
 // 2. Importamos íconos para la UI
 import { Plus, X } from 'lucide-react';
 import logoAdmin from '../../assets/logo.png'; // Avatar por defecto
 
-export default function CrearPublicacion() {
+export default function CrearEncuesta() {
     const navigate = useNavigate();
 
     // Estado para los 3 componentes del post

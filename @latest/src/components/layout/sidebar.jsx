@@ -13,8 +13,8 @@ import {
     AlertTriangle,// Errores
     Calendar,     // Armado de Parrilla
     UserCog,      // Gestión de Roles (ABM)
-    BarChart     // Reportes Audiencia
-    // 💥 PlusSquare ELIMINADO 💥
+    BarChart,     // Reportes Audiencia
+    PlusSquare    // 💥 AÑADIDO DE VUELTA 💥
 } from 'lucide-react';
 
 // --- Enlaces para Editor y Productor ---
@@ -79,6 +79,15 @@ const ProgramadorLinks = ({ onClick }) => (
 // (💥 MODIFICADO 💥)
 const AdminLinks = ({ onClick }) => (
     <>
+        {/* 💥 SECCIÓN AÑADIDA 💥 */}
+        <p className="panel-titulo">CONTENIDO</p>
+        <li>
+            <Link to="/admin/crear-publicacion" className="menu-item" onClick={onClick}>
+                <PlusSquare size={20} color="var(--texto)" style={{ marginRight: '10px' }} />
+                <span className="label">Crear Publicación</span>
+            </Link>
+        </li>
+
         <p className="panel-titulo">ABM</p>
         <li>
             <Link to="/abm" className="menu-item" onClick={onClick}>
@@ -94,14 +103,12 @@ const AdminLinks = ({ onClick }) => (
                 <span className="label">Reportes Audiencia</span>
             </Link>
         </li>
-
-        {/* 💥 LINK ELIMINADO 💥 */}
     </>
 );
 
 
 // --- Componente Principal del SideBar ---
-// (Sin cambios en la lógica)
+// (Sin cambios en la lógica, se mantienen los iconos 'bi')
 export default function SideBar({ idRol }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuClasses = `sub-header ${isMenuOpen ? 'visible' : ''}`;

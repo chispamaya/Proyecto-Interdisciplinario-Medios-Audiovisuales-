@@ -28,15 +28,16 @@ import Errores from './pages/programador/errores.jsx';
 import EnVivo from './pages/espectador/EnVivo.jsx';
 import EncuestasEspectador from './pages/espectador/EncuestasEspectador.jsx';
 
-// --- 💥 1. IMPORTAR NUEVAS COSAS 💥 ---
+// --- 徴 1. IMPORTAR NUEVAS COSAS 徴 ---
 import { ParrillaProvider } from './context/ParrillaContext';
 // import { FeedProvider } from './context/FeedContext.jsx'; // <--- No lo usamos por ahora
 // import CrearPublicacion from './pages/admin/CrearPublicacion.jsx'; // <--- ELIMINADO
+import CrearEncuesta from './pages/admin/CrearEncuesta.jsx'; // 💥 AÑADIDO 💥
 
 function App() {
   return (
     <>
-      {/* 💥 2. SACAMOS EL FEEDPROVIDER POR AHORA 💥 */}
+      {/* 徴 2. SACAMOS EL FEEDPROVIDER POR AHORA 徴 */}
       {/* <FeedProvider> */}
         <ParrillaProvider>
           <Routes>
@@ -68,8 +69,9 @@ function App() {
               <Route path="/controlEmision" element={<ControlEmision />} />
               <Route path="/errores" element={<Errores />} />
 
-              {/* 💥 3. RUTA ELIMINADA 💥 */}
+              {/* 徴 3. RUTA AÑADIDA 徴 */}
               {/* <Route path="/admin/crear-publicacion" element={<CrearPublicacion />} /> */}
+              <Route path="/admin/crear-publicacion" element={<CrearEncuesta />} /> {/* 💥 AÑADIDO 💥 */}
             </Route>
 
           </Routes>
