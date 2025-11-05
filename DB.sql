@@ -157,6 +157,10 @@ CREATE PROCEDURE s(IN tabla VARCHAR(50), IN id1 INT, OUT mensaje VARCHAR(50))
 		SELECT * FROM usuario WHERE id = id1;
 	 ELSEIF tabla = 'programas' AND id1 IS NOT NULL THEN
 		SELECT * FROM programas WHERE id = id1;
+	 ELSEIF tabla IN('Productor/Editor', 'Programador', 'Administrador') THEN
+		 SELECT tipoPermiso FROM permisos WHERE id IN
+		(SELECT idPermiso FROM permisos_rol WHERE idRol IN
+		(SELECT id FROM rol WHERE nombre = tabla));
 	 ELSEIF tabla = 'encuesta' AND id1 IS NOT NULL THEN
 	    SELECT 
 	        e.id AS idEncuesta, 
@@ -178,7 +182,7 @@ CREATE PROCEDURE s(IN tabla VARCHAR(50), IN id1 INT, OUT mensaje VARCHAR(50))
 	 END IF;
    SET mensaje = 'Mostrando datos.'; 
  END //
- 
+
  CREATE PROCEDURE cpr(IN categoria1 varchar(50), IN nombre1 varchar(50), IN horaInicio1 TIME, IN horaFin1 TIME, IN idP1 INT, IN formatoArchivo1 varchar(50), IN rutaArchivo1 varchar(500), IN idUs int, OUT mensaje varchar(50))
  BEGIN
 	DECLARE error varchar(500);
@@ -497,9 +501,6 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	COMMIT;
    SET mensaje = 'Datos de la emisión actualizados con éxito.';
  END //
-
- 
- 
  
  CREATE PROCEDURE cc(IN formato1 varchar(50), IN rutaArchivo1 varchar(500), IN idU1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
@@ -730,14 +731,6 @@ CREATE PROCEDURE vo(IN idO int, IN idU int, IN idE int, IN idUs int, OUT mensaje
     END IF;
     COMMIT; 
 END //
-
- CREATE PROCEDURE vp(IN nombreRol varchar(50), OUT mensaje varchar(50))
- BEGIN
-	 SELECT tipoPermiso FROM permisos WHERE id IN
-	(SELECT idPermiso FROM permisos_rol WHERE idRol IN
-	(SELECT id FROM rol WHERE nombre = nombreRol));
-   SET mensaje = 'Mostrando permisos para el rol pedido...';
- END //
 DELIMITER ;
   --TRIGGER DE INSERTS
 Delimiter //
@@ -1153,6 +1146,7 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (11, 6);
 
 
 INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7); 
+
 
 
 
