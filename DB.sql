@@ -153,11 +153,11 @@ CREATE PROCEDURE s(IN tabla VARCHAR(50), IN id1 INT, OUT mensaje VARCHAR(50))
 	  SET mensaje = 'Ocurrio un error.';
 	 END;
 	 
-	 IF tabla = 'usuario' THEN
+	 IF tabla = 'usuario' AND id1 IS NOT NULL THEN
 		SELECT * FROM usuario WHERE id = id1;
-	 ELSEIF tabla = 'programas' THEN
+	 ELSEIF tabla = 'programas' AND id1 IS NOT NULL THEN
 		SELECT * FROM programas WHERE id = id1;
-	 ELSEIF tabla = 'encuesta' THEN
+	 ELSEIF tabla = 'encuesta' AND id1 IS NOT NULL THEN
 		 SELECT e.id, preguntar, e.idUsuario, o.id, o.opcion
 		 FROM encuesta e JOIN opcion_e o ON e.id = o.idEncuesta
 		 WHERE e.id = id1;
@@ -1144,6 +1144,7 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (11, 6);
 
 
 INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7); 
+
 
 
 
