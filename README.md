@@ -60,9 +60,9 @@ El contenido del proyecto se organiza en las siguientes carpetas principales:
 ## Tecnologías utilizadas
 
 <p align="center">
-  <img width="150" height="150" alt="png-transparent-react-react-native-logos-brands-in-colors-icon-thumbnail" src="https://github.com/user-attachments/assets/153cdad2-f1c2-4ec2-ba4d-0c72453790f4" />
-  <img width="150" height="150" alt="mysql-logo-png-image-11660514413jvwkcjh4av" src="https://github.com/user-attachments/assets/fadfef91-986e-4355-a439-6a74b110b6b3" />
-  <img width="150" height="150" alt="png-transparent-java-class-file-java-platform-standard-edition-java-development-kit-java-runtime-environment-coffee-jar-text-class-orange" src="https://github.com/user-attachments/assets/2aeb76c4-07af-4f4c-8e3a-a4ea4b457717" />
+   <img  width="150" height="150" alt="react (1)" src="https://github.com/user-attachments/assets/eb7dbaee-5f5d-44ca-bad0-15fab9154df7" />
+   <img width="150" height="150" alt="mysql (1)" src="https://github.com/user-attachments/assets/b71974de-5d6b-4cc6-8653-f03951baee61" />
+   <img width="150" height="150" alt="java (1)" src="https://github.com/user-attachments/assets/b855ac05-d0f0-4423-b818-78179f8a043b" />
 
 
 </p>
