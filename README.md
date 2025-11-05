@@ -11,8 +11,6 @@ Proyecto en desarrollo, Gestion De Medios Audivisuales de una Empresa
 
 ## :hammer: Funcionalidades requeridas por el cliente
 
-## :hammer: Funcionalidades del Proyecto
-
 ### 🔑 Autenticación y Perfiles
 * `Funcionalidad 1`: Inicio de sesión y asignación de roles.
 * `Funcionalidad 2`: Gestión del perfil de usuario.
