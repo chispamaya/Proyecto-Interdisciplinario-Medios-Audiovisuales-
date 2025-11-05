@@ -42,25 +42,22 @@ Proyecto en desarrollo, Gestion De Medios Audivisuales de una Empresa
 
 El contenido del proyecto se organiza en las siguientes carpetas principales:
 
-* **`[Codigo-fuente](/tree/main/Codigo-fuente)`**:
-    * **Descripción**: Contiene todo el código fuente del backend (Java/Spring) y el frontend (React/Vite).
+* **`[Codigo-fuente](/tree/main/Codigo-fuente)`**
+    * **Descripción**: Contiene todo el código fuente del proyecto, incluyendo el backend (Java/Spring) y el frontend (React/Vite).
 
-* **`[Diseños](/tree/main/Diseños)`**:
-    * **Descripción**: Archivos de diseño, mockups y prototipos (Ej. archivos de Figma, paletas de colores).
+* **`[Diseños](/tree/main/Diseños)`**
+    * **Descripción**: Archivos de diseño y cualquier recurso visual relacionado con la UI/UX del proyecto.
 
-* **`[Documentacion](/tree/main/Documentacion)`**:
-    * **Descripción**: Aquí se encuentra la "Carpeta de Campo", diagramas de base de datos, y toda la documentación técnica del proyecto.
+* **`[Documentacion](/tree/main/Documentacion)`**
+    * **Descripción**: Toda la documentación técnica y funcional. Aquí se encuentra la Tesina, diagramas de base de datos, manual de usuario, etc.
 
-* **`[Redes](/tree/main/Redes)`**:
-    * **Descripción**: Configuración de redes, scripts de despliegue o infraestructura (si aplica).
+* **`[Redes](/tree/main/Redes)`**
+    * **Descripción**: Contiene la planificación de red: archivos de Packet Tracer (.pkt), planos en PDF (cableado, rack, etc), tablas de subneteo e IPs, presupuesto detallado y modelos 3D de la infraestructura física.
 
-* **`[Scrum-artifacts](/tree/main/Scrum-artifacts)`**:
-    * **Descripción**: Documentos relacionados con la metodología ágil (Sprints, User Stories, Burndown charts).
-    * 
+* **`[Scrum-artifacts](/tree/main/Scrum-artifacts)`**
+    * **Descripción**: Artefactos de la metodología Scrum. Incluye el Product Backlog, Sprint Backlogs, Burndown Charts, actas de Daily Scrums e informes de Sprint Review y Retrospectivas.
+      
 ## Tecnologías utilizadas
-
-
-
 
 <p align="center">
   <img width="150" height="150" alt="png-transparent-react-react-native-logos-brands-in-colors-icon-thumbnail" src="https://github.com/user-attachments/assets/153cdad2-f1c2-4ec2-ba4d-0c72453790f4" />
