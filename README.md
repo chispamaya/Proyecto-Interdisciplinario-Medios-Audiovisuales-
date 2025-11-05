@@ -38,18 +38,25 @@ Proyecto en desarrollo, Gestion De Medios Audivisuales de una Empresa
 * `Funcionalidad 16`: Participación en encuestas interactivas.
 * `Funcionalidad 17`: Sistema de opinión sobre programas. 
 
-## 🌳 Estructura de Ramas (Branches)
+## 📂 Estructura del Repositorio
 
-Nuestro proyecto sigue un flujo de trabajo basado en Gitflow. Las ramas principales son:
+El contenido del proyecto se organiza en las siguientes carpetas principales:
 
-* **`[main](/tree/main)`**:
-    * **Descripción**: Esta es la rama principal. Contiene la última versión estable y probada del proyecto. El código aquí es el que se considera "en producción" o listo para la entrega final.
+* **`[Codigo-fuente](/tree/main/Codigo-fuente)`**:
+    * **Descripción**: Contiene todo el código fuente del backend (Java/Spring) y el frontend (React/Vite).
 
-* **`[develop](/tree/develop)`**:
-    * **Descripción**: Rama de integración. Aquí es donde se unen todas las nuevas funcionalidades ("features") una vez que están terminadas y probadas individualmente. Es la rama de desarrollo activa.
+* **`[Diseños](/tree/main/Diseños)`**:
+    * **Descripción**: Archivos de diseño, mockups y prototipos (Ej. archivos de Figma, paletas de colores).
 
-* **`[feature/nombre-funcionalidad](/tree/feature/nombre-funcionalidad)`** (Ejemplo):
-    * **Descripción**: Usamos prefijos `feature/` para desarrollar nuevas funcionalidades (Ej: `feature/login`, `feature/gestion-contenidos`). Estas ramas se crean a partir de `develop` y vuelven a `develop` cuando están listas.
+* **`[Documentacion](/tree/main/Documentacion)`**:
+    * **Descripción**: Aquí se encuentra la "Carpeta de Campo", diagramas de base de datos, y toda la documentación técnica del proyecto.
+
+* **`[Redes](/tree/main/Redes)`**:
+    * **Descripción**: Configuración de redes, scripts de despliegue o infraestructura (si aplica).
+
+* **`[Scrum-artifacts](/tree/main/Scrum-artifacts)`**:
+    * **Descripción**: Documentos relacionados con la metodología ágil (Sprints, User Stories, Burndown charts).
+    * 
 ## Tecnologías utilizadas
 
 
