@@ -38,7 +38,18 @@ Proyecto en desarrollo, Gestion De Medios Audivisuales de una Empresa
 * `Funcionalidad 16`: Participación en encuestas interactivas.
 * `Funcionalidad 17`: Sistema de opinión sobre programas. 
 
-  
+## 🌳 Estructura de Ramas (Branches)
+
+Nuestro proyecto sigue un flujo de trabajo basado en Gitflow. Las ramas principales son:
+
+* **`[main](/tree/main)`**:
+    * **Descripción**: Esta es la rama principal. Contiene la última versión estable y probada del proyecto. El código aquí es el que se considera "en producción" o listo para la entrega final.
+
+* **`[develop](/tree/develop)`**:
+    * **Descripción**: Rama de integración. Aquí es donde se unen todas las nuevas funcionalidades ("features") una vez que están terminadas y probadas individualmente. Es la rama de desarrollo activa.
+
+* **`[feature/nombre-funcionalidad](/tree/feature/nombre-funcionalidad)`** (Ejemplo):
+    * **Descripción**: Usamos prefijos `feature/` para desarrollar nuevas funcionalidades (Ej: `feature/login`, `feature/gestion-contenidos`). Estas ramas se crean a partir de `develop` y vuelven a `develop` cuando están listas.
 ## Tecnologías utilizadas
 
 
