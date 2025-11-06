@@ -3,7 +3,7 @@
   <img width="3000" height="1740" alt="Texto (1)" src="https://github.com/user-attachments/assets/ce5e735f-6c3e-4e47-9d03-185acacc3564" />
 </p>
 
-# Softlution & CO - Plataforma de Gestión Audiovisual
+# Softlution & RO - Plataforma de Gestión de medios audiovisuales
 
 > Un sistema integral para la gestión y modernización de operaciones en una cadena de medios audiovisuales. La plataforma permite administrar contenidos, programar parrillas y controlar la emisión en un entorno modular, seguro y escalable, con una interfaz amigable para productores, editores y administradores.
 
