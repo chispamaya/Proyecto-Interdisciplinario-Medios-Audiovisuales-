@@ -64,11 +64,12 @@ El contenido del proyecto se organiza en las siguientes carpetas principales:
 ## Tecnologías utilizadas
 
 <p align="center">
-   <img  width="150" height="150" alt="react (1)" src="https://github.com/user-attachments/assets/eb7dbaee-5f5d-44ca-bad0-15fab9154df7" />
-   <img width="150" height="150" alt="mysql (1)" src="https://github.com/user-attachments/assets/b71974de-5d6b-4cc6-8653-f03951baee61" />
-   <img width="150" height="150" alt="java (1)" src="https://github.com/user-attachments/assets/b855ac05-d0f0-4423-b818-78179f8a043b" />
-
-
+  <a href="https://github.com/daoldev">
+    <img src="https://github.com/daoldev.png?size=100" width="80px;" height="80px;" alt="Avatar de daoldev" style="border-radius:50%; margin: 5px;"/>
+  </a>
+  <a href="https://github.com/sofiamarmol777">
+    <img src="https://github.com/sofiamarmol777.png?size=100" width="80px;" height="80px;" alt="Avatar de sofiamarmol777" style="border-radius:50%; margin: 5px;"/>
+  </a>
 </p>
 
 ## 👥 Contribuyentes
