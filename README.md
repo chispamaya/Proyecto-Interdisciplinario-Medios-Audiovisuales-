@@ -1,6 +1,11 @@
 
-![Logotipo Softlution & CO](https://github.com/user-attachments/assets/4dc8180c-d971-4f43-a982-1674b3cf585b)
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/2bfff2338-8361-43b7-b369-b7deb4dc3ceb" alt="Logotipo Softlution & CO" width="400"/>
+</p>
 
+# Softlution & CO - Plataforma de Gestión Audiovisual
+
+> Descripción breve del proyecto. Por ejemplo: "Proyecto final para la Tecnicatura X. Una plataforma web para la administración, programación y emisión de contenido multimedia, diseñada para canales de televisión y productoras."
 
 <p align="center">
 <img src="https://img.shields.io/badge/STATUS-EN%20PROCESO-red">
