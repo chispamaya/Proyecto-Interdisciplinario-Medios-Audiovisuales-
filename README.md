@@ -1,6 +1,6 @@
 
+<img width="3000" height="1740" alt="Texto (1)" src="https://github.com/user-attachments/assets/2bff2338-8361-43b7-b369-b7deb4dc3ceb" />
 
-![Logotipo Softlution & CO)](https://github.com/user-attachments/assets/4dc8180c-d971-4f43-a982-1674b3cf585b)
 
 
 <p align="center">
