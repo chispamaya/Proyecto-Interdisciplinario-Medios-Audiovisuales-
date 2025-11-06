@@ -72,15 +72,12 @@ El contenido del proyecto se organiza en las siguientes carpetas principales:
 ## Contribuyentes
 
 <p align="center">
-  
-    <a href="https://github.com/daoldev">
-    <img src="https://github.com/daoldev.png?size=100" width="80px;" height="80px;" alt="Nombre Profesor 1" style="border-radius:50%; margin: 5px;"/>
-  </a>
-  
-    <a href="https://github.com/sofiamarmol777">
-    <img src="https://github.com/sofiamarmol777.png?size=100" width="80px;" height="80px;" alt="Nombre Profesor 2" style="border-radius:50%; margin: 5px;"/>
-  </a>
-  
+  <a href="https://github.com/daoldev">
+    <img src="https://github.com/daoldev.png?size=100" width="80px;" height="80px;" alt="Avatar de daoldev" style="border-radius:50%; margin: 5px;"/>
+  </a>
+  <a href="https://github.com/sofiamarmol777">
+    <img src="https://github.com/sofiamarmol777.png?size=100" width="80px;" height="80px;" alt="Avatar de sofiamarmol777" style="border-radius:50%; margin: 5px;"/>
+  </a>
 </p>
 
 ## Autores
