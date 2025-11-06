@@ -1,17 +1,17 @@
 
 <p align="center">
-  <img src="https://github.com/user-attachments/assets/2bfff2338-8361-43b7-b369-b7deb4dc3ceb" alt="Logotipo Softlution & CO" width="400"/>
+  <img width="3000" height="1740" alt="Texto (1)" src="https://github.com/user-attachments/assets/ce5e735f-6c3e-4e47-9d03-185acacc3564" />
 </p>
 
 # Softlution & CO - Plataforma de Gestión Audiovisual
 
-> Descripción breve del proyecto. Por ejemplo: "Proyecto final para la Tecnicatura X. Una plataforma web para la administración, programación y emisión de contenido multimedia, diseñada para canales de televisión y productoras."
+> Un sistema integral para la gestión y modernización de operaciones en una cadena de medios audiovisuales. La plataforma permite administrar contenidos, programar parrillas y controlar la emisión en un entorno modular, seguro y escalable, con una interfaz amigable para productores, editores y administradores.
 
 <p align="center">
 <img src="https://img.shields.io/badge/STATUS-EN%20PROCESO-red">
 </p>
 
-Proyecto en desarrollo, Gestion De Medios Audivisuales de una Empresa 
+
 
 ## :hammer: Funcionalidades requeridas por el cliente
 
