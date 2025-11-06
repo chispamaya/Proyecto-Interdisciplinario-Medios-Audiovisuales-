@@ -71,7 +71,7 @@ El contenido del proyecto se organiza en las siguientes carpetas principales:
 
 ## Contribuyentes
 
-<p align="center">
+<p >
   <a href="https://github.com/daoldev">
     <img src="https://github.com/daoldev.png?size=100" width="80px;" height="80px;" alt="Avatar de daoldev" style="border-radius:50%; margin: 5px;"/>
   </a>
