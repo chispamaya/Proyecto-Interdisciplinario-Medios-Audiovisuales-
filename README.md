@@ -71,11 +71,11 @@ El contenido del proyecto se organiza en las siguientes carpetas principales:
 
 </p>
 
-## Personas Contribuyentes;
-<a href="https://github.com/chispamaya/SoftLution-CO/graphs/contributors">
- <a href="https://github.com/chispamaya/SoftLution-CO/graphs/contributors">
-  <img src="https://github.com/user-attachments/assets/58251b39-fee5-466f-87cb-3f37fc61dad2" alt="Foto de contribuyente" height="100"/>
-</a>
+## 👥 Contribuyentes
+
+¡Este proyecto existe gracias a todas las personas que contribuyen!
+
+[![Contributors](https://contrib.rocks/image?repo=daoldev/Proyecto-Interdisciplinario-Medios-Audiovisuales-)](https://github.com/sofiamarmol777/Proyecto-Interdisciplinario-Medios-Audiovisuales-/graphs/contributors)
 
 
 
