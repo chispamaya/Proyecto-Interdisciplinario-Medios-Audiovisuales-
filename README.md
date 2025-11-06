@@ -75,8 +75,7 @@ El contenido del proyecto se organiza en las siguientes carpetas principales:
 
 ¡Este proyecto existe gracias a todas las personas que contribuyen!
 
-[![Contributors](https://contrib.rocks/image?repo=daoldev/Proyecto-Interdisciplinario-Medios-Audiovisuales-)](https://github.com/sofiamarmol777/Proyecto-Interdisciplinario-Medios-Audiovisuales-/graphs/contributors)
-
+[![Contributors](https://contrib.rocks/image?repo=sofiamarmol777/Proyecto-Interdisciplinario-Medios-Audiovisuales-)](https://github.com/sofiamarmol777/Proyecto-Interdisciplinario-Medios-Audiovisuales-/graphs/contributors)
 
 
 ## Autores
