@@ -19,6 +19,8 @@ CREATE TABLE programas (
 	idPlataforma int,
 	formatoArchivo VARCHAR(50),
 	rutaArchivo VARCHAR(500),
+	formatoInforme VARCHAR(50),
+	rutaInforme VARCHAR(500),
 	foreign key(idPlataforma) references plataforma(id)
 );
 
@@ -185,7 +187,7 @@ CREATE PROCEDURE s(IN tabla VARCHAR(50), IN id1 INT, OUT mensaje VARCHAR(50))
    SET mensaje = 'Mostrando datos.'; 
  END //
 
- CREATE PROCEDURE cpr(IN categoria1 varchar(50), IN nombre1 varchar(50), IN horaInicio1 TIME, IN horaFin1 TIME, IN idP1 INT, IN formatoArchivo1 varchar(50), IN rutaArchivo1 varchar(500), IN idUs int, OUT mensaje varchar(50))
+ CREATE PROCEDURE cpr(IN categoria1 varchar(50), IN nombre1 varchar(50), IN horaInicio1 TIME, IN horaFin1 TIME, IN idP1 INT, IN formatoArchivo1 varchar(50), IN rutaArchivo1 varchar(500), IN formatoInforme1 varchar(50), IN rutaInforme1 varchar(500), IN idUs int, OUT mensaje varchar(50))
  BEGIN
 	DECLARE error varchar(500);
 	DECLARE errorC varchar(50);
@@ -200,8 +202,8 @@ CREATE PROCEDURE s(IN tabla VARCHAR(50), IN id1 INT, OUT mensaje VARCHAR(50))
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
 	 END;
 	START TRANSACTION;
-	 INSERT INTO programas(estadoAprobacion, categoria, nombre, horaInicio, horaFin, idPlataforma, formatoArchivo, rutaArchivo) 
-	 VALUES('En Revisión', categoria1, nombre1, horaInicio1, horaFin1, idP1, formatoArchivo1, rutaArchivo1);
+	 INSERT INTO programas(estadoAprobacion, categoria, nombre, horaInicio, horaFin, idPlataforma, formatoArchivo, rutaArchivo, formatoInforme, rutaInforme) 
+	 VALUES('En Revisión', categoria1, nombre1, horaInicio1, horaFin1, idP1, formatoArchivo1, rutaArchivo1, formatoInforme1, rutaInforme1);
 	COMMIT;
    SET mensaje = 'Programa ingresado con éxito.' ;
  END //
@@ -226,7 +228,7 @@ CREATE PROCEDURE s(IN tabla VARCHAR(50), IN id1 INT, OUT mensaje VARCHAR(50))
    SET mensaje = 'Programa borrado con éxito.' ;
  END //
  
- CREATE PROCEDURE mpr(IN id1 int, IN estadoAprobacion1 varchar(50), IN categoria1 varchar(50), IN nombre1 varchar(50), IN horaInicio1 TIME, IN horaFin1 TIME, IN idP1 int, IN formatoArchivo1 varchar(50), IN rutaArchivo1 varchar(500), IN idUs int, OUT mensaje varchar(50))
+ CREATE PROCEDURE mpr(IN id1 int, IN estadoAprobacion1 varchar(50), IN categoria1 varchar(50), IN nombre1 varchar(50), IN horaInicio1 TIME, IN horaFin1 TIME, IN idP1 int, IN formatoArchivo1 varchar(50), IN rutaArchivo1 varchar(500), IN formatoInforme1 varchar(50), IN rutaInforme1 varchar(500), IN idUs int, OUT mensaje varchar(50))
  BEGIN
     DECLARE error varchar(500);
 	DECLARE errorC varchar(50);
@@ -1148,6 +1150,7 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (11, 6);
 
 
 INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7); 
+
 
 
 
