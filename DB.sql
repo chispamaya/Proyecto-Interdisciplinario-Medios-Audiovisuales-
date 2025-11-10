@@ -200,32 +200,41 @@ CREATE PROCEDURE s(IN tabla VARCHAR(50), IN id1 INT, OUT mensaje VARCHAR(50))
 	  SET mensaje = 'Ocurrio un error.';
 	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+      SET @current_user_id = NULL;
+
 	 END;
+    SET @current_user_id = idUs;
 	START TRANSACTION;
 	 INSERT INTO programas(estadoAprobacion, categoria, nombre, horaInicio, horaFin, idPlataforma, formatoArchivo, rutaArchivo, formatoInforme, rutaInforme) 
 	 VALUES('En Revisión', categoria1, nombre1, horaInicio1, horaFin1, idP1, formatoArchivo1, rutaArchivo1, formatoInforme1, rutaInforme1);
 	COMMIT;
+   SET @current_user_id = NULL;
    SET mensaje = 'Programa ingresado con éxito.' ;
  END //
    
- CREATE PROCEDURE bpr(IN id1 int, IN idUs int, OUT mensaje varchar(50))
+CREATE PROCEDURE bpr(IN id1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
 	DECLARE error varchar(500);
 	DECLARE errorC varchar(50);
 	DECLARE EXIT HANDLER FOR SQLEXCEPTION
 	 BEGIN
-		GET DIAGNOSTICS CONDITION 1
-            errorC = MYSQL_ERRNO,      
-            error = MESSAGE_TEXT;
+		GET DIAGNOSTICS CONDITION 1 
+		errorC = MYSQL_ERRNO, 
+		error = MESSAGE_TEXT;
 	  ROLLBACK;
+
 	  SET mensaje = 'Ocurrio un error.';
-	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
-	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
-	 END;
-    START TRANSACTION;
+	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario) VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+      SET @current_user_id = NULL; -- Limpiar
+	
+	END;
+    
+    SET @current_user_id = idUs;
+ 	START TRANSACTION;
 	 DELETE FROM programas where id = id1;
 	COMMIT;
-   SET mensaje = 'Programa borrado con éxito.' ;
+    SET @current_user_id = NULL;
+ 	SET mensaje = 'Programa borrado con éxito.' ;
  END //
  
  CREATE PROCEDURE mpr(IN id1 int, IN estadoAprobacion1 varchar(50), IN categoria1 varchar(50), IN nombre1 varchar(50), IN horaInicio1 TIME, IN horaFin1 TIME, IN idP1 int, IN formatoArchivo1 varchar(50), IN rutaArchivo1 varchar(500), IN formatoInforme1 varchar(50), IN rutaInforme1 varchar(500), IN idUs int, OUT mensaje varchar(50))
@@ -241,12 +250,16 @@ CREATE PROCEDURE s(IN tabla VARCHAR(50), IN id1 INT, OUT mensaje VARCHAR(50))
 	  SET mensaje = 'Ocurrio un error.';
 	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+      SET @current_user_id = NULL;
 	 END;
+    
+    SET @current_user_id = idUs; 
 	START TRANSACTION;
 	 UPDATE programas
 	 SET estadoAprobacion = estadoAprobacion1, categoria = categoria1, nombre = nombre1, horaInicio = horaInicio1, horaFin = horaFin1, idPlataforma = idP1
 	 WHERE id = id1;
 	COMMIT;
+   SET @current_user_id = NULL;
    SET mensaje = 'Datos del programa actualizados con éxito.';
  END //
  
@@ -263,11 +276,15 @@ CREATE PROCEDURE cd(IN dia1 DATE, IN idP1 int, IN idUs int, OUT mensaje varchar(
 	  SET mensaje = 'Ocurrio un error.';
 	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+      SET @current_user_id = NULL;
 	 END;
+    
+    SET @current_user_id = idUs; -- <-- AÑADIDO
 	START TRANSACTION;
 	 INSERT INTO dias(dia, idPrograma) 
 	 VALUES(dia1, idP1);
 	COMMIT;
+   SET @current_user_id = NULL; -- <-- AÑADIDO
    SET mensaje = 'Dia asignado al programa con éxito.';
  END //
 
@@ -284,11 +301,14 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	  SET mensaje = 'Ocurrio un error.';
 	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+      SET @current_user_id = NULL;
 	 END;
+    SET @current_user_id = idUs; 
 	START TRANSACTION;
 	 DELETE FROM dias
 	 WHERE id = id1;
 	COMMIT;
+    SET @current_user_id = NULL;
    SET mensaje = 'Dia eliminado con éxito.' ;
  END //
 
@@ -306,10 +326,14 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	  SET mensaje = 'Ocurrio un error.';
 	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+      SET @current_user_id = NULL; 
 	 END;
+    SET @current_user_id = idUs; 
+
 	START TRANSACTION;
 	 INSERT INTO usuario(email, nombre, contrasenia, idRol) VALUES(email1, nombre1, contrasenia1, idRol1);
 	COMMIT;
+   SET @current_user_id = NULL;
    SET mensaje = 'Usuario ingresado con éxito.';
  END //
  
@@ -326,10 +350,14 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	  SET mensaje = 'Ocurrio un error.';
 	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+      SET @current_user_id = NULL;
+
 	 END;
+    SET @current_user_id = idUs;
     START TRANSACTION;
 	 DELETE FROM usuario where id = id1;
 	COMMIT;
+   SET @current_user_id = NULL; 
    SET mensaje = 'Usuario borrado con éxito.';
  END //
  
@@ -346,12 +374,15 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	  SET mensaje = 'Ocurrio un error.';
 	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+      SET @current_user_id = NULL;
 	 END;
+    SET @current_user_id = idUs;
 	START TRANSACTION;
 	 UPDATE usuario
 	 SET idRol = idRol1
 	 WHERE id = id1;
 	COMMIT;
+   SET @current_user_id = NULL;
    SET mensaje = 'Rol del usuario actualizado con éxito.';
  END //
  
@@ -368,10 +399,13 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	  SET mensaje = 'Ocurrio un error.';
 	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+      SET @current_user_id = NULL; 
 	 END;
+      SET @current_user_id = idUs;
 	START TRANSACTION;
 	 INSERT INTO segmentos(estadoAprobacion, duracion, titulo, idPrograma) VALUES(estadoAprobacion1, duracion1, titulo1, idP1);
 	COMMIT;
+   SET @current_user_id = NULL;
    SET mensaje = 'Segmento ingresado con éxito.';
  END //
  
@@ -388,10 +422,13 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	  SET mensaje = 'Ocurrio un error.';
 	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+      SET @current_user_id = NULL; 
 	 END;
+    SET @current_user_id = idUs;
     START TRANSACTION;
 	 DELETE FROM segmentos where id = id1;
 	COMMIT;
+   SET @current_user_id = NULL;
    SET mensaje = 'Segmento borrado con éxito.' ;
  END //
 
@@ -408,12 +445,15 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	  SET mensaje = 'Ocurrio un error.';
 	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+      SET @current_user_id = NULL;
 	 END;
+	SET @current_user_id = idUs;
 	START TRANSACTION;
 	 UPDATE segmentos
 	 SET estadoAprobacion = estadoAprobacion1, duracion = duracion1, titulo = titulo1, idPrograma = idP1
 	 WHERE id = id1;
 	COMMIT;
+   SET @current_user_id = NULL;
    SET mensaje = 'Segmento actualizado con éxito.';
  END //
  
@@ -432,10 +472,13 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	  SET mensaje = 'Ocurrio un error.';
 	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+	  SET @current_user_id = NULL;
 	 END;
+   SET @current_user_id = idUs;
 	START TRANSACTION;
 	 INSERT INTO plataforma(nombre, tipo) VALUES(nombre1, tipo1);
 	COMMIT;
+   SET @current_user_id = NULL;
    SET mensaje = 'Plataforma ingresada con éxito.'; 
  END //
    
@@ -449,13 +492,17 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
             errorC = MYSQL_ERRNO,      
             error = MESSAGE_TEXT;
 	  ROLLBACK;
+		
 	  SET mensaje = 'Ocurrio un error.';
 	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+      SET @current_user_id = NULL;
 	 END;
+     SET @current_user_id = idUs;
     START TRANSACTION;
 	 DELETE FROM plataforma where id = id1;
 	COMMIT;
+   SET @current_user_id = NULL;
    SET mensaje = 'Plataforma borrada con éxito.';
  END //
  
@@ -472,12 +519,15 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	  SET mensaje = 'Ocurrio un error.';
 	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+      SET @current_user_id = NULL;
 	 END;
+	  SET @current_user_id = idUs;
 	START TRANSACTION;
 	 UPDATE plataforma
 	 SET nombre = nombre1, tipo = tipo1
 	 WHERE id = id1;
 	COMMIT;
+   SET @current_user_id = NULL;
    SET mensaje = 'Datos de la plataforma actualizados con éxito.';
  END //
  
@@ -497,12 +547,15 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	  SET mensaje = 'Ocurrio un error.';
 	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+	  SET @current_user_id = NULL;
 	 END;
+     SET @current_user_id = idUs;
 	START TRANSACTION;
 	 UPDATE emisiones
 	 SET enVivo = enVivo1, idPrograma = idPr1
 	 WHERE id = id1;
 	COMMIT;
+   SET @current_user_id = NULL;
    SET mensaje = 'Datos de la emisión actualizados con éxito.';
  END //
  
@@ -519,10 +572,13 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	  SET mensaje = 'Ocurrio un error.';
 	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+      SET @current_user_id = NULL;
 	 END;
+     SET @current_user_id = idUs;
 	START TRANSACTION;
 	 INSERT INTO contenidos(formato,rutaArchivo,idUsuario) VALUES(formato1,rutaArchivo1,idU1);
 	COMMIT;
+	SET @current_user_id = NULL;
    SET mensaje = 'Contenido subido con éxito.';
  END // 
  
@@ -539,11 +595,14 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	  SET mensaje = 'Ocurrio un error.';
 	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+      SET @current_user_id = NULL;
 	 END;
+      SET @current_user_id = idUs;
 	START TRANSACTION;
 	 DELETE FROM contenidos
 	 WHERE id = id1;
 	COMMIT;
+   SET @current_user_id = NULL;
    SET mensaje = 'Contenido borrado con éxito.';
  END //
  
@@ -560,10 +619,13 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	  SET mensaje = 'Ocurrio un error.';
 	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
-	 END;
+	  SET @current_user_id = NULL;
+	END;
+	SET @current_user_id = idUs;
 	START TRANSACTION;
 	 INSERT INTO tags(tag) VALUES(tag1);
 	COMMIT;
+    SET @current_user_id = NULL;
    SET mensaje = CONCAT('Tag ', tag1, ' creado con éxito.');
  END //
 
@@ -580,10 +642,13 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	  SET mensaje = 'Ocurrio un error.';
 	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+	  SET @current_user_id = NULL;
 	 END;
+     SET @current_user_id = idUs;
 	START TRANSACTION;
 	 INSERT INTO contenido_tag(idContenido, idTag) VALUES(idC1, idT1);
 	COMMIT;
+   SET @current_user_id = NULL;
    SET mensaje = 'Tag añadido con éxito al contenido.';
  END //
 
@@ -600,11 +665,14 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	  SET mensaje = 'Ocurrio un error.';
 	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+	  SET @current_user_id = NULL;
 	 END;
+      SET @current_user_id = idUs;
 	START TRANSACTION;
 	 DELETE FROM contenido_tag
 	 WHERE idContenido = idC1;
 	COMMIT;
+    SET @current_user_id = NULL;
    SET mensaje = 'Contenido-Tag eliminado con éxito.';
  END //
  
@@ -621,7 +689,9 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	  SET mensaje = 'Ocurrio un error.';
 	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+      SET @current_user_id = NULL;
 	 END;
+      SET @current_user_id = idUs;
 	START TRANSACTION;
 	 IF NOT EXISTS (SELECT * FROM audiencia_con WHERE idUsuario = idU AND idContenido = idC) THEN
 	  INSERT INTO audiencia_con(likeOdislike, idContenido, idUsuario) VALUES (likeOdislike1, idC, idU);
@@ -631,6 +701,7 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	   WHERE idUsuario = idU AND idContenido = idC;
 	 END IF;
 	COMMIT;
+	SET @current_user_id = NULL;
    SET mensaje = 'Valoración actualizada con éxito.';
  END //
  
@@ -647,11 +718,14 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	  SET mensaje = 'Ocurrio un error.';
 	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+      SET @current_user_id = NULL;
 	 END;
+     SET @current_user_id = idUs;
 	START TRANSACTION;
 	 DELETE FROM audiencia_con
 	 WHERE idContenido = idC AND idUsuario = idU;
 	COMMIT;
+     SET @current_user_id = NULL;
    SET mensaje = 'Valoración actualizada con éxito.';
  END //
  
@@ -671,11 +745,14 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	  SET mensaje = 'Ocurrio un error.';
 	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+	  SET @current_user_id = NULL;
 	 END;
+      SET @current_user_id = idUs;
 	START TRANSACTION;
 	 INSERT INTO encuesta(preguntar, idUsuario) VALUES (preguntar1, idU);
 	 COMMIT;
    SET idE = LAST_INSERT_ID();
+   SET @current_user_id = NULL;
    SET mensaje = 'Encuesta creada con éxito.';
  END //
 
@@ -692,10 +769,13 @@ CREATE PROCEDURE co(IN idE int, IN opcion1 varchar(50), IN cont int, IN idUs int
 	  SET mensaje = 'Ocurrio un error.';
 	  INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
 	  VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+      SET @current_user_id = NULL;
 	 END;
+      SET @current_user_id = idUs;
 	START TRANSACTION;
 	 INSERT INTO opcion_e(idEncuesta, opcion) VALUES (idE, opcion1);
 	 COMMIT;
+     SET @current_user_id = NULL;
    SET mensaje = CONCAT('Opcion ',cont, ' creada con éxito.');
  END //
  
@@ -713,7 +793,9 @@ CREATE PROCEDURE vo(IN idO int, IN idU int, IN idE int, IN idUs int, OUT mensaje
       SET mensaje = CONCAT("Ocurrio un error."); 
       INSERT INTO errores(tipo, mensaje, fechaYHora, idUsuario)
       VALUES(CONCAT('Error: ', errorC), error, NOW(), idUs);
+	  SET @current_user_id = NULL;
      END;
+    SET @current_user_id = idUs;
     START TRANSACTION;
     IF NOT EXISTS(SELECT * FROM votar_o WHERE idUsuario = idU AND idOpcion IN(SELECT id FROM opcion_e WHERE idEncuesta = idE)) THEN 
       INSERT INTO votar_o(idOpcion, idUsuario) VALUES(idO, idU);
@@ -734,6 +816,7 @@ CREATE PROCEDURE vo(IN idO int, IN idU int, IN idE int, IN idUs int, OUT mensaje
       END IF;
     END IF;
     COMMIT; 
+  SET @current_user_id = NULL;
 END //
 DELIMITER ;
 Delimiter //
@@ -1111,6 +1194,7 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (11, 6);
 
 
 INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7); 
+
 
 
 
