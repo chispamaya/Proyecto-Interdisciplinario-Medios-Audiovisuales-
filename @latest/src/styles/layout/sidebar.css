@@ -106,6 +106,10 @@ a {
     display: none;
 }
 
+/* * ===============================================
+ * SECCIÓN MÓVIL (Aquí están todos los cambios)
+ * ===============================================
+ */
 @media (max-width: 576px) {
     .material-symbols-outlined {
         color: var(--texto);
@@ -141,45 +145,54 @@ a {
         cursor: pointer;
     }
 
-    /* * ⚠️ --- ARREGLO 1 --- ⚠️
-     * En lugar de 'display: none;', reseteamos los estilos de desktop
-     * para que el <aside> exista pero no interfiera.
+    /* * ⚠️ --- ARREGLO 1 (De la vez anterior) --- ⚠️
+     * Reseteamos el <aside> para que no se oculte con 'display: none'
      */
     .sideBar {
         position: static;
         width: auto;
         min-height: 0;
         background-color: transparent;
-        z-index: auto; /* El z-index lo controla el modal */
-        display: block; /* Aseguramos que sea visible */
+        z-index: auto;
+        display: block; 
     }
 
-
-    /* El <nav> se convierte en el modal */
+    /* * ⚠️ --- ARREGLO 2 (Tu nueva petición) --- ⚠️
+     * Cambiamos el modal de pantalla completa a un panel lateral que se desliza.
+     */
     .sub-header {
         display: flex;
-        visibility: hidden;
         flex-direction: column;
         gap: 1rem;
         position: fixed;
         top: 0;
         left: 0;
+        bottom: 0;
         background-color: var(--sideBarHeader);
         padding: 2rem;
-        bottom: 0;
-        /* left: 0; (ya estaba) */
-        width: 100%; /* Ocupa todo el ancho */
-        box-shadow: 0 0 0 100vmax rgba(0, 0, 0, .5);
         
-        /* ⚠️ --- ARREGLO 2 --- ⚠️ (Subimos el z-index) */
-        z-index: 40; /* Mayor que 30 (el botón) */
+        /* 1. Ancho parcial, no 100% */
+        width: 80%; 
+        max-width: 300px; /* Un límite seguro */
         
-        overflow: hidden;
+        /* 2. Eliminamos la sombra que cubría todo */
+        /* box-shadow: 0 0 0 100vmax rgba(0, 0, 0, .5); <-- ELIMINADO */
+        
+        /* 3. z-index alto para estar encima del contenido */
+        z-index: 40; 
+        
+        /* 4. Permitimos scroll si hay muchos items */
+        overflow-y: auto; 
+
+        /* 5. Nueva lógica de animación (slide) */
+        visibility: visible; /* Siempre visible, pero... */
+        transform: translateX(-100%); /* ...fuera de la pantalla */
+        transition: transform 0.3s ease-in-out;
     }
     
     .sub-header.visible {
-        opacity: 1;
-        visibility: visible;
+        /* En lugar de opacity/visibility, movemos el panel a la vista */
+        transform: translateX(0); 
     }
 
     .sub-header ul li a {
@@ -187,7 +200,7 @@ a {
     }
     .sub-header .lista {
         flex-grow: 1;
-        overflow-y: auto;
+        overflow-y: auto; /* Esto ya estaba, pero es correcto */
         padding-bottom: 2rem;
         margin-left: 0;
         gap: 20px;
@@ -198,6 +211,8 @@ a {
     /* Esta regla se asegura que el <nav> (que es el .sub-header) se vea en desktop */
     .sub-header {
         visibility: visible;
+        /* Reseteamos el transform por si acaso */
+        transform: none; 
     }
 
     .label, .material-symbols-outlined{
