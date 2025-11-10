@@ -16,7 +16,7 @@
 
   box-sizing: border-box; 
   flex-shrink: 0; /* No se encoje */
-  min-height: 70px;
+  min-height: 70px; /* Se mantiene la altura de escritorio */
 }
 
 @media (max-width: 768px) {
@@ -24,11 +24,8 @@
       width: 100%;
       padding-left: 15px; 
       padding-right: 15px;
-      min-height: 60px;
+      /* min-height: 60px; <-- ELIMINADO */
   }
   
-  .header .logo {
-      height: 40px; 
-      width: auto;
-  }
+  /* Se eliminó la regla .header .logo { height: 40px; } */
 }
