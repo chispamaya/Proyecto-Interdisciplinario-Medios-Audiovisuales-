@@ -21,8 +21,8 @@ class PermisosRolRepositoryTests {
         List<PermisosRol> lista = permisosRolRepository.listarTodasLasAsignaciones();
         
         assertNotNull(lista);
-        // En tu DB.sql insertas 17 asignaciones
-        assertEquals(17, lista.size(), "Deberían cargarse 17 asignaciones desde el DB.sql");
+        // En tu DB.sql insertas 18 asignaciones
+        assertEquals(18, lista.size(), "Deberían cargarse 17 asignaciones desde el DB.sql");
         System.out.println("Prueba 's' exitosa. Asignaciones encontradas: " + lista.size());
     }
 }

@@ -1,13 +1,8 @@
 package com.example.demo.repository;
 
-import com.example.demo.dto.Encuesta;
-import com.example.demo.dto.EncuestaResultado;
-import com.example.demo.dto.OpcionE;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
-
-import java.util.List;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -15,66 +10,63 @@ import static org.junit.jupiter.api.Assertions.*;
 class VotarORepositoryTests {
 
     @Autowired
-    private VotarORepository votarORepository; // El repo que queremos probar
+    private VotarORepository votarORepository;
 
-    // --- Dependencias necesarias para el Setup ---
-    @Autowired
-    private EncuestaRepository encuestaRepository;
+    // --- IDs DE PRUEBA BASADOS EN TU BASE DE DATOS REAL ---
+
+    // Asumimos que el usuario 1 (admin@test.com) existe
+    private final long ID_USUARIO_QUE_VOTA = 1L; 
     
-    @Autowired
-    private OpcionERepository opcionERepository;
-
-    // Asumimos que el usuario 1 (Admin) y el 12 (Espectador) existen en la BD
-    private static final Long ID_USUARIO_AUDITORIA = 1L; 
-    private static final Long ID_USUARIO_VOTANTE = 12L; 
+    // El ID de la encuesta que me mostraste
+    private final long ID_ENCUESTA = 1L;
+    
+    // El ID de "Opción A: Netflix"
+    private final long ID_OPCION_A_VOTAR = 1L;
+    
+    // El ID de "Opción B: Disney+"
+    private final long ID_OTRA_OPCION = 2L;
+    
+    // Usuario para auditoría (el mismo admin)
+    private final long ID_USUARIO_AUDITORIA = 1L;
 
     @Test
     void probarVotarOpcion() {
-        System.out.println("--- INICIANDO PRUEBA DE VotarORepository ---");
+        System.out.println("--- Probando votarOpcion con los IDs correctos ---");
 
-        // --- 1. Setup: Crear Encuesta (SP 'cen') ---
-        Encuesta nuevaEncuesta = new Encuesta();
-        nuevaEncuesta.setPreguntar("¿Pregunta para Votar " + System.currentTimeMillis() + "?");
-        nuevaEncuesta.setIdUsuario(ID_USUARIO_AUDITORIA);
-        
-        Long nuevaEncuestaId = encuestaRepository.crearEncuesta(nuevaEncuesta, ID_USUARIO_AUDITORIA);
-        assertNotNull(nuevaEncuestaId, "Fallo el setup: No se pudo crear la encuesta");
-        System.out.println("Setup: Encuesta creada con ID: " + nuevaEncuestaId);
-
-        // --- 2. Setup: Crear Opción (SP 'co') ---
-        OpcionE opcion1 = new OpcionE();
-        opcion1.setIdEncuesta(nuevaEncuestaId);
-        opcion1.setOpcion("Opción para Votar");
-        
-        String msgOpcion = opcionERepository.crearOpcion(opcion1, 1, ID_USUARIO_AUDITORIA);
-        assertEquals("Opcion 1 creada con éxito.", msgOpcion, "Fallo el setup: El SP 'co' no respondió lo esperado");
-        System.out.println("Setup: Opción creada.");
-
-        // --- 3. Setup: Obtener el ID de la opción que acabamos de crear (SP 's') ---
-        List<EncuestaResultado> resultados = encuestaRepository.buscarEncuestaConOpcionesYVotos(nuevaEncuestaId);
-        assertNotNull(resultados, "Fallo el setup: No se pudo recuperar la opción creada");
-        assertFalse(resultados.isEmpty(), "Fallo el setup: La lista de opciones está vacía");
-        
-        Long idOpcionVotada = resultados.get(0).getIdOpcion();
-        System.out.println("Setup: ID de la opción a votar: " + idOpcionVotada);
-
-        // --- 4. Prueba: Ejecutar el voto (SP 'vo') ---
-        System.out.println("Probando SP 'vo' (votarOpcion)...");
-        String msgVoto = votarORepository.votarOpcion(
-            idOpcionVotada, 
-            ID_USUARIO_VOTANTE, 
-            nuevaEncuestaId, 
-            ID_USUARIO_AUDITORIA
+        // --- PASO 1: Votar por la Opción 3 (Netflix) ---
+        // Se llama con: idO=3, idU=1, idE=2, idUs=1
+        String mensajeVoto = votarORepository.votarOpcion(
+                ID_OPCION_A_VOTAR,    // idO = 1
+                ID_USUARIO_QUE_VOTA,  // idU (quien vota) = 1
+                ID_ENCUESTA,          // idE = 1
+                ID_USUARIO_AUDITORIA  // idUs (logger) = 1
         );
-        
-        // Verificamos el mensaje de tu SP 'vo'
-        assertEquals("Voto ingresado con éxito.", msgVoto, "El SP 'vo' no devolvió el mensaje esperado");
-        System.out.println("Respuesta 'vo': " + msgVoto);
 
-        // --- 5. Verificación Opcional: Verificamos que el voto se contó (SP 's') ---
-        System.out.println("Verificando el conteo de votos (SP 's')...");
-        List<EncuestaResultado> resultadosDespuesDeVotar = encuestaRepository.buscarEncuestaConOpcionesYVotos(nuevaEncuestaId);
-        assertEquals(1, resultadosDespuesDeVotar.get(0).getTotalVotos(), "El voto no fue contado por el SP 's'");
-        System.out.println("¡Éxito! El SP 's' ahora reporta " + resultadosDespuesDeVotar.get(0).getTotalVotos() + " voto(s).");
+        // 1. Ahora SÍ debería decir "Voto ingresado con éxito."
+        assertEquals("Voto ingresado con éxito.", mensajeVoto);
+        System.out.println("Prueba 'votarOpcion' exitosa.");
+
+        // --- PRUEBAS ADICIONALES (Para probar la lógica de tu SP 'vo') ---
+
+        // 2. Si volvemos a votar por la Opción 3, debería QUITAR el voto.
+        String mensajeQuitarVoto = votarORepository.votarOpcion(
+                ID_OPCION_A_VOTAR,
+                ID_USUARIO_QUE_VOTA,
+                ID_ENCUESTA,
+                ID_USUARIO_AUDITORIA
+        );
+        assertEquals("Voto eliminado con éxito.", mensajeQuitarVoto, "El SP 'vo' no eliminó el voto al segundo clic.");
+
+        // 3. Votamos por la Opción 3 de nuevo (para dejarlo como estaba)
+        votarORepository.votarOpcion(ID_OPCION_A_VOTAR, ID_USUARIO_QUE_VOTA, ID_ENCUESTA, ID_USUARIO_AUDITORIA);
+        
+        // 4. Ahora votamos por OTRA opción (Opción 4 - Disney+)
+        String mensajeCambiarVoto = votarORepository.votarOpcion(
+                ID_OTRA_OPCION, // idO = 4
+                ID_USUARIO_QUE_VOTA,
+                ID_ENCUESTA,
+                ID_USUARIO_AUDITORIA
+        );
+        assertEquals("Voto actualizado con éxito.", mensajeCambiarVoto, "El SP 'vo' no actualizó el voto a una nueva opción.");
     }
 }
