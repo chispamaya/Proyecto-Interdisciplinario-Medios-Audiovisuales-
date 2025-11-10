@@ -111,7 +111,6 @@ export default function CrearEncuesta() {
                         onChange={(e) => setText(e.target.value)}
                         rows="4"
                         placeholder="¿Qué está pasando? (Opcional si subes foto o encuesta)"
-                        className="poll-textarea" // Reutilizamos este estilo
                     ></textarea>
                 </div>
 
@@ -127,16 +126,19 @@ export default function CrearEncuesta() {
                     />
                 </div>
 
-                {/* 3. CAMPO DE ENCUESTA (Opcional) */}
-                <div className="form-group form-group-checkbox">
+                {/* 3. CAMPO DE ENCUESTA (Opcional) - ⚠️ ESTILO "TOGGLE" APLICADO ⚠️ */}
+                <div className="form-group form-group-toggle">
+                    <label htmlFor="showPoll" className="toggle-label">Añadir Encuesta</label>
                     <input 
                         type="checkbox" 
                         id="showPoll"
+                        className="toggle-checkbox"
                         checked={showPoll}
                         onChange={(e) => setShowPoll(e.target.checked)}
                     />
-                    <label htmlFor="showPoll">Añadir Encuesta</label>
+                    <label htmlFor="showPoll" className="toggle-switch"></label>
                 </div>
+
 
                 {/* --- Opciones de Encuesta (Condicional) --- */}
                 {showPoll && (
