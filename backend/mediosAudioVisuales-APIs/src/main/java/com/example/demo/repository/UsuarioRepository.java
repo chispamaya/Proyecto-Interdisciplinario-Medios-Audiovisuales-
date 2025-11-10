@@ -60,7 +60,17 @@ public class UsuarioRepository {
         return (String) outParams.get("mensaje");
     }
 
-  
+    public Usuario buscarUsuarioPorEmail(String email) {
+        String sql = "SELECT * FROM usuario WHERE email = ?";
+        
+        try {
+            return jdbcTemplate.queryForObject(sql, new UsuarioRowMapper(), email);
+        } catch (Exception e) {
+            return null;
+        }
+    }
+    
+    
     public Usuario buscarUsuarioPorId(Long idUsuarioBuscado) {
        
     	String sql = "CALL s('usuario', ?, @mensaje)";
