@@ -141,10 +141,19 @@ a {
         cursor: pointer;
     }
 
-    /* El <aside> en móvil está oculto */
+    /* * ⚠️ --- ARREGLO 1 --- ⚠️
+     * En lugar de 'display: none;', reseteamos los estilos de desktop
+     * para que el <aside> exista pero no interfiera.
+     */
     .sideBar {
-        display: none;
+        position: static;
+        width: auto;
+        min-height: 0;
+        background-color: transparent;
+        z-index: auto; /* El z-index lo controla el modal */
+        display: block; /* Aseguramos que sea visible */
     }
+
 
     /* El <nav> se convierte en el modal */
     .sub-header {
@@ -161,7 +170,10 @@ a {
         /* left: 0; (ya estaba) */
         width: 100%; /* Ocupa todo el ancho */
         box-shadow: 0 0 0 100vmax rgba(0, 0, 0, .5);
-        z-index: 12;
+        
+        /* ⚠️ --- ARREGLO 2 --- ⚠️ (Subimos el z-index) */
+        z-index: 40; /* Mayor que 30 (el botón) */
+        
         overflow: hidden;
     }
     
