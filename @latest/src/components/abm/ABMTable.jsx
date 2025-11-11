@@ -1,14 +1,15 @@
 import React from 'react';
-import { Edit, Trash2 } from 'lucide-react'; 
+// Ya no necesitamos 'Edit' ni 'Trash2' porque sacamos los botones
+// import { Edit, Trash2 } from 'lucide-react'; 
 
 /**
  * Componente de tabla reutilizable para las páginas ABM.
  * @param {Array} columns - Definición de las columnas: [{ key: 'id', header: 'ID' }, ...]
  * @param {Array} data - Los datos a mostrar en la tabla.
- * @param {function} onEdit - Callback para la acción de editar.
- * @param {function} onDelete - Callback para la acción de eliminar.
+ *
+ * (Se quitaron onEdit y onDelete porque la columna de Acciones fue removida)
  */
-export default function ABMTable({ columns, data, onEdit, onDelete }) {
+export default function ABMTable({ columns, data }) {
 
     return (
         // Utilizamos las clases de tabla responsive definidas en gestionMultimedia.css
@@ -19,7 +20,7 @@ export default function ABMTable({ columns, data, onEdit, onDelete }) {
                         {columns.map(col => (
                             <th key={col.key}>{col.header}</th>
                         ))}
-                        <th>Acciones</th> 
+                        {/* <th>Acciones</th> <-- COLUMNA ELIMINADA */}
                     </tr>
                 </thead>
                 <tbody>
@@ -34,30 +35,17 @@ export default function ABMTable({ columns, data, onEdit, onDelete }) {
                                     </td>
                                 ))}
                                 
-                                {/* Celda de Acciones */}
-                                <td data-label="Acciones" className="actions-cell">
-                                    <button
-                                        className="btn-accion-tabla btn-editar"
-                                        // Ejecuta la función onEdit con el ID del elemento
-                                        onClick={() => onEdit(item.id)} 
-                                        title="Editar"
-                                    >
-                                        <Edit size={18} />
-                                    </button>
-                                    <button
-                                        className="btn-accion-tabla btn-eliminar"
-                                        onClick={() => onDelete(item.id)}
-                                        title="Eliminar"
-                                    >
-                                        <Trash2 size={18} />
-                                    </button>
-                                </td>
+                                {/* CELDA DE ACCIONES ELIMINADA */}
+                                {/* <td data-label="Acciones" className="actions-cell">
+                                    ...botones...
+                                </td> 
+                                */}
                             </tr>
                         ))
                     ) : (
                         <tr>
-                            {/* Muestra un mensaje si no hay datos. El colSpan es para que ocupe todo el ancho. */}
-                            <td colSpan={columns.length + 1} className="no-data-cell">
+                            {/* CAMBIO: El colSpan ahora es solo 'columns.length' porque quitamos 1 columna */}
+                            <td colSpan={columns.length} className="no-data-cell">
                                 No hay datos para mostrar.
                             </td>
                         </tr>
