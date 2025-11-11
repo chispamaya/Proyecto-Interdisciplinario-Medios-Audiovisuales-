@@ -335,3 +335,24 @@
         padding-top: 0.5rem;
     }
 }
+
+/* =======================================
+   AÑADIR ESTO AL FINAL DE EnVivo.css
+   ======================================= */
+
+/* --- PARCHE PARA BUG DE ANIMACIÓN HOVER --- */
+/* Resetea la animación rota en los botones de rating y encuestas */
+.rating-btn,
+.poll-submit-btn-x,
+.footer-icon {
+    position: static;
+    overflow: visible;
+    animation: none !important;
+}
+
+/* Elimina el pseudo-elemento 'after' que causa el parpadeo */
+.rating-btn::after,
+.poll-submit-btn-x::after,
+.footer-icon::after {
+    content: none !important;
+}

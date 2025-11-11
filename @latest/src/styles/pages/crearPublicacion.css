@@ -275,3 +275,26 @@
     color: var(--color-texto-secundario);
     transform: none;
 }
+
+/* =======================================
+   AÑADIR ESTO AL FINAL DE crearPublicacion.css
+   ======================================= */
+
+/* --- PARCHE PARA BUG DE ANIMACIÓN HOVER --- */
+/* Resetea la animación rota en todos los botones de esta página */
+.btn-guardar-form,
+.btn-descartar-form,
+.btn-add-option,
+.btn-remove-option {
+    position: static;
+    overflow: visible;
+    animation: none !important;
+}
+
+/* Elimina el pseudo-elemento 'after' que causa el parpadeo */
+.btn-guardar-form::after,
+.btn-descartar-form::after,
+.btn-add-option::after,
+.btn-remove-option::after {
+    content: none !important;
+}
