@@ -20,8 +20,8 @@ public class ContenidoRepository {
     private JdbcTemplate jdbcTemplate;
 
     /**
-     * Llama al SP cc (Crear Contenido).
-     * SP: cc(IN formato1 varchar(50), IN rutaArchivo1 varchar(500), IN idU1 int, IN idUs int, ...)
+     * (ACTUALIZADO) Llama al SP cc (Crear Contenido) con todos los campos.
+     * Usado por 'SubidaMultimedia.jsx'.
      */
     public String crearContenido(Contenido contenido, Long idUsuarioAuditoria) {
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate).withProcedureName("cc");
@@ -30,15 +30,21 @@ public class ContenidoRepository {
         inParams.put("formato1", contenido.getFormato());
         inParams.put("rutaArchivo1", contenido.getRutaArchivo());
         inParams.put("idU1", contenido.getIdUsuario());
-        inParams.put("idUs", idUsuarioAuditoria); // Parámetro de auditoría
+        inParams.put("idUs", idUsuarioAuditoria);
+        
+        // (5) Pasamos los nuevos parámetros al SP
+        inParams.put("titulo1", contenido.getTitulo());
+        inParams.put("tipo1", contenido.getTipo());
+        inParams.put("duracion1", contenido.getDuracion());
+        inParams.put("tamano1", contenido.getTamano());
 
         Map<String, Object> outParams = jdbcCall.execute(inParams);
         return (String) outParams.get("mensaje");
     }
 
     /**
-     * Llama al SP bc (Borrar Contenido).
-     * SP: bc(IN id1 int, IN idUs int, ...)
+     * (EXISTENTE) Llama al SP bc (Borrar Contenido).
+     * Usado por 'GestionMultimedia.jsx'.
      */
     public String borrarContenido(Long idContenidoAEliminar, Long idUsuarioAuditoria) {
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate).withProcedureName("bc");
@@ -52,16 +58,46 @@ public class ContenidoRepository {
     }
 
     /**
-     * (AÑADIDO PARA PRUEBAS) Llama al SP s('contenidos', null, @mensaje)
+     * (NUEVO) Llama al SP 'mces' (Modificar Contenido Estado).
+     * Usado por 'EstadoAprobacion.jsx'.
+     */
+    public String modificarEstadoContenido(Long idContenido, String nuevoEstado, Long idUsuarioAuditoria) {
+        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate).withProcedureName("mces");
+
+        Map<String, Object> inParams = new HashMap<>();
+        inParams.put("idContenido1", idContenido);
+        inParams.put("nuevoEstado1", nuevoEstado);
+        inParams.put("idUs", idUsuarioAuditoria);
+
+        Map<String, Object> outParams = jdbcCall.execute(inParams);
+        return (String) outParams.get("mensaje");
+    }
+
+    /**
+     * (NUEVO) Lista TODO el contenido.
+     * Usado por 'EstadoAprobacion.jsx'.
      */
     public List<Contenido> listarTodosLosContenidos() {
+        // Usamos el SP 's' genérico para traer todo
         String sql = "CALL s('contenidos', null, @mensaje)";
         return jdbcTemplate.query(sql, new ContenidoRowMapper());
+    }
+
+    /**
+     * (NUEVO) Lista contenido FILTRADO por usuario.
+     * Usado por 'GestionMultimedia.jsx' (que solo muestra "Tu contenido").
+     */
+    public List<Contenido> listarContenidosPorUsuario(Long idUsuario) {
+        // (6) Como el SP 's' no puede filtrar por usuario, escribimos el SQL.
+        String sql = "SELECT * FROM contenidos WHERE idUsuario = ?";
+        return jdbcTemplate.query(sql, new ContenidoRowMapper(), idUsuario);
     }
 }
 
 /**
- * (AÑADIDO PARA PRUEBAS) RowMapper para Contenido.
+ * (NUEVO) RowMapper para Contenido.
+ * Le dice a Spring cómo convertir una fila de la BD (con las nuevas columnas)
+ * en un objeto DTO Contenido.java.
  */
 class ContenidoRowMapper implements RowMapper<Contenido> {
     @Override
@@ -71,6 +107,14 @@ class ContenidoRowMapper implements RowMapper<Contenido> {
         contenido.setFormato(rs.getString("formato"));
         contenido.setRutaArchivo(rs.getString("rutaArchivo"));
         contenido.setIdUsuario(rs.getLong("idUsuario"));
+        
+        // Mapeamos los nuevos campos
+        contenido.setTitulo(rs.getString("titulo"));
+        contenido.setTipo(rs.getString("tipo"));
+        contenido.setEstado(rs.getString("estado"));
+        contenido.setDuracion(rs.getString("duracion"));
+        contenido.setTamano(rs.getString("tamano"));
+        
         return contenido;
     }
 }

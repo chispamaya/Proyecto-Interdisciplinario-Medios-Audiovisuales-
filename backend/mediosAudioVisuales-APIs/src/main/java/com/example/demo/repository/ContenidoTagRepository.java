@@ -1,6 +1,6 @@
 package com.example.demo.repository;
 
-import com.example.demo.dto.contenidoTag; // Asegúrate que el nombre de tu DTO sea este
+import com.example.demo.dto.contenidoTag;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.simple.SimpleJdbcCall;
@@ -34,6 +34,7 @@ public class ContenidoTagRepository {
     /**
      * Llama al SP bct (Borrar Contenido-Tag).
      * SP: bct(IN idC1 int, IN idUs int, ...)
+     * NOTA: Este SP borra TODOS los tags de un contenido, no solo uno.
      */
     public String borrarTagsPorContenido(Long idContenido, Long idUsuarioAuditoria) {
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate).withProcedureName("bct");
