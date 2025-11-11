@@ -1,0 +1,222 @@
+/* src/styles/pages/auditoria.css (ACTUALIZADO - Versión "Pro") */
+
+/* --- Variables de Diseño --- */
+:root {
+    --color-fondo-principal: #1a2a44; /* Azul oscuro elegante */
+    --color-fondo-secundario: #263e5e; /* Azul más claro para elementos */
+    --color-borde-divisor: #38517c; /* Borde sutil */
+    --color-texto-claro: #e0e6f0; /* Texto principal claro */
+    --color-texto-muted: #aab8c9; /* Texto secundario/cabecera */
+    --color-resaltado: #66b2ff; /* Azul brillante para interacción/énfasis */
+    --color-fondo-fila-par: #1f3350; /* Fondo para filas pares */
+    --color-fondo-fila-impar: #223757; /* Fondo para filas impares */
+    --color-scrollbar-thumb: #4a6fa5; /* Color del thumb del scroll */
+    --color-scrollbar-track: #1f3350; /* Color del track del scroll */
+}
+
+/* --- 1. Contenedor Principal de la Página --- */
+.auditoria-container {
+    width: 100%;
+    height: 100%; 
+    padding: 2rem 2.5rem; /* Aumento del padding */
+    background: var(--color-fondo-principal); /* Fondo principal */
+    color: var(--color-texto-claro);
+    display: flex;
+    flex-direction: column;
+    overflow: hidden; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; /* Fuente más moderna */
+}
+
+/* --- Título de la Página --- */
+.auditoria-header {
+    margin-bottom: 1.5rem; /* Más espacio */
+    padding-bottom: 1rem;
+    border-bottom: 1px solid var(--color-borde-divisor); /* Borde más sutil */
+    flex-shrink: 0;
+}
+
+.auditoria-header h1 {
+    font-size: 2.2rem; /* Título más grande */
+    font-weight: 700; /* Más énfasis */
+    margin: 0;
+    color: var(--color-texto-claro);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); /* Sombra de texto suave */
+}
+
+/* --- 2. Wrapper de Cabecera de la Tabla (SCROLL-X) --- */
+.auditoria-header-scroll-wrapper {
+    overflow-x: auto; 
+    background-color: var(--color-fondo-secundario); /* Fondo secundario */
+    border-radius: 8px 8px 0 0; /* Bordes redondeados arriba */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra suave */
+    margin-bottom: 0.5rem; /* Espacio entre cabecera y cuerpo */
+    flex-shrink: 0;
+}
+
+/* Contenido de la cabecera */
+.auditoria-list-header-content {
+    display: flex;
+    min-width: 700px; /* Ajuste del min-width para más espacio */
+}
+
+/* --- 3. Contenedor de la Lista (SCROLL VERTICAL) --- */
+.auditoria-list-container {
+    flex-grow: 1; 
+    overflow-y: auto; 
+    min-height: 0; 
+    background-color: var(--color-fondo-secundario); /* Mismo fondo que la cabecera */
+    border-radius: 0 0 8px 8px; /* Bordes redondeados abajo */
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); /* Sombra suave */
+}
+
+/* --- 4. Fila de Auditoría (SCROLL HORIZONTAL INDIVIDUAL) --- */
+.auditoria-row-scroll-wrapper {
+    overflow-x: auto; 
+    border-bottom: 1px solid var(--color-borde-divisor); /* Borde sutil */
+    transition: background-color 0.2s ease-in-out; /* Transición para hover */
+}
+/* Estilo de fila alterna */
+.auditoria-row-scroll-wrapper:nth-child(even) {
+    background-color: var(--color-fondo-fila-par);
+}
+.auditoria-row-scroll-wrapper:nth-child(odd) {
+    background-color: var(--color-fondo-fila-impar);
+}
+.auditoria-row-scroll-wrapper:last-child {
+    border-bottom: none; /* Eliminar el último borde */
+}
+/* Efecto hover en las filas */
+.auditoria-row-scroll-wrapper:hover {
+    background-color: rgba(102, 178, 255, 0.1); /* Resaltado suave al pasar el mouse */
+    cursor: pointer;
+}
+
+/* Contenido interno de la fila (el que se desborda) */
+.auditoria-row-content {
+    display: flex;
+    min-width: 700px; /* Debe coincidir con la cabecera */
+}
+
+/* --- Celdas (Comunes para cabecera y contenido) --- */
+.auditoria-cell {
+    padding: 1rem 1rem; /* Más padding en las celdas */
+    flex-shrink: 0; 
+    box-sizing: border-box; 
+    word-break: break-word; 
+    white-space: nowrap; /* Evitar que el texto se rompa en varias líneas */
+    overflow: hidden; /* Ocultar el desbordamiento si no hay nowrap */
+    text-overflow: ellipsis; /* Puntos suspensivos si el texto es demasiado largo */
+}
+
+/* --- Definición de columnas basado en la tabla 'auditoria' --- */
+.auditoria-cell.fecha {
+    flex-basis: 200px; /* Más espacio para fecha y hora */
+}
+.auditoria-cell.usuario {
+    flex-basis: 120px; 
+}
+.auditoria-cell.accion {
+    flex-basis: 150px; 
+    font-weight: 600; /* Énfasis en la acción */
+    color: var(--color-resaltado); /* Color para resaltar acciones */
+}
+.auditoria-cell.tabla {
+    flex-basis: 180px; 
+}
+.auditoria-cell.registro {
+    flex-basis: 100px; 
+    flex-grow: 1; /* El último campo puede crecer más */
+    text-align: right; /* Alineación a la derecha para IDs numéricos */
+}
+
+
+/* Estilo específico para la cabecera */
+.auditoria-list-header-content .auditoria-cell {
+    font-weight: 700;
+    color: var(--color-texto-muted); /* Color más tenue para la cabecera */
+    text-transform: uppercase;
+    font-size: 0.85rem; /* Un poco más grande */
+    letter-spacing: 0.05em; /* Espaciado entre letras */
+    background-color: var(--color-fondo-secundario); /* Asegura el fondo */
+    position: sticky; /* Sticky para la cabecera del scroll-x */
+    top: 0;
+    z-index: 1; /* Asegura que esté por encima de las filas */
+}
+
+/* --- Estilos de Scrollbars (Modernos y sutiles) --- */
+.auditoria-list-container::-webkit-scrollbar,
+.auditoria-row-scroll-wrapper::-webkit-scrollbar,
+.auditoria-header-scroll-wrapper::-webkit-scrollbar {
+    width: 7px;
+    height: 7px;
+}
+.auditoria-list-container::-webkit-scrollbar-track,
+.auditoria-row-scroll-wrapper::-webkit-scrollbar-track,
+.auditoria-header-scroll-wrapper::-webkit-scrollbar-track {
+    background: var(--color-scrollbar-track);
+    border-radius: 10px;
+}
+.auditoria-list-container::-webkit-scrollbar-thumb,
+.auditoria-row-scroll-wrapper::-webkit-scrollbar-thumb,
+.auditoria-header-scroll-wrapper::-webkit-scrollbar-thumb {
+    background-color: var(--color-scrollbar-thumb);
+    border-radius: 10px;
+    border: 2px solid var(--color-scrollbar-track); /* Borde para el thumb */
+}
+/* Firefox scrollbar styles */
+.auditoria-list-container,
+.auditoria-row-scroll-wrapper,
+.auditoria-header-scroll-wrapper {
+    scrollbar-width: thin;
+    scrollbar-color: var(--color-scrollbar-thumb) var(--color-scrollbar-track);
+}
+
+
+/* --- RESPONSIVE --- */
+@media (max-width: 768px) { /* Ajuste para tablets */
+    .auditoria-container {
+        padding: 1.5rem;
+    }
+
+    .auditoria-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .auditoria-list-header-content,
+    .auditoria-row-content {
+        min-width: 600px; /* Ajustado para pantallas medianas */
+    }
+    .auditoria-cell {
+        padding: 0.8rem 0.8rem;
+    }
+}
+
+@media (max-width: 480px) { /* Ajuste para móviles */
+    .auditoria-container {
+        padding: 1rem;
+    }
+
+    .auditoria-header h1 {
+        font-size: 1.5rem;
+    }
+
+    .auditoria-list-header-content,
+    .auditoria-row-content {
+        min-width: 500px; /* Ajustado para pantallas pequeñas */
+    }
+    .auditoria-cell.fecha {
+        flex-basis: 160px;
+    }
+    .auditoria-cell.usuario {
+        flex-basis: 90px;
+    }
+    .auditoria-cell.accion {
+        flex-basis: 120px;
+    }
+    .auditoria-cell.tabla {
+        flex-basis: 130px;
+    }
+    .auditoria-cell.registro {
+        flex-basis: 80px;
+    }
+}

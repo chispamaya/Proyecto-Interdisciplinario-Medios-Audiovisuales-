@@ -1,3 +1,5 @@
+// src/components/layout/sidebar.jsx (Modificado)
+
 import React, { useState } from "react";
 import { Link } from 'react-router-dom';
 import "../../styles/layout/sidebar.css";
@@ -14,7 +16,8 @@ import {
     Calendar,     // Armado de Parrilla
     UserCog,      // Gestión de Roles (ABM)
     BarChart,     // Reportes Audiencia
-    PlusSquare    // 💥 AÑADIDO DE VUELTA 💥
+    PlusSquare,   // Crear Publicacion
+    History       // 💥 AÑADIDO (para Auditoría) 💥
 } from 'lucide-react';
 
 // --- Enlaces para Editor y Productor ---
@@ -79,7 +82,6 @@ const ProgramadorLinks = ({ onClick }) => (
 // (💥 MODIFICADO 💥)
 const AdminLinks = ({ onClick }) => (
     <>
-        {/* 💥 SECCIÓN AÑADIDA 💥 */}
         <p className="panel-titulo">CONTENIDO</p>
         <li>
             <Link to="/admin/crear-publicacion" className="menu-item" onClick={onClick}>
@@ -103,12 +105,19 @@ const AdminLinks = ({ onClick }) => (
                 <span className="label">Reportes Audiencia</span>
             </Link>
         </li>
+        {/* 💥 SECCIÓN AÑADIDA 💥 */}
+        <li>
+            <Link to="/admin/auditoria" className="menu-item" onClick={onClick}>
+                <History size={20} color="var(--texto)" style={{ marginRight: '10px' }} />
+                <span className="label">Auditoría</span>
+            </Link>
+        </li>
     </>
 );
 
 
 // --- Componente Principal del SideBar ---
-// (Sin cambios en la lógica, se mantienen los iconos 'bi')
+// (Sin cambios en la lógica)
 export default function SideBar({ idRol }) {
     const [isMenuOpen, setIsMenuOpen] = useState(false);
     const menuClasses = `sub-header ${isMenuOpen ? 'visible' : ''}`;

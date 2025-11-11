@@ -1,0 +1,95 @@
+/* src/styles/pages/loginEspectador.css (NUEVO) */
+
+:root {
+    /* Colores del EspectadorLayout */
+    --color-acento-espectador: #007bff;
+    --color-fondo-espectador: #14213d;
+    --color-fondo-box: #0a101f;
+    --color-texto-principal: #ffffff;
+    --color-texto-secundario: #a0a8b9;
+    --color-borde: #2a3d66;
+}
+
+.login-espectador-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--color-fondo-espectador);
+    font-family: Arial, sans-serif;
+}
+
+.login-espectador-box {
+    background-color: var(--color-fondo-box);
+    padding: 2.5rem 3rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    width: 100%;
+    max-width: 450px; /* Un poco más ancho */
+    text-align: center;
+    border-top: 4px solid var(--color-acento-espectador); /* Detalle de diseño */
+}
+
+.login-espectador-logo {
+    margin-bottom: 1rem;
+}
+
+.login-espectador-logo img {
+    max-width: 180px;
+}
+
+.login-espectador-box h2 {
+    color: var(--color-texto-principal);
+    margin-bottom: 0.5rem;
+    font-weight: 700;
+    font-size: 2rem;
+}
+
+.login-espectador-subtitulo {
+    color: var(--color-texto-secundario);
+    margin-bottom: 2rem;
+    font-size: 1rem;
+}
+
+.login-espectador-box form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.login-espectador-btn {
+    background-color: var(--color-acento-espectador);
+    color: white;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 1rem;
+}
+
+.login-espectador-btn:hover {
+    background-color: #0056b3;
+}
+
+.login-espectador-registro-link {
+    margin-top: 1.5rem;
+    color: var(--color-texto-secundario);
+    font-size: 0.9rem;
+}
+
+.login-espectador-registro-link p {
+    margin: 0;
+}
+
+.login-espectador-registro-link a {
+    color: var(--color-acento-espectador);
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.login-espectador-registro-link a:hover {
+    text-decoration: underline;
+}

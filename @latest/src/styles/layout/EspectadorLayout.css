@@ -1,84 +1,83 @@
-/* src/styles/layout/EspectadorLayout.css */
+/* src/styles/layout/EspectadorLayout.css (CORREGIDO) */
 
-/* --- Contenedor principal de la página --- */
-.envivo-page-container {
-  background-color: #333; /* Fondo gris oscuro general */
-  min-height: 100vh;
+:root {
+  --header-espectador-height: 70px;
+  --header-espectador-bg: #0a101f;
+  --color-texto-espectador: #ffffff;
+  --color-acento-espectador: #007bff;
+  --color-fondo-espectador: #14213d;
+}
+
+.espectador-layout-container {
   width: 100%;
-  display: flex; /* Para que el header y main ocupen espacio */
+  min-height: 100vh;
+  display: flex;
   flex-direction: column;
+  background-color: var(--color-fondo-espectador);
 }
 
-/* --- Header (Barra negra superior) --- */
-.envivo-header {
-  background-color: black;
-  padding: 10px 20px;
-  border-bottom: 3px solid #00AFFF; /* Borde azul */
+/* --- HEADER --- */
+.header-espectador {
+  width: 100%;
+  height: var(--header-espectador-height);
+  background-color: var(--header-espectador-bg);
+  border-bottom: 2px solid var(--color-acento-espectador);
+  padding: 0 2rem;
+  display: flex;
+  justify-content: space-between; /* Modificado */
+  align-items: center;
+  flex-shrink: 0;
+  box-sizing: border-box;
+}
+
+.header-espectador-logo-container {
   display: flex;
   align-items: center;
-  color: white;
-  flex-shrink: 0; /* Evita que el header se achique */
 }
 
-.envivo-logo {
-  font-weight: bold;
-  margin-right: 25px;
-  font-size: 1.2rem;
+.header-espectador-logo {
+  height: 40px; 
+  width: auto;
+}
+
+/* --- ESTILOS PARA EL BOTÓN --- */
+.header-espectador-login {
   display: flex;
   align-items: center;
 }
 
-.envivo-logo-icon {
-  color: #FFA500; /* Color naranja del ícono del logo */
-  font-size: 1.5rem;
-  margin-left: 5px;
-}
-
-.envivo-nav,
-.envivo-nav-active {
-  color: #aaa; /* Color grisáceo para links inactivos */
+.btn-login-espectador {
+  font-family: Arial, sans-serif;
+  background-color: var(--color-acento-espectador);
+  color: var(--color-texto-espectador);
+  padding: 0.6rem 1.2rem;
+  border-radius: 6px;
   text-decoration: none;
-  font-size: 1rem;
-  margin: 0 10px;
-  padding: 5px 0;
-  transition: color 0.2s;
-}
-
-.envivo-nav-active {
-  color: white;
   font-weight: bold;
+  font-size: 0.9rem;
+  transition: background-color 0.2s ease, transform 0.2s ease;
 }
 
-.envivo-nav:hover {
-  color: white;
+.btn-login-espectador:hover {
+  background-color: #0056b3;
+  transform: translateY(-2px);
+}
+/* ------------------------------------------- */
+
+
+.espectador-main-content {
+  flex-grow: 1;
+  width: 100%;
 }
 
-/* --- Responsive del Header --- */
-@media (max-width: 768px) {
-  .envivo-header {
-    padding: 10px 15px;
-    font-size: 0.9rem;
+/* Responsive */
+@media (max-width: 600px) {
+  .header-espectador {
+      padding: 0 1rem;
   }
-  .envivo-logo {
-    margin-right: 15px;
-    font-size: 1rem;
-  }
-  .envivo-nav, .envivo-nav-active {
-    margin: 0 8px;
-    font-size: 0.9rem;
-  }
-}
 
-@media (max-width: 480px) {
-   .envivo-header {
-     flex-wrap: wrap;
-     justify-content: center;
-     padding: 8px;
-   }
-   .envivo-logo {
-     width: 100%;
-     justify-content: center;
-     margin-bottom: 5px;
-     margin-right: 0;
-   }
+  .btn-login-espectador {
+      padding: 0.5rem 0.8rem;
+      font-size: 0.8rem;
+  }
 }

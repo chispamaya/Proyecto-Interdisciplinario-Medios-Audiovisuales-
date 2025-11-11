@@ -1,0 +1,79 @@
+/* src/styles/pages/registro.css (NUEVO) */
+
+.registro-container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: #14213d;
+    font-family: Arial, sans-serif;
+    padding: 2rem 0; /* Añadido por si el form es más largo */
+}
+
+.registro-box {
+    background-color: #0a101f;
+    padding: 2.5rem 3rem;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.4);
+    width: 100%;
+    max-width: 420px; /* Un poco más ancho para el título */
+    text-align: center;
+    border: 1px solid #2a3d66;
+}
+
+.registro-logo {
+    margin-bottom: 1.5rem;
+}
+
+.registro-logo img {
+    max-width: 200px;
+}
+
+.registro-box h2 {
+    color: #ffffff;
+    margin-bottom: 2rem;
+    font-weight: 600;
+}
+
+.registro-box form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.registro-btn {
+    background-color: #007bff;
+    color: white;
+    padding: 0.8rem;
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: bold;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
+    margin-top: 1rem;
+}
+
+.registro-btn:hover {
+    background-color: #0056b3;
+}
+
+.registro-login-link {
+    margin-top: 1.5rem;
+    color: #a0a8b9;
+    font-size: 0.9rem;
+}
+
+.registro-login-link p {
+    margin: 0;
+}
+
+.registro-login-link a {
+    color: #007bff;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+.registro-login-link a:hover {
+    text-decoration: underline;
+}

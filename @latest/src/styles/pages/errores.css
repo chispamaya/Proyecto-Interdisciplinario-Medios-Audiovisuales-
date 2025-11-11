@@ -1,164 +1,210 @@
-/* src/styles/pages/errores.css (Restaurado + Modificado) */
+/* src/styles/pages/errores.css (ACTUALIZADO - Scrollbars Ocultos) */
 
-/* --- Variables --- */
+/* --- Variables de Diseño --- */
 :root {
-    --color-fondo-errores: #14213d; 
-    --color-fondo-header-tabla: #0a101f; 
-    --color-borde-fila: #2a3d66; 
-    --color-texto-principal: #ffffff;
-    --color-texto-header: #a0a8b9;
-    --color-danger: #d9534f;
-    --color-warning: #FFC107;
-    --color-scrollbar-thumb: #2a3d66;
+    --color-fondo-principal: #1a2a44; 
+    --color-fondo-secundario: #263e5e; 
+    --color-borde-divisor: #38517c; 
+    --color-texto-claro: #e0e6f0; 
+    --color-texto-muted: #aab8c9; 
+    
+    /* Colores para los tags */
+    --color-danger-texto: #f87171; 
+    --color-danger-fondo: rgba(248, 113, 113, 0.1);
+    --color-warning-texto: #facc15; 
+    --color-warning-fondo: rgba(250, 204, 21, 0.1);
+
+    /* Variables de scrollbar (ya no se usan pero se dejan por si acaso) */
+    --color-scrollbar-thumb: #4a6fa5; 
+    --color-scrollbar-track: #1f3350; 
 }
 
-/* --- 1. Contenedor Principal --- */
+/* --- 1. Contenedor Principal de la Página --- */
 .errores-container {
     width: 100%;
     height: 100%; 
-    padding: 1.5rem 2rem;
-    background-color: var(--color-fondo-errores);
-    color: var(--color-texto-principal);
+    padding: 2rem 2.5rem; 
+    background: var(--color-fondo-principal); 
+    color: var(--color-texto-claro);
     display: flex;
     flex-direction: column;
     overflow: hidden; 
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
 }
 
 /* --- Título de la Página --- */
 .errores-header {
-    margin-bottom: 1rem;
+    margin-bottom: 1.5rem; 
     padding-bottom: 1rem;
-    border-bottom: 2px solid var(--color-borde-fila);
+    border-bottom: 1px solid var(--color-borde-divisor); 
     flex-shrink: 0;
 }
 
 .errores-header h1 {
-    font-size: 1.8rem;
-    font-weight: 600;
+    font-size: 2.2rem; 
+    font-weight: 700; 
     margin: 0;
-    color: var(--color-texto-principal);
+    color: var(--color-texto-claro);
+    text-shadow: 0 2px 4px rgba(0, 0, 0, 0.3); 
 }
 
-/* --- 2. Wrapper de Cabecera (NUEVO SCROLL-X) --- */
-/* Este div maneja el scroll horizontal (X) SÓLO para la cabecera */
-.header-scroll-wrapper {
-    overflow-x: auto; /* SCROLL HORIZONTAL (X) para la cabecera */
-    background-color: var(--color-fondo-header-tabla);
-    border-bottom: 2px solid var(--color-borde-fila);
+/* --- 2. Wrapper de Cabecera de la Tabla (SCROLL-X) --- */
+.errores-header-scroll-wrapper {
+    overflow-x: auto; 
+    background-color: var(--color-fondo-secundario); 
+    border-radius: 8px 8px 0 0; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
+    margin-bottom: 0.5rem; 
     flex-shrink: 0;
 }
 
 /* Contenido de la cabecera */
 .errores-list-header-content {
     display: flex;
-    /* Ancho mínimo que fuerza el scroll en pantallas chicas */
-    min-width: 650px; 
+    min-width: 700px; 
 }
 
 /* --- 3. Contenedor de la Lista (SCROLL VERTICAL) --- */
-/* Este div maneja el scroll vertical (Y) si hay muchos errores */
 .errores-list-container {
-    flex-grow: 1; /* Ocupa el espacio restante */
-    overflow-y: auto; /* SCROLL VERTICAL (Y) */
+    flex-grow: 1; 
+    overflow-y: auto; 
     min-height: 0; 
+    background-color: var(--color-fondo-secundario); 
+    border-radius: 0 0 8px 8px; 
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.2); 
 }
 
 /* --- 4. Fila de Error (SCROLL HORIZONTAL INDIVIDUAL) --- */
-/* Este wrapper maneja el scroll horizontal individual de CADA fila */
 .error-row-scroll-wrapper {
-    overflow-x: auto; /* SCROLL HORIZONTAL (X) INDIVIDUAL */
-    border-bottom: 1px solid var(--color-borde-fila);
+    overflow-x: auto; 
+    border-bottom: 1px solid var(--color-borde-divisor); 
+    transition: background-color 0.2s ease-in-out; 
+}
+/* Estilo de fila alterna */
+.error-row-scroll-wrapper:nth-child(even) {
+    background-color: var(--color-scrollbar-track); 
+}
+.error-row-scroll-wrapper:nth-child(odd) {
+    background-color: #223757;
 }
 .error-row-scroll-wrapper:last-child {
-    border-bottom: none;
+    border-bottom: none; 
+}
+.error-row-scroll-wrapper:hover {
+    background-color: rgba(102, 178, 255, 0.1); 
 }
 
 /* Contenido interno de la fila (el que se desborda) */
 .error-row-content {
     display: flex;
-    /* Ancho mínimo que fuerza el scroll en pantallas chicas */
-    min-width: 650px; 
+    min-width: 700px; 
 }
 
 /* --- Celdas (Comunes para cabecera y contenido) --- */
 .error-cell {
-    padding: 1rem 0.8rem;
+    padding: 1rem 1rem; 
     flex-shrink: 0; 
     box-sizing: border-box; 
+    display: flex; 
+    align-items: center;
 }
+
+/* --- Definición de columnas basado en la tabla 'errores' --- */
 .error-cell.fecha {
+    flex-basis: 200px; 
+    white-space: nowrap;
+}
+.error-cell.usuario {
     flex-basis: 120px; 
+    white-space: nowrap;
 }
 .error-cell.tipo {
     flex-basis: 180px; 
+    white-space: nowrap;
 }
 .error-cell.mensaje {
     flex-basis: 100%; 
     flex-grow: 1;
     white-space: pre-wrap; 
     word-break: break-word; 
+    align-items: flex-start; 
+    padding-top: 1rem; 
+    padding-bottom: 1rem;
 }
+
 
 /* Estilo específico para la cabecera */
 .errores-list-header-content .error-cell {
     font-weight: 700;
-    color: var(--color-texto-header);
+    color: var(--color-texto-muted); 
     text-transform: uppercase;
-    font-size: 0.8rem;
-    padding-top: 0.8rem;
-    padding-bottom: 0.8rem;
+    font-size: 0.85rem; 
+    letter-spacing: 0.05em; 
+    background-color: var(--color-fondo-secundario); 
+    position: sticky; 
+    top: 0;
+    z-index: 1; 
 }
 
-/* --- Tags de Tipo de Error --- */
+/* --- Tags de Tipo de Error (Estilo "Pro") --- */
 .tipo-tag {
-    font-weight: bold;
-    padding: 0.2rem 0.6rem;
-    border-radius: 12px;
+    font-weight: 700;
+    padding: 0.25rem 0.75rem;
+    border-radius: 16px; 
     font-size: 0.8rem;
     display: inline-block;
     border: 1px solid transparent;
 }
 
 .tipo-error {
-    color: var(--color-danger);
-    background-color: rgba(217, 83, 79, 0.1);
-    border-color: var(--color-danger);
+    color: var(--color-danger-texto);
+    background-color: var(--color-danger-fondo);
+    border-color: var(--color-danger-texto);
 }
 
 .tipo-advertencia {
-    color: var(--color-warning);
-    background-color: rgba(255, 193, 7, 0.1);
-    border-color: var(--color-warning);
+    color: var(--color-warning-texto);
+    background-color: var(--color-warning-fondo);
+    border-color: var(--color-warning-texto);
 }
 
-/* --- Estilos de Scrollbars (Aplica a los 3) --- */
+
+/* --- 💥 ESTILOS DE SCROLLBARS (OCULTOS) 💥 --- */
 .errores-list-container::-webkit-scrollbar,
 .error-row-scroll-wrapper::-webkit-scrollbar,
-.header-scroll-wrapper::-webkit-scrollbar {
-    width: 8px;
-    height: 8px;
+.errores-header-scroll-wrapper::-webkit-scrollbar {
+    display: none; /* Oculta scrollbar en Chrome, Safari y Edge */
 }
-.errores-list-container::-webkit-scrollbar-track,
-.error-row-scroll-wrapper::-webkit-scrollbar-track,
-.header-scroll-wrapper::-webkit-scrollbar-track {
-    background: var(--color-fondo-header-tabla);
-}
-.errores-list-container::-webkit-scrollbar-thumb,
-.error-row-scroll-wrapper::-webkit-scrollbar-thumb,
-.header-scroll-wrapper::-webkit-scrollbar-thumb {
-    background-color: var(--color-scrollbar-thumb);
-    border-radius: 4px;
-}
+
+/* Oculta scrollbar en Firefox */
 .errores-list-container,
 .error-row-scroll-wrapper,
-.header-scroll-wrapper {
-    scrollbar-width: thin;
-    scrollbar-color: var(--color-scrollbar-thumb) var(--color-fondo-header-tabla);
+.errores-header-scroll-wrapper {
+    scrollbar-width: none;  /* Firefox */
+    -ms-overflow-style: none; /* IE y Edge (versiones viejas) */
 }
 
 
 /* --- RESPONSIVE --- */
-@media (max-width: 600px) {
+@media (max-width: 768px) { 
+    .errores-container {
+        padding: 1.5rem;
+    }
+
+    .errores-header h1 {
+        font-size: 1.8rem;
+    }
+
+    .errores-list-header-content,
+    .error-row-content {
+        min-width: 650px; 
+    }
+    .error-cell {
+        padding: 0.8rem 0.8rem;
+    }
+}
+
+@media (max-width: 480px) { 
     .errores-container {
         padding: 1rem;
     }
@@ -167,9 +213,17 @@
         font-size: 1.5rem;
     }
 
-    /* Hacemos el min-width más pequeño en móvil para no forzar tanto el scroll */
     .errores-list-header-content,
     .error-row-content {
-        min-width: 500px; 
+        min-width: 600px; 
+    }
+    .error-cell.fecha {
+        flex-basis: 160px;
+    }
+    .error-cell.usuario {
+        flex-basis: 90px;
+    }
+    .error-cell.tipo {
+        flex-basis: 150px;
     }
 }

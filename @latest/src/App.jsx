@@ -1,4 +1,4 @@
-// src/App.jsx
+// src/App.jsx (Corregido)
 
 import './styles/App.css';
 import { Routes, Route } from 'react-router-dom';
@@ -9,7 +9,7 @@ import EspectadorLayout from './components/layout/EspectadorLayout.jsx';
 
 // --- Pages ---
 import Login from './pages/Login.jsx';
-import Perfil from './pages/Perfil.jsx'; // 
+import Perfil from './pages/perfil.jsx'; // Corregido a minúscula si el archivo es 'perfil.jsx'
 import ReportesAudiencia from './pages/admin/ReportesAudiencia.jsx';
 import SubidaMultimedia from './pages/editor-productor/SubidaMultimedia.jsx';
 import EstadoAprobacion from './pages/editor-productor/EstadoAprobacion.jsx';
@@ -27,30 +27,32 @@ import Errores from './pages/programador/errores.jsx';
 // --- Pages Espectador ---
 import EnVivo from './pages/espectador/EnVivo.jsx';
 import EncuestasEspectador from './pages/espectador/EncuestasEspectador.jsx';
+import Registro from './pages/espectador/Registro.jsx'; 
+import LoginEspectador from './pages/espectador/LoginEspectador.jsx'; 
 
-// --- 徴 1. IMPORTAR NUEVAS COSAS 徴 ---
-import { ParrillaProvider } from './context/ParrillaContext';
-// import { FeedProvider } from './context/FeedContext.jsx'; // <--- No lo usamos por ahora
-// import CrearPublicacion from './pages/admin/CrearPublicacion.jsx'; // <--- ELIMINADO
-import CrearEncuesta from './pages/admin/CrearEncuesta.jsx'; // 💥 AÑADIDO 💥
+// --- Context ---
+import { ParrillaProvider } from './context/ParrillaContext.jsx'; // 💥 .jsx AÑADIDO
+import CrearEncuesta from './pages/admin/CrearEncuesta.jsx'; 
+import Auditoria from './pages/admin/Auditoria.jsx'; 
 
 function App() {
   return (
     <>
-      {/* 徴 2. SACAMOS EL FEEDPROVIDER POR AHORA 徴 */}
-      {/* <FeedProvider> */}
         <ParrillaProvider>
           <Routes>
-            {/* --- Ruta de Login (Sin layout) --- */}
+            {/* --- Rutas sin Layout (Logins y Registro) --- */}
             <Route path="/" element={<Login />} />
+            <Route path="/registro" element={<Registro />} />
+            <Route path="/login-espectador" element={<LoginEspectador />} />
 
             {/* --- Rutas de Espectador --- */}
+            {/* 💥 AQUÍ ESTABA EL ERROR (Decía <Groute>) 💥 */}
             <Route element={<EspectadorLayout />}>
               <Route path="/en-vivo" element={<EnVivo />} />
               <Route path="/encuestas-espectador" element={<EncuestasEspectador />} />
             </Route>
 
-            {/* --- Rutas de Admin --- */}
+            {/* --- Rutas de Admin/Empleados --- */}
             <Route element={<AppLayout />}>
               <Route path="/perfil" element={<Perfil />} />
               <Route path="/subida" element={<SubidaMultimedia />} />
@@ -69,14 +71,12 @@ function App() {
               <Route path="/controlEmision" element={<ControlEmision />} />
               <Route path="/errores" element={<Errores />} />
 
-              {/* 徴 3. RUTA AÑADIDA 徴 */}
-              {/* <Route path="/admin/crear-publicacion" element={<CrearPublicacion />} /> */}
-              <Route path="/admin/crear-publicacion" element={<CrearEncuesta />} /> {/* 💥 AÑADIDO 💥 */}
+              <Route path="/admin/crear-publicacion" element={<CrearEncuesta />} /> 
+              <Route path="/admin/auditoria" element={<Auditoria />} /> 
             </Route>
 
           </Routes>
         </ParrillaProvider>
-      {/* </FeedProvider> */}
     </>
   );
 }

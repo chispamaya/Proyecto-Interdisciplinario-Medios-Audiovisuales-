@@ -1,42 +1,32 @@
+// src/components/layout/EspectadorLayout.jsx (CORREGIDO)
+
 import React from 'react';
-import { Outlet, NavLink } from 'react-router-dom';
-// Importamos el CSS que crearemos en el siguiente paso
-import '../../styles/layout/EspectadorLayout.css'; 
+import { Outlet, Link } from 'react-router-dom';
+import '../../styles/layout/EspectadorLayout.css';
+import logo from '../../assets/logo.png'; 
 
-// --- Componente del Header (Ahora vive en el Layout) ---
-function EspectadorHeader() {
-  return (
-    <header className="envivo-header">
-      <div className="envivo-logo">
-        <span>My</span>
-        <span className="envivo-logo-icon">⚙️</span>
-      </div>
-      <NavLink
-        to="/en-vivo"
-        end
-        className={({ isActive }) => isActive ? "envivo-nav-active" : "envivo-nav"}
-      >
-        Inicio
-      </NavLink>
-      <NavLink
-        to="/encuestas-espectador"
-        className={({ isActive }) => isActive ? "envivo-nav-active" : "envivo-nav"}
-      >
-        Encuestas
-      </NavLink>
-    </header>
-  );
-}
-
-// --- Layout Principal del Espectador ---
 export default function EspectadorLayout() {
-  return (
-    <div className="envivo-page-container">
-      {/* 1. Muestra el header negro */}
-      <EspectadorHeader />
-      
-      {/* 2. 'Outlet' renderiza la página hija (EnVivo o Encuestas) */}
-      <Outlet /> 
-    </div>
-  );
+    return (
+        <div className="espectador-layout-container">
+            
+            {/* --- HEADER --- */}
+            <header className="header-espectador">
+                <div className="header-espectador-logo-container">
+                    <img src={logo} alt="Logo Canal" className="header-espectador-logo" />
+                </div>
+                
+                {/* 💥 BOTÓN APUNTA AL NUEVO LOGIN 💥 */}
+                <div className="header-espectador-login">
+                    <Link to="/login-espectador" className="btn-login-espectador">
+                        Iniciar Sesión
+                    </Link>
+                </div>
+            </header>
+
+            {/* --- CONTENIDO PRINCIPAL (EnVivo, etc.) --- */}
+            <main className="espectador-main-content">
+                <Outlet /> 
+            </main>
+        </div>
+    );
 }
