@@ -1,21 +1,18 @@
-package com.example.demo.dto; // (O el paquete que estés usando, ej: com.example.mediosAudioVisuales.model)
+package com.example.demo.dto; 
 
 import lombok.Data;
 import java.time.LocalDateTime;
 
-@Data // <-- Esta se queda (es de Lombok)
+@Data
 public class Auditoria {
 
-    // Se van @Id y @GeneratedValue
     private Long id;
-
     private String accion;
     private String tablaM;
-    private Integer registro_afectado_id;
     private LocalDateTime fecha;
+    private Long usuarioId; // Correcto (camelCase)
 
-    // Se van @ManyToOne y @JoinColumn
-    // Reemplazamos el objeto 'Usuario' por el ID (la Foreign Key)
-    // Tu script SQL la llama 'usuario_id'
-    private Long usuarioId; 
+    // 💥 ¡CAMBIO HECHO AQUÍ! 💥
+    // Renombrado de 'registro_afectado_id' a 'registroAfectadoId'
+    private Long registroAfectadoId; 
 }
