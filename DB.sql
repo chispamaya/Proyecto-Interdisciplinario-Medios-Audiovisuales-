@@ -35,6 +35,7 @@ CREATE TABLE segmentos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     estadoAprobacion VARCHAR(50),
     duracion FLOAT,
+	orden int,
     titulo VARCHAR(50),
     idPrograma INT,
     FOREIGN KEY (idPrograma) REFERENCES programas(id)
@@ -387,7 +388,7 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
    SET mensaje = 'Rol del usuario actualizado con éxito.';
  END //
  
- CREATE PROCEDURE cs(IN estadoAprobacion1 varchar(50), IN duracion1 FLOAT, IN titulo1 varchar(50), IN idP1 int, IN idUs int, OUT mensaje varchar(50))
+ CREATE PROCEDURE cs(IN estadoAprobacion1 varchar(50), IN duracion1 FLOAT, IN orden1 int, IN titulo1 varchar(50), IN idP1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
 	DECLARE error varchar(500);
 	DECLARE errorC varchar(50);
@@ -404,7 +405,7 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	 END;
       SET @current_user_id = idUs;
 	START TRANSACTION;
-	 INSERT INTO segmentos(estadoAprobacion, duracion, titulo, idPrograma) VALUES(estadoAprobacion1, duracion1, titulo1, idP1);
+	 INSERT INTO segmentos(estadoAprobacion, duracion, orden, titulo, idPrograma) VALUES(estadoAprobacion1, duracion1, orden1, titulo1, idP1);
 	COMMIT;
    SET @current_user_id = NULL;
    SET mensaje = 'Segmento ingresado con éxito.';
@@ -433,7 +434,7 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
    SET mensaje = 'Segmento borrado con éxito.' ;
  END //
 
- CREATE PROCEDURE ms(IN id1 int, IN estadoAprobacion1 varchar(50), IN duracion1 FLOAT, IN titulo1 varchar(50), IN idP1 int, IN idUs int, OUT mensaje varchar(50))
+ CREATE PROCEDURE ms(IN id1 int, IN estadoAprobacion1 varchar(50), IN duracion1 FLOAT, IN orden1 int, IN titulo1 varchar(50), IN idP1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
 	DECLARE error varchar(500);
 	DECLARE errorC varchar(50);
@@ -450,8 +451,8 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	 END;
 	SET @current_user_id = idUs;
 	START TRANSACTION;
-	 UPDATE segmentos
-	 SET estadoAprobacion = estadoAprobacion1, duracion = duracion1, titulo = titulo1, idPrograma = idP1
+	 UPDATE s
+	 SET estadoAprobacion = estadoAprobacion1, duracion = duracion1, orden = orden1, titulo = titulo1, idPrograma = idP1
 	 WHERE id = id1;
 	COMMIT;
    SET @current_user_id = NULL;
@@ -1195,6 +1196,7 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (11, 6);
 
 
 INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7); 
+
 
 
 
