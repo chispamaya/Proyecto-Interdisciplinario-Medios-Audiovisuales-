@@ -78,6 +78,7 @@ CREATE TABLE contenidos (
     id INT AUTO_INCREMENT PRIMARY KEY,
     formato VARCHAR(50),
     rutaArchivo VARCHAR(500),
+	texto varchar(500),
     idUsuario INT,
     FOREIGN KEY (idUsuario) REFERENCES usuario(id)
 );
@@ -559,7 +560,7 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
    SET mensaje = 'Datos de la emisión actualizados con éxito.';
  END //
  
- CREATE PROCEDURE cc(IN formato1 varchar(50), IN rutaArchivo1 varchar(500), IN idU1 int, IN idUs int, OUT mensaje varchar(50))
+ CREATE PROCEDURE cc(IN formato1 varchar(50), IN rutaArchivo1 varchar(500), IN texto1 varchar(500), IN idU1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
 	DECLARE error varchar(500);
 	DECLARE errorC varchar(50);
@@ -576,7 +577,7 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	 END;
      SET @current_user_id = idUs;
 	START TRANSACTION;
-	 INSERT INTO contenidos(formato,rutaArchivo,idUsuario) VALUES(formato1,rutaArchivo1,idU1);
+	 INSERT INTO contenidos(formato,rutaArchivo, texto, idUsuario) VALUES(formato1,rutaArchivo1,texto1,idU1);
 	COMMIT;
 	SET @current_user_id = NULL;
    SET mensaje = 'Contenido subido con éxito.';
@@ -1194,6 +1195,7 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (11, 6);
 
 
 INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7); 
+
 
 
 
