@@ -72,27 +72,27 @@ public class AudienciaConRepository {
         // nuevo 'ReporteAudienciaRowMapper' para construir los objetos.
         return jdbcTemplate.query(sql, new ReporteAudienciaRowMapper());
     }
-    /**
-     * (NUEVO) RowMapper para el Reporte.
-     * Le enseña a Spring cómo convertir una fila del resultado SQL
-     * en un objeto 'ReporteAudienciaDTO'.
-     */
-    class ReporteAudienciaRowMapper implements RowMapper<ReporteAudienciaDTO> {
-        @Override
-        public ReporteAudienciaDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
-            ReporteAudienciaDTO reporte = new ReporteAudienciaDTO();
-            
-            // Mapeamos la columna 'idContenido' del SQL al campo 'idContenido' del DTO
-            reporte.setIdContenido(rs.getLong("idContenido"));
-            
-            // Mapeamos la columna 'totalLikes' del SQL al campo 'totalLikes' del DTO
-            reporte.setTotalLikes(rs.getLong("totalLikes"));
-            
-            // Mapeamos la columna 'totalDislikes' del SQL al campo 'totalDislikes' del DTO
-            reporte.setTotalDislikes(rs.getLong("totalDislikes"));
-            
-            return reporte;
-        }
-    }
 }
 
+/**
+ * (NUEVO) RowMapper para el Reporte.
+ * Le enseña a Spring cómo convertir una fila del resultado SQL
+ * en un objeto 'ReporteAudienciaDTO'.
+ */
+class ReporteAudienciaRowMapper implements RowMapper<ReporteAudienciaDTO> {
+    @Override
+    public ReporteAudienciaDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+        ReporteAudienciaDTO reporte = new ReporteAudienciaDTO();
+        
+        // Mapeamos la columna 'idContenido' del SQL al campo 'idContenido' del DTO
+        reporte.setIdContenido(rs.getLong("idContenido"));
+        
+        // Mapeamos la columna 'totalLikes' del SQL al campo 'totalLikes' del DTO
+        reporte.setTotalLikes(rs.getLong("totalLikes"));
+        
+        // Mapeamos la columna 'totalDislikes' del SQL al campo 'totalDislikes' del DTO
+        reporte.setTotalDislikes(rs.getLong("totalDislikes"));
+        
+        return reporte;
+    }
+}

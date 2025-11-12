@@ -9,8 +9,9 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet; // (2) IMPORTAR
 import java.sql.SQLException; // (3) IMPORTAR
+import java.time.LocalDate; // (4) IMPORTAR
 import java.util.HashMap;
-import java.util.List; // (4) IMPORTAR
+import java.util.List; // (5) IMPORTAR
 import java.util.Map;
 
 @Repository
@@ -21,13 +22,12 @@ public class DiaRepository {
 
     /**
      * Llama al SP cd (Crear Dia).
-     * Asigna un programa a una fecha.
      */
     public String crearDia(Dia dia, Long idUsuarioAuditoria) {
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate).withProcedureName("cd");
 
         Map<String, Object> inParams = new HashMap<>();
-        inParams.put("dia1", dia.getDia()); // Asumiendo que getDia() devuelve java.time.LocalDate
+        inParams.put("dia1", dia.getDia()); 
         inParams.put("idP1", dia.getIdPrograma());
         inParams.put("idUs", idUsuarioAuditoria); 
 
@@ -37,7 +37,7 @@ public class DiaRepository {
 
     /**
      * Llama al SP bd (Borrar Dia).
-     * Quita un programa de una fecha USANDO EL ID DEL DÍA.
+     * Borra por el ID de la tabla 'dias'.
      */
     public String borrarDia(Long idDiaAEliminar, Long idUsuarioAuditoria) {
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate).withProcedureName("bd");
@@ -51,33 +51,36 @@ public class DiaRepository {
     }
 
     /**
-     * (NUEVO) Llama al SP s('dias', ...) para listar todas las asignaciones.
-     * Necesario para que 'ArmadoParrillaHoraria.jsx' pueda mostrar el calendario.
-     */
-    public List<Dia> listarTodosLosDias() {
-        // Usamos el SP 's' genérico
-        String sql = "CALL s('dias', null, @mensaje)";
-        return jdbcTemplate.query(sql, new DiaRowMapper());
-    }
-
-    /**
      * (NUEVO) Lista los días asignados a un programa específico.
-     * Necesario para 'ABMProgramasForm.jsx' (Modo Lento).
+     * Este es el método que faltaba y causaba el error.
      */
     public List<Dia> listarDiasPorPrograma(Long idPrograma) {
         // Como el SP 's' no puede filtrar por 'idPrograma', usamos SQL directo.
         String sql = "SELECT * FROM dias WHERE idPrograma = ?";
         return jdbcTemplate.query(sql, new DiaRowMapper(), idPrograma);
     }
-    class DiaRowMapper implements RowMapper<Dia> {
-        @Override
-        public Dia mapRow(ResultSet rs, int rowNum) throws SQLException {
-            Dia dia = new Dia();
-            dia.setId(rs.getLong("id"));
-            dia.setDia(rs.getDate("dia").toLocalDate()); // Convierte DATE de SQL a LocalDate de Java
-            dia.setIdPrograma(rs.getLong("idPrograma"));
-            return dia;
-        }
+    
+    /**
+     * (NUEVO) Lista todos los días de la parrilla.
+     */
+    public List<Dia> listarTodosLosDias() {
+        String sql = "CALL s('dias', null, @mensaje)";
+        return jdbcTemplate.query(sql, new DiaRowMapper());
     }
 }
 
+/**
+ * (NUEVO) RowMapper para Dia.
+ * Le dice a Spring cómo convertir una fila de la tabla 'dias'
+ * en un objeto Dia.java.
+ */
+class DiaRowMapper implements RowMapper<Dia> {
+    @Override
+    public Dia mapRow(ResultSet rs, int rowNum) throws SQLException {
+        Dia dia = new Dia();
+        dia.setId(rs.getLong("id"));
+        dia.setDia(rs.getDate("dia").toLocalDate()); // Convierte DATE de SQL a LocalDate de Java
+        dia.setIdPrograma(rs.getLong("idPrograma"));
+        return dia;
+    }
+}
