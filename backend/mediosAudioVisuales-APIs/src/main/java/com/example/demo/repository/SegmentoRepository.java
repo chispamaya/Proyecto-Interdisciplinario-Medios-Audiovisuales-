@@ -67,7 +67,13 @@ public class SegmentoRepository {
         
         return jdbcTemplate.query(sql, new SegmentoRowMapper());
     }
-
+    public List<Segmento> listarSegmentosPorPrograma(Long idPrograma) {
+        // Usamos SQL directo porque el SP 's' no soporta este filtro
+        String sql = "SELECT * FROM segmentos WHERE idPrograma = ?";
+        
+        // Usamos el 'traductor' (SegmentoRowMapper) que ya tenías
+        return jdbcTemplate.query(sql, new SegmentoRowMapper(), idPrograma);
+    }
   
     public Segmento buscarSegmentoPorId(Long idSegmentoBuscado) {
         
@@ -96,4 +102,5 @@ public class SegmentoRepository {
         }
     }
 }
+
 
