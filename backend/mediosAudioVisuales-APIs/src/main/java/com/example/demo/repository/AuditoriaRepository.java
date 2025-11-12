@@ -16,32 +16,41 @@ public class AuditoriaRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    /**
-     * Llama al SP s (Select) para obtener todos los registros de 'auditoria'.
-     * Llama a s('auditoria', null, @mensaje)
-     */
+
     public List<Auditoria> obtenerTodasLasAuditorias() {
+
         String sql = "CALL s('auditoria', null, @mensaje)";
+        
+
         return jdbcTemplate.query(sql, new AuditoriaRowMapper());
+    }
+
+    public List<Auditoria> buscarAuditoriaPorTablaYAccion(String tabla, String accion) {
+    
+        String sql = "SELECT * FROM auditoria WHERE tablaM = ? AND accion = ?";
+        
+    
+        return jdbcTemplate.query(sql, new AuditoriaRowMapper(), tabla, accion);
+    }
+    public List<Auditoria> buscarAuditoriaPorUsuarioYTTabla(Long idUsuario, String tabla, String accion) {
+        String sql = "SELECT * FROM auditoria WHERE usuario_id = ? AND tablaM = ? AND accion = ?";
+        
+        return jdbcTemplate.query(sql, new AuditoriaRowMapper(), idUsuario, tabla, accion);
+    }
+    class AuditoriaRowMapper implements RowMapper<Auditoria> {
+        @Override
+        public Auditoria mapRow(ResultSet rs, int rowNum) throws SQLException {
+            Auditoria auditoria = new Auditoria();
+            
+            auditoria.setId(rs.getLong("id"));
+            auditoria.setAccion(rs.getString("accion"));
+            auditoria.setUsuarioId(rs.getLong("usuario_id")); // Mapeo de DB a DTO
+            auditoria.setTablaM(rs.getString("tablaM"));
+            auditoria.setRegistroAfectadoId(rs.getLong("registro_afectado_id"));
+            auditoria.setFecha(rs.getTimestamp("fecha").toLocalDateTime()); // Conversión de Timestamp a LocalDateTime
+            
+            return auditoria;
+        }
     }
 }
 
-/**
- * RowMapper para la entidad Auditoria.
- * Mapea las columnas de la DB (ej. 'usuario_id') a los campos del DTO.
- */
-class AuditoriaRowMapper implements RowMapper<Auditoria> {
-    @Override
-    public Auditoria mapRow(ResultSet rs, int rowNum) throws SQLException {
-        Auditoria auditoria = new Auditoria();
-        
-        auditoria.setId(rs.getLong("id"));
-        auditoria.setAccion(rs.getString("accion"));
-        auditoria.setUsuarioId(rs.getLong("usuario_id")); // Mapeo de DB a DTO
-        auditoria.setTablaM(rs.getString("tablaM"));
-        auditoria.setRegistro_afectado_id(rs.getInt("registro_afectado_id"));
-        auditoria.setFecha(rs.getTimestamp("fecha").toLocalDateTime()); // Conversión
-        
-        return auditoria;
-    }
-}
