@@ -12,7 +12,6 @@ public class Permisos {
     
     private Long id;
     private String tipoPermiso;
-    private String rolPerteneciente;
     
     
     // --- NOTA IMPORTANTE ---
