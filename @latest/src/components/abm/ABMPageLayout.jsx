@@ -13,24 +13,36 @@ export default function ABMPageLayout({ title, columns, data, onAdd, onEdit, onD
 
     return (
         <div className="abm-container">
-            {/* 💥 BOTÓN DE VOLVER AÑADIDO 💥 */}
+            {/* --- BOTÓN DE VOLVER --- */}
             <button onClick={() => navigate(-1)} className="btn-volver">
                 <ArrowLeft size={20} />
                 Volver
             </button>
 
+            {/* --- HEADER (SOLO TÍTULO) --- */}
             <header className="abm-page-header">
                 <h1><span>{title}</span></h1>
-                <button 
-                    className="btn-anadir" 
-                    onClick={onAdd}
-                    title={`Añadir ${entityName}`}
-                >
-                    <Plus size={20} />
-                    Añadir
-                </button>
             </header>
 
+            {/* 👇 CONTENEDOR DEL BOTÓN 'AÑADIR' CON COMPROBACIÓN 👇 */}
+            {/* Esto significa: "Solo muestra este bloque si 'onAdd' existe 
+              (es decir, si la página pasó la prop onAdd)" 
+            */}
+            {onAdd && (
+                <div className="abm-actions-header">
+                    <button 
+                        className="btn-anadir" 
+                        onClick={onAdd}
+                        title={`Añadir ${entityName}`}
+                    >
+                        <Plus size={20} />
+                        Añadir
+                    </button>
+                </div>
+            )}
+            {/* 👆 FIN DEL BLOQUE DEL BOTÓN 👆 */}
+
+            {/* --- TABLA --- */}
             <ABMTable 
                 columns={columns} 
                 data={data} 

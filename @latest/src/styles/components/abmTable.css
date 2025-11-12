@@ -26,6 +26,13 @@
     border-color: var(--color-text-main, #ffffff);
 }
 
+/* 👇 NUEVO ESTILO AÑADIDO PARA ALINEAR EL BOTÓN 'AÑADIR' 👇 */
+.abm-actions-header {
+    display: flex;
+    justify-content: flex-end; /* Esto empuja el botón a la derecha */
+    margin-bottom: 1rem; /* Espacio antes de la tabla */
+}
+
 
 /* --- (NUEVO) ESTILOS PARA BOTONES DE ACCIÓN DE TABLA --- */
 
