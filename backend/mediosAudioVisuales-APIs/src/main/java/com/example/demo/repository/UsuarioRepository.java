@@ -89,20 +89,21 @@ public class UsuarioRepository {
        
         return jdbcTemplate.query(sql, new UsuarioRowMapper());
     }
-}
-
-class UsuarioRowMapper implements RowMapper<Usuario> {
-    @Override
-    public Usuario mapRow(ResultSet rs, int rowNum) throws SQLException {
-        Usuario usuario = new Usuario();
-        
-        // Mapeamos columna por columna
-        usuario.setId(rs.getLong("id"));
-        usuario.setEmail(rs.getString("email"));
-        usuario.setNombre(rs.getString("nombre"));
-        usuario.setContrasenia(rs.getString("contrasenia"));
-        usuario.setIdRol(rs.getLong("idRol"));
-        
-        return usuario;
+    class UsuarioRowMapper implements RowMapper<Usuario> {
+        @Override
+        public Usuario mapRow(ResultSet rs, int rowNum) throws SQLException {
+            Usuario usuario = new Usuario();
+            
+            // Mapeamos columna por columna
+            usuario.setId(rs.getLong("id"));
+            usuario.setEmail(rs.getString("email"));
+            usuario.setNombre(rs.getString("nombre"));
+            usuario.setContrasenia(rs.getString("contrasenia"));
+            usuario.setIdRol(rs.getLong("idRol"));
+            
+            return usuario;
+        }
     }
 }
+
+

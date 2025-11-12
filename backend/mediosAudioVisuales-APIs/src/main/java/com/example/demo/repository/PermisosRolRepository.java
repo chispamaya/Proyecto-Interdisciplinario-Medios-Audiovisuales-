@@ -26,21 +26,20 @@ public class PermisosRolRepository {
         String sql = "CALL s('permisos_rol', null, @mensaje)";
         return jdbcTemplate.query(sql, new PermisosRolRowMapper());
     }
-
+    /**
+     * El "TRADUCTOR" que convierte una fila de 'permisos_rol' (ResultSet)
+     * en un objeto Java (PermisosRol).
+     */
+    class PermisosRolRowMapper implements RowMapper<PermisosRol> {
+        @Override
+        public PermisosRol mapRow(ResultSet rs, int rowNum) throws SQLException {
+            PermisosRol pr = new PermisosRol();
+            pr.setId(rs.getLong("id"));
+            pr.setIdRol(rs.getLong("idRol"));
+            pr.setIdPermiso(rs.getLong("idPermiso"));
+            return pr;
+        }
+    }
  
 }
 
-/**
- * El "TRADUCTOR" que convierte una fila de 'permisos_rol' (ResultSet)
- * en un objeto Java (PermisosRol).
- */
-class PermisosRolRowMapper implements RowMapper<PermisosRol> {
-    @Override
-    public PermisosRol mapRow(ResultSet rs, int rowNum) throws SQLException {
-        PermisosRol pr = new PermisosRol();
-        pr.setId(rs.getLong("id"));
-        pr.setIdRol(rs.getLong("idRol"));
-        pr.setIdPermiso(rs.getLong("idPermiso"));
-        return pr;
-    }
-}

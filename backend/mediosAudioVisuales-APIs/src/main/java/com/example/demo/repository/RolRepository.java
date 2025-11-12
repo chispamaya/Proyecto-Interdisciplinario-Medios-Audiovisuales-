@@ -36,19 +36,19 @@ public class RolRepository {
             return null; 
         }
     }
-}
-
-
-class RolRowMapper implements RowMapper<Rol> {
-    @Override
-    public Rol mapRow(ResultSet rs, int rowNum) throws SQLException {
+    class RolRowMapper implements RowMapper<Rol> {
+        @Override
+        public Rol mapRow(ResultSet rs, int rowNum) throws SQLException {
+            
+            Rol rol = new Rol();
+            
+            
+            rol.setId(rs.getLong("id"));
+            rol.setNombre(rs.getString("nombre"));
         
-        Rol rol = new Rol();
-        
-        
-        rol.setId(rs.getLong("id"));
-        rol.setNombre(rs.getString("nombre"));
-    
-        return rol;
+            return rol;
+        }
     }
 }
+
+

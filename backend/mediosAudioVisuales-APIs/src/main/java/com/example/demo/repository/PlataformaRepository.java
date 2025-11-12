@@ -78,20 +78,20 @@ public class PlataformaRepository {
             return null; 
         }
     }
-}
-
-
-class PlataformaRowMapper implements RowMapper<Plataforma> {
-    @Override
-    public Plataforma mapRow(ResultSet rs, int rowNum) throws SQLException {
-        
-        Plataforma plataforma = new Plataforma();
-        
-        
-        plataforma.setId(rs.getLong("id"));
-        plataforma.setNombre(rs.getString("nombre"));
-        plataforma.setTipo(rs.getString("tipo"));
-        
-        return plataforma;
+    class PlataformaRowMapper implements RowMapper<Plataforma> {
+        @Override
+        public Plataforma mapRow(ResultSet rs, int rowNum) throws SQLException {
+            
+            Plataforma plataforma = new Plataforma();
+            
+            
+            plataforma.setId(rs.getLong("id"));
+            plataforma.setNombre(rs.getString("nombre"));
+            plataforma.setTipo(rs.getString("tipo"));
+            
+            return plataforma;
+        }
     }
 }
+
+

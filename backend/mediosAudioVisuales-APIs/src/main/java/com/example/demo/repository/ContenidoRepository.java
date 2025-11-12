@@ -92,29 +92,29 @@ public class ContenidoRepository {
         String sql = "SELECT * FROM contenidos WHERE idUsuario = ?";
         return jdbcTemplate.query(sql, new ContenidoRowMapper(), idUsuario);
     }
-}
-
-/**
- * (NUEVO) RowMapper para Contenido.
- * Le dice a Spring cómo convertir una fila de la BD (con las nuevas columnas)
- * en un objeto DTO Contenido.java.
- */
-class ContenidoRowMapper implements RowMapper<Contenido> {
-    @Override
-    public Contenido mapRow(ResultSet rs, int rowNum) throws SQLException {
-        Contenido contenido = new Contenido();
-        contenido.setId(rs.getLong("id"));
-        contenido.setFormato(rs.getString("formato"));
-        contenido.setRutaArchivo(rs.getString("rutaArchivo"));
-        contenido.setIdUsuario(rs.getLong("idUsuario"));
-        
-        // Mapeamos los nuevos campos
-        contenido.setTitulo(rs.getString("titulo"));
-        contenido.setTipo(rs.getString("tipo"));
-        contenido.setEstado(rs.getString("estado"));
-        contenido.setDuracion(rs.getString("duracion"));
-        contenido.setTamano(rs.getString("tamano"));
-        
-        return contenido;
+    /**
+     * (NUEVO) RowMapper para Contenido.
+     * Le dice a Spring cómo convertir una fila de la BD (con las nuevas columnas)
+     * en un objeto DTO Contenido.java.
+     */
+    class ContenidoRowMapper implements RowMapper<Contenido> {
+        @Override
+        public Contenido mapRow(ResultSet rs, int rowNum) throws SQLException {
+            Contenido contenido = new Contenido();
+            contenido.setId(rs.getLong("id"));
+            contenido.setFormato(rs.getString("formato"));
+            contenido.setRutaArchivo(rs.getString("rutaArchivo"));
+            contenido.setIdUsuario(rs.getLong("idUsuario"));
+            
+            // Mapeamos los nuevos campos
+            contenido.setTitulo(rs.getString("titulo"));
+            contenido.setTipo(rs.getString("tipo"));
+            contenido.setEstado(rs.getString("estado"));
+            contenido.setDuracion(rs.getString("duracion"));
+            contenido.setTamano(rs.getString("tamano"));
+            
+            return contenido;
+        }
     }
 }
+

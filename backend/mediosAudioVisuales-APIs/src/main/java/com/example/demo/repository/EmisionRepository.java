@@ -47,18 +47,18 @@ public class EmisionRepository {
             return null;
         }
     }
-}
-
-/**
- * (AÑADIDO PARA PRUEBAS) RowMapper para Emision.
- */
-class EmisionRowMapper implements RowMapper<Emision> {
-    @Override
-    public Emision mapRow(ResultSet rs, int rowNum) throws SQLException {
-        Emision emision = new Emision();
-        emision.setId(rs.getLong("id"));
-        emision.setEnVivo(rs.getBoolean("enVivo"));
-        emision.setIdPrograma(rs.getLong("idPrograma"));
-        return emision;
+    /**
+     * (AÑADIDO PARA PRUEBAS) RowMapper para Emision.
+     */
+    class EmisionRowMapper implements RowMapper<Emision> {
+        @Override
+        public Emision mapRow(ResultSet rs, int rowNum) throws SQLException {
+            Emision emision = new Emision();
+            emision.setId(rs.getLong("id"));
+            emision.setEnVivo(rs.getBoolean("enVivo"));
+            emision.setIdPrograma(rs.getLong("idPrograma"));
+            return emision;
+        }
     }
 }
+

@@ -87,35 +87,35 @@ public class ProgramaRepository {
             return null; 
         }
     }
-}
+    class ProgramaRowMapper implements RowMapper<Programa> {
+        @Override
+        public Programa mapRow(ResultSet rs, int rowNum) throws SQLException {
+           
+            Programa programa = new Programa();
+            
+            programa.setId(rs.getLong("id"));
+            programa.setEstadoAprobacion(rs.getString("estadoAprobacion"));
+            programa.setCategoria(rs.getString("categoria"));
+            programa.setNombre(rs.getString("nombre"));
+            
+            java.sql.Time sqlHoraInicio = rs.getTime("horaInicio");
+            
+            if (sqlHoraInicio != null) {
+                programa.setHoraInicio(sqlHoraInicio.toLocalTime()); 
+            }
 
-class ProgramaRowMapper implements RowMapper<Programa> {
-    @Override
-    public Programa mapRow(ResultSet rs, int rowNum) throws SQLException {
-       
-        Programa programa = new Programa();
-        
-        programa.setId(rs.getLong("id"));
-        programa.setEstadoAprobacion(rs.getString("estadoAprobacion"));
-        programa.setCategoria(rs.getString("categoria"));
-        programa.setNombre(rs.getString("nombre"));
-        
-        java.sql.Time sqlHoraInicio = rs.getTime("horaInicio");
-        
-        if (sqlHoraInicio != null) {
-            programa.setHoraInicio(sqlHoraInicio.toLocalTime()); 
+            java.sql.Time sqlHoraFin = rs.getTime("horaFin");
+            
+            if (sqlHoraFin != null) {
+                programa.setHoraFin(sqlHoraFin.toLocalTime());       
+            }
+            
+            programa.setIdPlataforma(rs.getLong("idPlataforma"));
+            programa.setFormatoArchivo(rs.getString("formatoArchivo"));
+            programa.setRutaArchivo(rs.getString("rutaArchivo"));
+            
+            return programa;
         }
-
-        java.sql.Time sqlHoraFin = rs.getTime("horaFin");
-        
-        if (sqlHoraFin != null) {
-            programa.setHoraFin(sqlHoraFin.toLocalTime());       
-        }
-        
-        programa.setIdPlataforma(rs.getLong("idPlataforma"));
-        programa.setFormatoArchivo(rs.getString("formatoArchivo"));
-        programa.setRutaArchivo(rs.getString("rutaArchivo"));
-        
-        return programa;
     }
 }
+

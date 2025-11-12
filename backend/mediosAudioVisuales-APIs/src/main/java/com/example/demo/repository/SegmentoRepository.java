@@ -81,19 +81,19 @@ public class SegmentoRepository {
             return null; 
         }
     }
-}
-
-class SegmentoRowMapper implements RowMapper<Segmento> {
-    @Override
-    public Segmento mapRow(ResultSet rs, int rowNum) throws SQLException {
-        Segmento segmento = new Segmento();
-        
-        segmento.setId(rs.getLong("id"));
-        segmento.setEstadoAprobacion(rs.getString("estadoAprobacion"));
-        segmento.setDuracion(rs.getFloat("duracion"));
-        segmento.setTitulo(rs.getString("titulo"));
-        segmento.setIdPrograma(rs.getLong("idPrograma"));
-        
-        return segmento;
+    class SegmentoRowMapper implements RowMapper<Segmento> {
+        @Override
+        public Segmento mapRow(ResultSet rs, int rowNum) throws SQLException {
+            Segmento segmento = new Segmento();
+            
+            segmento.setId(rs.getLong("id"));
+            segmento.setEstadoAprobacion(rs.getString("estadoAprobacion"));
+            segmento.setDuracion(rs.getFloat("duracion"));
+            segmento.setTitulo(rs.getString("titulo"));
+            segmento.setIdPrograma(rs.getLong("idPrograma"));
+            
+            return segmento;
+        }
     }
 }
+

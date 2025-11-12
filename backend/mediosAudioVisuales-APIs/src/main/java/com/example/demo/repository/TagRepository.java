@@ -54,16 +54,16 @@ public class TagRepository {
             return null; 
         }
     }
-}
-
-class TagRowMapper implements RowMapper<Tag> {
-    @Override
-    public Tag mapRow(ResultSet rs, int rowNum) throws SQLException {
-        Tag tag = new Tag();
-        
-        tag.setId(rs.getLong("id"));
-        tag.setTag(rs.getString("tag")); 
-        
-        return tag;
+    class TagRowMapper implements RowMapper<Tag> {
+        @Override
+        public Tag mapRow(ResultSet rs, int rowNum) throws SQLException {
+            Tag tag = new Tag();
+            
+            tag.setId(rs.getLong("id"));
+            tag.setTag(rs.getString("tag")); 
+            
+            return tag;
+        }
     }
 }
+

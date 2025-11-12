@@ -62,25 +62,25 @@ public class EncuestaRepository {
         // Usa el NUEVO RowMapper que traduce el resultado del JOIN
         return jdbcTemplate.query(sql, new EncuestaResultadoRowMapper(), idEncuesta);
     }
-}
-
-/**
- * El "TRADUCTOR" NUEVO para el resultado del JOIN del SP 's'
- * (Traduce la fila combinada a un DTO 'EncuestaResultado')
- */
-class EncuestaResultadoRowMapper implements RowMapper<EncuestaResultado> {
-    @Override
-    public EncuestaResultado mapRow(ResultSet rs, int rowNum) throws SQLException {
-        EncuestaResultado dto = new EncuestaResultado();
-        
-        // Mapeamos los alias del SELECT de tu SP 's'
-        dto.setIdEncuesta(rs.getLong("idEncuesta"));
-        dto.setPreguntar(rs.getString("preguntar"));
-        dto.setIdCreador(rs.getLong("idCreador"));
-        dto.setIdOpcion(rs.getLong("idOpcion"));
-        dto.setOpcion(rs.getString("opcion"));
-        dto.setTotalVotos(rs.getLong("totalVotos"));
-        
-        return dto;
+    /**
+     * El "TRADUCTOR" NUEVO para el resultado del JOIN del SP 's'
+     * (Traduce la fila combinada a un DTO 'EncuestaResultado')
+     */
+    class EncuestaResultadoRowMapper implements RowMapper<EncuestaResultado> {
+        @Override
+        public EncuestaResultado mapRow(ResultSet rs, int rowNum) throws SQLException {
+            EncuestaResultado dto = new EncuestaResultado();
+            
+            // Mapeamos los alias del SELECT de tu SP 's'
+            dto.setIdEncuesta(rs.getLong("idEncuesta"));
+            dto.setPreguntar(rs.getString("preguntar"));
+            dto.setIdCreador(rs.getLong("idCreador"));
+            dto.setIdOpcion(rs.getLong("idOpcion"));
+            dto.setOpcion(rs.getString("opcion"));
+            dto.setTotalVotos(rs.getLong("totalVotos"));
+            
+            return dto;
+        }
     }
 }
+
