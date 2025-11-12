@@ -67,20 +67,32 @@ public class DiaRepository {
         String sql = "CALL s('dias', null, @mensaje)";
         return jdbcTemplate.query(sql, new DiaRowMapper());
     }
-}
+    public List<Dia> listarDiasPorFecha(java.time.LocalDate fecha) {
+        String sql = "SELECT * FROM dias WHERE dia = ?";
+        // Usamos el 'traductor' (DiaRowMapper) que ya tenías
+        return jdbcTemplate.query(sql, new DiaRowMapper(), fecha);
+    }
+    public List<Dia> listarDiasPorPrograma(Long idPrograma) {
+        // Como el SP 's' no puede filtrar por 'idPrograma', usamos SQL directo.
+        String sql = "SELECT * FROM dias WHERE idPrograma = ?";
+        return jdbcTemplate.query(sql, new DiaRowMapper(), idPrograma);
+    }
+    
 
 /**
  * (NUEVO) RowMapper para Dia.
  * Le dice a Spring cómo convertir una fila de la tabla 'dias'
  * en un objeto Dia.java.
  */
-class DiaRowMapper implements RowMapper<Dia> {
-    @Override
-    public Dia mapRow(ResultSet rs, int rowNum) throws SQLException {
-        Dia dia = new Dia();
-        dia.setId(rs.getLong("id"));
-        dia.setDia(rs.getDate("dia").toLocalDate()); // Convierte DATE de SQL a LocalDate de Java
-        dia.setIdPrograma(rs.getLong("idPrograma"));
-        return dia;
-    }
+    class DiaRowMapper implements RowMapper<Dia> {
+        @Override
+        public Dia mapRow(ResultSet rs, int rowNum) throws SQLException {
+            Dia dia = new Dia();
+            dia.setId(rs.getLong("id"));
+            dia.setDia(rs.getDate("dia").toLocalDate()); // Convierte DATE de SQL a LocalDate de Java
+            dia.setIdPrograma(rs.getLong("idPrograma"));
+            return dia;
+        }
+
+}
 }
