@@ -754,7 +754,6 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	 INSERT INTO encuesta(preguntar, idUsuario) VALUES (preguntar1, idU);
 	 COMMIT;
    SET idE = LAST_INSERT_ID();
-   SET @current_user_id = NULL;
    SET mensaje = 'Encuesta creada con éxito.';
  END //
 
@@ -777,7 +776,6 @@ CREATE PROCEDURE co(IN idE int, IN opcion1 varchar(50), IN cont int, IN idUs int
 	START TRANSACTION;
 	 INSERT INTO opcion_e(idEncuesta, opcion) VALUES (idE, opcion1);
 	 COMMIT;
-     SET @current_user_id = NULL;
    SET mensaje = CONCAT('Opcion ',cont, ' creada con éxito.');
  END //
  
@@ -1196,6 +1194,7 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (11, 6);
 
 
 INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7); 
+
 
 
 
