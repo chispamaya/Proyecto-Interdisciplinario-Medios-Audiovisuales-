@@ -1,54 +1,106 @@
+import React, { useState, useEffect } from 'react'; // <-- 1. IMPORTAMOS a useState y useEffect
+import axios from 'axios'; // <-- 2. IMPORTAMOS AXIOS
+
 import logoImage from '../assets/logo.png'
 import '../styles/pages/perfil.css'
 import { ShieldCheck } from 'lucide-react';
+
 export default function Perfil({idUsuario}) { 
 
-    const handleSubmit = (e) => {
-        e.preventDefault();
-        // Aquí iría la lógica para guardar los cambios (ej: actualizar contraseña)
-        console.log('Contraseña actualizada');
+    // --- 3. CREAMOS ESTADOS ---
+    // (Para guardar los datos que vienen de la API)
+    const [perfil, setPerfil] = useState(null); // Para el DTO PerfilDTO
+    const [loading, setLoading] = useState(true); // Para el mensaje "Cargando..."
+    const [error, setError] = useState(null); // Para cualquier error
+
+    // --- 4. USEEFFECT (LA LLAMADA A LA API) ---
+    // (Esto se ejecuta 1 sola vez cuando la página carga)
+    useEffect(() => {
+        // TODO: Tenés que sacar el ID del usuario logueado de algún lado
+        // Por ahora, usamos el 'idUsuario' que pasaste como prop.
+        // Si 'idUsuario' no existe, usamos 1 como fallback.
+        const idUsuarioLogueado = idUsuario || 1; 
+
+        // Esta es la URL de tu UsuarioController (@GetMapping("/perfil/{id}"))
+        const API_URL = `http://localhost:8080/api/usuarios/perfil/${idUsuarioLogueado}`;
+
+        axios.get(API_URL)
+            .then(response => {
+                // ¡ÉXITO! response.data es tu PerfilDTO
+                setPerfil(response.data);
+                setLoading(false);
+            })
+            .catch(err => {
+                // ¡ERROR!
+                console.error("Error al cargar el perfil:", err);
+                setError("No se pudo cargar el perfil.");
+                setLoading(false);
+            });
+    }, [idUsuario]); // Se ejecuta cada vez que 'idUsuario' cambie
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    console.log('Contraseña actualizada');
+  }
+
+  const handleLogout = () => {
+    console.log('Cerrar Sesión');
+  }
+
+    // --- 5. RENDERIZADO CONDICIONAL ---
+    // (Mostramos mensajes mientras la API responde)
+
+    if (loading) {
+        return <div className="contenedor-principal"><h1>Cargando perfil...</h1></div>;
     }
 
-    const handleLogout = () => {
-        // Aquí iría la lógica de cerrar sesión
-        console.log('Cerrar Sesión');
+    if (error) {
+        return <div className="contenedor-principal"><h1>{error}</h1></div>;
     }
 
-    return (
-        <>
-            <div className="contenedor-principal">
-                <main className="contenido-perfil">
+    if (!perfil) {
+        return <div className="contenedor-principal"><h1>No se encontró el perfil.</h1></div>;
+    }
 
-                    <div className="logo-contenedor">
-                        <img className="logo-perfil" src={logoImage} alt="Logo" />
-                    </div>
-                    
-                    <div className="datos-perfil"> 
-                        <h1>Martín Romero</h1>
-                        <ShieldCheck size={20} color="var(--texto)" style={{ marginRight: '10px' }} />
-                        <h2 className='adm'>ADMINISTRADOR</h2> 
-                    </div>
+    // --- 6. RENDERIZADO CON DATOS REALES ---
+    // (Una vez que 'perfil' tiene los datos de la API)
+  return (
+    <>
+      <div className="contenedor-principal">
+        <main className="contenido-perfil">
 
-                    <form className="formulario-perfil" onSubmit={handleSubmit}>
-                        <div className="campo-form">
-                            <label htmlFor="password">Contraseña</label>
-                            <input 
-                                type="password" 
-                                id="password" 
-                                name="pass" 
-                                placeholder="Cambiar contraseña"
-                            />
-                        </div>
+          <div className="logo-contenedor">
+            <img className="logo-perfil" src={logoImage} alt="Logo" />
+          </div>
+          
+          <div className="datos-perfil"> 
+                        {/* 💥 CAMBIO HECHO AQUÍ 💥 */}
+            <h1>{perfil.nombreUsuario}</h1> 
+            <ShieldCheck size={20} color="var(--texto)" style={{ marginRight: '10px' }} />
+                        {/* 💥 CAMBIO HECHO AQUÍ 💥 */}
+            <h2 className='adm'>{perfil.nombreRol.toUpperCase()}</h2> 
+          </div>
 
-
-                        <div className="acciones-form-centrado">
-                            <button type="button" className="btn-descartar" onClick={handleLogout}>Cerrar Sesión</button>
-                            <button type="submit" className="btn-guardar">Guardar</button>
-                        </div>
-                    </form>
-
-                </main>
+          <form className="formulario-perfil" onSubmit={handleSubmit}>
+            <div className="campo-form">
+              <label htmlFor="password">Contraseña</label>
+              <input 
+                type="password" 
+                id="password" 
+                name="pass" 
+                placeholder="Cambiar contraseña"
+              />
             </div>
-        </>
-    )
+
+
+            <div className="acciones-form-centrado">
+              <button type="button" className="btn-descartar" onClick={handleLogout}>Cerrar Sesión</button>
+              <button type="submit" className="btn-guardar">Guardar</button>
+            </div>
+          </form>
+
+        </main>
+      </div>
+    </>
+  )
 }
