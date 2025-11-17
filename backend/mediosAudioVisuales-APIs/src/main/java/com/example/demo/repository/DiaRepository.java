@@ -1,6 +1,7 @@
 package com.example.demo.repository;
 
 import com.example.demo.dto.Dia;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper; // (1) IMPORTAR
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Repository;
 
 import java.sql.ResultSet; // (2) IMPORTAR
 import java.sql.SQLException; // (3) IMPORTAR
-import java.time.LocalDate; // (4) IMPORTAR
 import java.util.HashMap;
 import java.util.List; // (5) IMPORTAR
 import java.util.Map;
@@ -50,15 +50,6 @@ public class DiaRepository {
         return (String) outParams.get("mensaje");
     }
 
-    /**
-     * (NUEVO) Lista los días asignados a un programa específico.
-     * Este es el método que faltaba y causaba el error.
-     */
-    public List<Dia> listarDiasPorPrograma(Long idPrograma) {
-        // Como el SP 's' no puede filtrar por 'idPrograma', usamos SQL directo.
-        String sql = "SELECT * FROM dias WHERE idPrograma = ?";
-        return jdbcTemplate.query(sql, new DiaRowMapper(), idPrograma);
-    }
     
     /**
      * (NUEVO) Lista todos los días de la parrilla.
