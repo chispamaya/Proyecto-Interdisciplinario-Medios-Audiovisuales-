@@ -25,7 +25,7 @@ public class EmisionController {
     }
 
     /**
-     * Poner una emisión EN VIVO.
+     * Poner una emisión EN VIVO.	
      */
     @PutMapping("/{id}/vivo")
     public ResponseEntity<String> ponerEnVivo(@PathVariable Long id, @RequestParam Long idUsuarioAuditoria) {

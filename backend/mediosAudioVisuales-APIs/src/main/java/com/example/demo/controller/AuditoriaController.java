@@ -16,17 +16,10 @@ public class AuditoriaController {
     @Autowired
     private AuditoriaService auditoriaService;
 
-    // Traer todo
+    // GET /api/auditoria
     @GetMapping
     public ResponseEntity<List<Auditoria>> listarTodo() {
+        // CORREGIDO: Usamos el método real del servicio
         return ResponseEntity.ok(auditoriaService.listarAuditorias());
     }
-
-    // Si agregaste los métodos de filtro al Service, descomenta esto:
-    /*
-    @GetMapping("/filtro")
-    public ResponseEntity<List<Auditoria>> filtrar(@RequestParam String tabla, @RequestParam String accion) {
-        return ResponseEntity.ok(auditoriaService.filtrarPorTablaYAccion(tabla, accion));
-    }
-    */
 }
