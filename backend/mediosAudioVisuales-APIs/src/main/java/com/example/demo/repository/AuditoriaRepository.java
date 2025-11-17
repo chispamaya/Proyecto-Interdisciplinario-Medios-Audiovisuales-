@@ -32,11 +32,13 @@ public class AuditoriaRepository {
     
         return jdbcTemplate.query(sql, new AuditoriaRowMapper(), tabla, accion);
     }
+    
     public List<Auditoria> buscarAuditoriaPorUsuarioYTTabla(Long idUsuario, String tabla, String accion) {
         String sql = "SELECT * FROM auditoria WHERE usuario_id = ? AND tablaM = ? AND accion = ?";
         
         return jdbcTemplate.query(sql, new AuditoriaRowMapper(), idUsuario, tabla, accion);
     }
+    
     class AuditoriaRowMapper implements RowMapper<Auditoria> {
         @Override
         public Auditoria mapRow(ResultSet rs, int rowNum) throws SQLException {
