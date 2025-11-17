@@ -21,16 +21,18 @@ public class SegmentoRepository {
 
     public String crearSegmento(Segmento segmento, Long idUsuarioAuditoria) {
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate).withProcedureName("cs");
-
         Map<String, Object> inParams = new HashMap<>();
         inParams.put("estadoAprobacion1", segmento.getEstadoAprobacion());
         inParams.put("duracion1", segmento.getDuracion());
         inParams.put("titulo1", segmento.getTitulo());
         inParams.put("idP1", segmento.getIdPrograma());
+        
+        // 💥 ¡AGREGÁ ESTA LÍNEA QUE FALTABA! 💥
+        inParams.put("orden1", segmento.getOrden());
+        
         inParams.put("idUs", idUsuarioAuditoria);
 
         Map<String, Object> outParams = jdbcCall.execute(inParams);
-
         return (String) outParams.get("mensaje");
     }
 
@@ -53,6 +55,11 @@ public class SegmentoRepository {
         inParams.put("id1", segmento.getId());
         inParams.put("estadoAprobacion1", segmento.getEstadoAprobacion());
         inParams.put("duracion1", segmento.getDuracion());
+        
+        // --- 💥 ¡LÍNEA QUE FALTABA! 💥 ---
+        inParams.put("orden1", segmento.getOrden());
+        // --- 💥 ---
+        
         inParams.put("titulo1", segmento.getTitulo());
         inParams.put("idP1", segmento.getIdPrograma());
         inParams.put("idUs", idUsuarioAuditoria);
