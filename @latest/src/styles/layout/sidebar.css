@@ -15,23 +15,28 @@
 .app {
     display: flex;
     flex-direction: column;
-    height: 100vh; 
+    min-height: 100vh; /* Arreglo para scroll de página principal */
 }
 
-/* SIDEBAR - Desktop */
+/* * ===============================================
+ * 👇 ARREGLO SCROLLBAR DEL MENÚ LATERAL 👇
+ * ===============================================
+ */
 .sideBar {
     background-color: var(--sideBarHeader);
     width: 20%;
-    min-height: 100vh;
-    display: flex;
-    flex-direction: column;
-    justify-content: space-between;
     
-    /* Esto está BIEN, se queda fijo */
+    /* 1. Altura fija para que el overflow funcione */
+    height: 100vh; 
+    
+    /* 2. Propiedades de flex ELIMINADAS (causaban conflicto) */
+    
+    /* 3. Position fixed y overflow para el scroll */
     position: fixed;
     top: 0;
     left: 0;     
     z-index: 11; 
+    overflow-y: auto; /* <-- Esto mostrará el scroll del menú */
 }
     
 /* 💥 REGLA ".main" ELIMINADA POR COMPLETO 💥 */
@@ -41,7 +46,8 @@
     list-style: none;
     display: flex;
     flex-direction: column;
-    height: 100%;
+
+    /* 4. 'height: 100%' ELIMINADO para que la lista crezca */
 }
 
 li {
@@ -107,7 +113,7 @@ a {
 }
 
 /* * ===============================================
- * SECCIÓN MÓVIL (Aquí están todos los cambios)
+ * SECCIÓN MÓVIL (Sin cambios)
  * ===============================================
  */
 @media (max-width: 576px) {
@@ -151,10 +157,14 @@ a {
     .sideBar {
         position: static;
         width: auto;
-        min-height: 0;
+        /* Reseteamos la altura fija de desktop */
+        height: auto; 
         background-color: transparent;
         z-index: auto;
         display: block; 
+        
+        /* Reseteamos el overflow para móvil */
+        overflow-y: visible;
     }
 
     /* * ⚠️ --- ARREGLO 2 (Tu nueva petición) --- ⚠️
@@ -260,4 +270,41 @@ p {
         display: block; 
         animation: none !important;
     }
+}
+
+/* * ===============================================
+ * 👇 CÓDIGO ACTUALIZADO: SCROLLBAR CHIDO (NEGRO Y GRIS) 👇
+ * Ahora se aplica a TODO (*) y funciona en Firefox
+ * ===============================================
+ */
+
+/* Estilos para Firefox (Moderno) */
+* {
+  scrollbar-width: thin; /* "thin" o "auto" */
+  scrollbar-color: #555 var(--background, #212121); /* Mango y Pista */
+}
+
+/* Estilos para Chrome, Edge, Safari (WebKit) */
+::-webkit-scrollbar {
+  width: 10px; /* Ancho del scrollbar (un poco más fino) */
+  height: 10px; /* Para scroll horizontal si aparece */
+}
+
+/* Pista (el fondo por donde se mueve) */
+::-webkit-scrollbar-track {
+  background: var(--background, #212121);
+}
+
+/* Mango (la barra que se arrastra) */
+::-webkit-scrollbar-thumb {
+  background-color: #555; /* Un gris medio oscuro */
+  border-radius: 5px; /* Bordes redondeados */
+  
+  /* Un borde sutil para que se separe de la pista */
+  border: 2px solid var(--background, #212121);
+}
+
+/* Mango (al pasar el mouse por encima) */
+::-webkit-scrollbar-thumb:hover {
+  background-color: #888; /* Un gris más claro al hacer hover */
 }
