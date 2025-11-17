@@ -7,16 +7,16 @@ import java.time.LocalTime;
 @Data
 public class AprobacionDTO {
     
-   
     private Long idDia; 
     private LocalDate fechaEmision;
 
     private String tituloPrograma;
-    private LocalTime horaInicio;
-    private LocalTime horaFin;
+    private LocalTime horaInicio; 
+    private LocalTime horaFin;    
+    private String estadoAprobacion;
 
     private String propuestaDe; 
     
     private String rutaArchivo;
-
+    private String rutaInforme;
 }
