@@ -820,7 +820,7 @@ CREATE PROCEDURE vo(IN idO int, IN idU int, IN idE int, IN idUs int, OUT mensaje
 END //
 DELIMITER ;
 Delimiter //
-	  --TRIGGER DE INSERTS
+-- TRIGGER DE INSERTS
 
 	CREATE TRIGGER trg_after_insert_segmento
 	AFTER INSERT ON segmentos
@@ -1194,6 +1194,7 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (11, 6);
 
 
 INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7); 
+
 
 
 
