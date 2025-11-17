@@ -17,20 +17,16 @@ public class Programa {
     private LocalTime horaFin;
     private String formatoArchivo;
     private String rutaArchivo;
-   
-    // Sugerencia: Renombrar para claridad.
-    // Esto es correcto para JDBC, es la FK a la tabla 'plataformas'.
+    
+    // --- 💥 ¡CAMPOS FALTANTES AGREGADOS! 💥 ---
+    private String formatoInforme;
+    private String rutaInforme;
+    // --- 💥 ---
+    
     private long idPlataforma; 
-  
-    // --- Campos de Relaciones (se llenan manualmente) ---
-   
-    // Esta lista se llenará con una consulta separada
-    // (Ej: SELECT * FROM dias_x_programa WHERE id_programa = ?)
+ 
+    // --- Campos de Relaciones (se llenan en el Service) ---
     private List<Dia> dias;
-   
-    // Esta lista se llenará con una consulta separada
     private List<Segmento> segmentos;
-   
-    // Esta lista se llenará con una consulta separada
     private List<Emision> emisiones;
 }
