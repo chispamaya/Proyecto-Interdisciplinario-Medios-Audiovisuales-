@@ -15,4 +15,7 @@ public class VotarO {
     // Convertimos la relación @ManyToOne 'Usuario'
     // en un simple campo para el ID (la clave foránea).
     private Long idUsuario;
+ // ID de la encuesta a la que pertenece el voto
+    // (Este es el campo que faltaba y que el controlador necesita)
+    private Long idEncuesta;
 }
