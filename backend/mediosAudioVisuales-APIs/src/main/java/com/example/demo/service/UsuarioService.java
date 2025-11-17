@@ -3,6 +3,7 @@ package com.example.demo.service;
 // Importamos todas las "cajas" (DTOs) y "brazos" (Repositories) que necesita
 import com.example.demo.dto.EmpleadoDto;
 
+
 import com.example.demo.dto.PerfilDTO;
 import com.example.demo.dto.Rol;
 import com.example.demo.dto.Usuario;
@@ -21,9 +22,8 @@ import java.util.Map;
 import java.util.stream.Collectors;
 import com.example.demo.dto.GestionProgramaDTO;
 import com.example.demo.dto.Programa;
-import com.example.demo.dto.Segmento;
+
 import com.example.demo.repository.ProgramaRepository;
-import com.example.demo.repository.SegmentoRepository;
 import com.example.demo.repository.AuditoriaRepository;
 import java.time.Duration;
 
@@ -41,8 +41,7 @@ public class UsuarioService {
     @Autowired
     private ProgramaRepository programaRepository; 
     
-    @Autowired
-    private SegmentoRepository segmentoRepository;
+
     
     @Autowired
     private AuditoriaRepository auditoriaRepository;
