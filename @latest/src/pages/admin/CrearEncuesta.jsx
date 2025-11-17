@@ -1,188 +1,246 @@
-// src/pages/admin/CrearEncuesta.jsx
-
 import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
+import { Plus, Trash2, UploadCloud } from 'lucide-react';
+import '../../styles/pages/crearPublicacion.css'; 
 
-// 1. Importamos los estilos del ABM (para el layout) y los nuevos
-import '../../styles/components/abmForm.css'; 
-import '../../styles/pages/crearPublicacion.css'; // <--- Importamos el CSS
+// Lo llamamos 'CrearPublicacion' porque ahora hace más que solo encuestas
+export default function CrearPublicacion() {
+  const navigate = useNavigate();
+  
+  // --- Estados del Formulario ---
+  const [tipoPublicacion, setTipoPublicacion] = useState('mensaje'); // 'mensaje' o 'encuesta'
+  
+  // Campos Comunes
+  const [texto, setTexto] = useState(''); // Opcional para ambos
+  const [tags, setTags] = useState(''); // Opcional para ambos
 
-// 2. Importamos íconos para la UI
-import { Plus, X } from 'lucide-react';
-import logoAdmin from '../../assets/logo.png'; // Avatar por defecto
+  // Campos de Mensaje
+  const [imagen, setImagen] = useState(null); // Obligatoria para mensaje
+  const [fileName, setFileName] = useState('Ningún archivo seleccionado');
 
-export default function CrearEncuesta() {
-    const navigate = useNavigate();
+  // Campos de Encuesta
+  const [tituloEncuesta, setTituloEncuesta] = useState(''); // Obligatorio para encuesta
+  const [opciones, setOpciones] = useState(['', '']); 
 
-    // Estado para los 3 componentes del post
-    const [text, setText] = useState('');
-    const [imageUrl, setImageUrl] = useState('');
-    const [showPoll, setShowPoll] = useState(false); // Checkbox para mostrar la encuesta
+  // --- Lógica de Encuesta ---
+  const handleAddOption = () => {
+    if (opciones.length < 4) {
+      setOpciones([...opciones, '']);
+    }
+  };
 
-    // Estado solo para las opciones de la encuesta
-    const [pollOptions, setPollOptions] = useState([
-        { id: 1, text: '' },
-        { id: 2, text: '' },
-    ]);
+  const handleRemoveOption = (index) => {
+    const newOpciones = opciones.filter((_, i) => i !== index);
+    setOpciones(newOpciones);
+  };
 
-    // --- Lógica para manejar opciones de encuesta ---
-    const handlePollOptionChange = (id, value) => {
-        setPollOptions(options =>
-            options.map(opt => (opt.id === id ? { ...opt, text: value } : opt))
-        );
-    };
+  const handleOptionChange = (index, value) => {
+    const newOpciones = [...opciones];
+    newOpciones[index] = value;
+    setOpciones(newOpciones);
+  };
 
-    const addPollOption = (e) => {
-        e.preventDefault(); // Evita que el form se envíe
-        setPollOptions(options => [
-            ...options,
-            { id: Date.now(), text: '' } // Añade nueva opción con id único
-        ]);
-    };
+  // --- Lógica de Archivo ---
+  const handleImageChange = (e) => {
+    if (e.target.files && e.target.files[0]) {
+      setImagen(e.target.files[0]);
+      setFileName(e.target.files[0].name);
+    } else {
+      setImagen(null);
+      setFileName('Ningún archivo seleccionado');
+    }
+  };
 
-    const removePollOption = (e, id) => {
-        e.preventDefault(); // Evita que el form se envíe
-        if (pollOptions.length <= 2) {
-             alert('Debe haber al menos 2 opciones.');
-             return;
-        }
-        setPollOptions(options => options.filter(opt => opt.id !== id));
-    };
+  // --- Lógica de Envío ---
+  const handleSubmit = (e) => {
+    e.preventDefault();
+    
+    // 1. Parsear Tags (común para ambos)
+    const tagsArray = tags.split(',')
+      .map(tag => tag.trim()) 
+      .filter(tag => tag.length > 0 && tag.startsWith('#'));
 
-    // --- Lógica de Envío (Simulación) ---
-    const handleSubmit = (e) => {
-        e.preventDefault();
+    // 2. Enviar según el tipo
+    if (tipoPublicacion === 'mensaje') {
+      // Validar Mensaje (Imagen es obligatoria)
+      if (!imagen) {
+        alert('Por favor, sube una imagen para el mensaje.');
+        return;
+      }
+      
+      // Se usa FormData para enviar archivos
+      const formData = new FormData();
+      formData.append('tipo', 'mensaje');
+      formData.append('texto', texto);
+      formData.append('imagen', imagen);
+      formData.append('tags', JSON.stringify(tagsArray));
 
-        // 1. Validar que no esté vacío
-        if (!text.trim() && !imageUrl.trim() && !showPoll) {
-            alert('No se puede crear una publicación vacía. Añade texto, una imagen o una encuesta.');
-            return;
-        }
+      console.log('Enviando Mensaje (FormData):', Object.fromEntries(formData));
+      // Lógica de fetch con FormData...
 
-        // 2. Construir el objeto del post
-        const newPost = {
-            id: Date.now(),
-            user: { name: 'Admin', handle: '@MyCanalOficial', avatar: logoAdmin },
-            time: 'recién',
-            likes: 0,
-            dislikes: 0,
-        };
+    } else if (tipoPublicacion === 'encuesta') {
+      // Validar Encuesta (Título y 2 opciones son obligatorios)
+      const opcionesValidas = opciones.filter(op => op.trim() !== '');
+      if (opcionesValidas.length < 2) {
+        alert('La encuesta debe tener al menos 2 opciones válidas.');
+        return;
+      }
+      
+      // Se puede enviar como JSON
+      const publicacionJSON = {
+        tipo: 'encuesta',
+        titulo: tituloEncuesta,
+        texto: texto, // El texto/pregunta es opcional
+        opciones: opcionesValidas,
+        tags: tagsArray
+      };
 
-        if (text.trim()) {
-            newPost.text = text.trim();
-        }
-        if (imageUrl.trim()) {
-            newPost.image = imageUrl.trim();
-        }
-        if (showPoll) {
-            const validOptions = pollOptions.filter(opt => opt.text.trim() !== '');
-            if (validOptions.length < 2) {
-                alert('Las encuestas deben tener al menos 2 opciones válidas.');
-                return;
-            }
-            // Si la encuesta es válida, se añade al post
-            newPost.options = validOptions;
-            // Si no hay texto, la pregunta de la encuesta es el texto principal
-            if (!newPost.text && validOptions[0]) {
-                 newPost.text = "¡Vota en nuestra nueva encuesta!"; // Texto genérico
-            }
-        }
+      console.log('Enviando Encuesta (JSON):', publicacionJSON);
+      // Lógica de fetch con JSON...
+    }
+    
+    // Limpiar formulario y navegar
+    // navigate('/admin/dashboard'); 
+  };
 
-        // 3. Mostrar simulación (sin backend)
-        console.log("NUEVO POST CREADO:", newPost);
-        alert('Simulación: ¡Publicación creada con éxito!\nRevisa la consola (F12) para ver el objeto del post.');
+  // --- Renderizado del Formulario ---
+  return (
+    <div className="crear-publicacion-container">
+      <h1>Crear Nueva Publicación</h1>
+      
+      <div className="tipo-publicacion-selector">
+        <button 
+          className={`btn-tipo ${tipoPublicacion === 'mensaje' ? 'activo' : ''}`}
+          onClick={() => setTipoPublicacion('mensaje')}
+        >
+          Mensaje (Imagen)
+        </button>
+        <button 
+          className={`btn-tipo ${tipoPublicacion === 'encuesta' ? 'activo' : ''}`}
+          onClick={() => setTipoPublicacion('encuesta')}
+        >
+          Encuesta
+        </button>
+      </div>
+
+      <form onSubmit={handleSubmit} className="crear-publicacion-form">
         
-        // 4. Redirigir de vuelta
-        navigate('/perfil'); // Volvemos al perfil (o donde quieras)
-    };
+        {/* --- FORMULARIO PARA MENSAJE --- */}
+        {tipoPublicacion === 'mensaje' && (
+          <>
+            <div className="form-group">
+              <label htmlFor="imagen" className="label-required">
+                Imagen (Obligatoria)
+              </label>
+              <label htmlFor="imagen" className="file-upload-label">
+                <UploadCloud size={18} />
+                <span>{fileName}</span>
+              </label>
+              <input 
+                type="file"
+                id="imagen"
+                className="file-upload-input"
+                onChange={handleImageChange}
+                accept="image/png, image/jpeg, image/gif"
+                required
+              />
+            </div>
 
-    return (
-        <div className="abm-form-page-content"> {/* Reutilizamos layout ABM */ }
-            <h1 className="form-page-title"><span>Crear Nueva Publicación</span></h1>
+            <div className="form-group">
+              <label htmlFor="texto-mensaje">Texto (Opcional)</label>
+              <textarea 
+                id="texto-mensaje"
+                value={texto}
+                onChange={(e) => setTexto(e.target.value)}
+                placeholder="Añade un texto si lo deseas..."
+                rows={4}
+              />
+            </div>
+          </>
+        )}
+
+        {/* --- FORMULARIO PARA ENCUESTA --- */}
+        {tipoPublicacion === 'encuesta' && (
+          <>
+            <div className="form-group">
+              <label htmlFor="titulo-encuesta" className="label-required">
+                Título de la Encuesta (Obligatorio)
+              </label>
+              <input
+                type="text"
+                id="titulo-encuesta"
+                value={tituloEncuesta}
+                onChange={(e) => setTituloEncuesta(e.target.value)}
+                placeholder="¿Sobre qué quieres preguntar?"
+                required
+              />
+            </div>
             
-            <form className="abm-form-card" onSubmit={handleSubmit}>
-                
-                {/* 1. CAMPO DE TEXTO (Opcional) */}
-                <div className="form-group">
-                    <label htmlFor="text">Texto de la Publicación</label>
-                    <textarea 
-                        id="text" 
-                        value={text} 
-                        onChange={(e) => setText(e.target.value)}
-                        rows="4"
-                        placeholder="¿Qué está pasando? (Opcional si subes foto o encuesta)"
-                    ></textarea>
-                </div>
+            <div className="form-group">
+              <label htmlFor="texto-encuesta">Pregunta / Descripción (Opcional)</label>
+              <textarea 
+                id="texto-encuesta"
+                value={texto}
+                onChange={(e) => setTexto(e.target.value)}
+                placeholder="Añade un contexto o pregunta si lo deseas..."
+                rows={3}
+              />
+            </div>
 
-                {/* 2. CAMPO DE FOTO (Opcional) */}
-                <div className="form-group">
-                    <label htmlFor="imageUrl">URL de la Imagen (Opcional)</label>
-                    <input 
-                        type="text" 
-                        id="imageUrl" 
-                        value={imageUrl}
-                        onChange={(e) => setImageUrl(e.target.value)}
-                        placeholder="https://.../imagen-del-programa.png" 
-                    />
-                </div>
-
-                {/* 3. CAMPO DE ENCUESTA (Opcional) - ⚠️ ESTILO "TOGGLE" APLICADO ⚠️ */}
-                <div className="form-group form-group-toggle">
-                    <label htmlFor="showPoll" className="toggle-label">Añadir Encuesta</label>
-                    <input 
-                        type="checkbox" 
-                        id="showPoll"
-                        className="toggle-checkbox"
-                        checked={showPoll}
-                        onChange={(e) => setShowPoll(e.target.checked)}
-                    />
-                    <label htmlFor="showPoll" className="toggle-switch"></label>
-                </div>
-
-
-                {/* --- Opciones de Encuesta (Condicional) --- */}
-                {showPoll && (
-                    <div className="poll-creator-box">
-                        <label className="poll-creator-label">Opciones de la Encuesta</label>
-                        <div className="poll-options-creator">
-                            {pollOptions.map((option, index) => (
-                                <div key={option.id} className="poll-option-input-group">
-                                    <input
-                                        type="text"
-                                        value={option.text}
-                                        onChange={(e) => handlePollOptionChange(option.id, e.target.value)}
-                                        placeholder={`Opción ${index + 1}`}
-                                        required
-                                    />
-                                    <button 
-                                        className="btn-remove-option" 
-                                        onClick={(e) => removePollOption(e, option.id)}
-                                        disabled={pollOptions.length <= 2}
-                                        title="Eliminar opción"
-                                    >
-                                        <X size={16} />
-                                    </button>
-                                </div>
-                            ))}
-                        </div>
-                        <button className="btn-add-option" onClick={addPollOption}>
-                            <Plus size={16} style={{ marginRight: '8px' }} />
-                            Añadir Opción
-                        </button>
-                    </div>
-                )}
-
-
-                {/* 4. Botones de Acción */}
-                <div className="form-action-buttons">
-                    <button type="button" className="btn-descartar-form" onClick={() => navigate('/perfil')}>
-                        Descartar
+            <div className="opciones-encuesta-container">
+              <label className="label-required">Opciones (Mínimo 2)</label>
+              {opciones.map((opcion, index) => (
+                <div key={index} className="opcion-input-group">
+                  <input 
+                    type="text"
+                    value={opcion}
+                    onChange={(e) => handleOptionChange(index, e.target.value)}
+                    placeholder={`Opción ${index + 1}`}
+                    maxLength={50}
+                    required={index < 2} // Las primeras 2 son obligatorias
+                  />
+                  {opciones.length > 2 && (
+                    <button 
+                      type="button" 
+                      className="btn-remove-opcion"
+                      onClick={() => handleRemoveOption(index)}
+                    >
+                      <Trash2 size={18} />
                     </button>
-                    <button type="submit" className="btn-guardar-form">
-                        Publicar
-                    </button>
+                  )}
                 </div>
-            </form>
+              ))}
+              {opciones.length < 4 && (
+                <button 
+                  type="button" 
+                  className="btn-add-opcion"
+                  onClick={handleAddOption}
+                >
+                  <Plus size={18} /> Añadir opción
+                </button>
+              )}
+            </div>
+          </>
+        )}
+
+        {/* --- CAMPO COMÚN: TAGS --- */}
+        <div className="form-group">
+          <label htmlFor="tags">Tags (Opcional)</label>
+          <input
+            type="text"
+            id="tags"
+            value={tags}
+            onChange={(e) => setTags(e.target.value)}
+            placeholder="Ej: #debate, #noticias, #vivo"
+          />
         </div>
-    );
+
+        <div className="form-actions">
+          <button type="submit" className="btn-submit-publicacion">
+            Publicar
+          </button>
+        </div>
+      </form>
+    </div>
+  );
 }

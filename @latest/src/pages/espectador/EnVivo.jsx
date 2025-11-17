@@ -1,15 +1,23 @@
 import React from 'react';
-// 1. Importa el CSS que ahora solo tiene estilos de contenido
+// 1. Importamos Link DE VUELTA
+import { Link } from 'react-router-dom';
 import './EnVivo.css';
 
 // --- Componente Principal de la Página EnVivo ---
-// ❌ (Ya no tiene el 'EnVivoHeader', el layout lo maneja)
 export default function EnVivo() {
   return (
-    // Ya no necesita <div className="envivo-page-container">
     <main className="envivo-main-content">
       <div className="envivo-container-white">
-        <h1 className="envivo-title">EN VIVO</h1>
+        
+        {/* 2. VOLVEMOS A PONER EL BOTÓN AQUÍ */}
+        <div className="envivo-header-area">
+          <h1 className="envivo-title">EN VIVO</h1>
+          
+          <Link to="/encuestas-espectador" className="btn-encuestas-vivo">
+            Ir a Encuestas
+          </Link>
+        </div>
+
         <div className="envivo-content-wrapper">
           <div className="envivo-video-wrapper">
             <iframe

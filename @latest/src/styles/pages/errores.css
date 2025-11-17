@@ -1,4 +1,4 @@
-/* src/styles/pages/errores.css (ACTUALIZADO - Tema Oscuro + HTTP Cats) */
+/* src/styles/pages/errores.css (ACTUALIZADO - Scrollbars Ocultos) */
 
 /* --- Variables de Diseño --- */
 :root {
@@ -14,7 +14,7 @@
     --color-warning-texto: #facc15; 
     --color-warning-fondo: rgba(250, 204, 21, 0.1);
 
-    /* Colores de scrollbar (ocultos, pero de referencia) */
+    /* Variables de scrollbar (ya no se usan pero se dejan por si acaso) */
     --color-scrollbar-thumb: #4a6fa5; 
     --color-scrollbar-track: #1f3350; 
 }
@@ -30,7 +30,6 @@
     flex-direction: column;
     overflow: hidden; 
     font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; 
-    box-sizing: border-box; /* Añadido para consistencia */
 }
 
 /* --- Título de la Página --- */
@@ -185,81 +184,6 @@
     -ms-overflow-style: none; /* IE y Edge (versiones viejas) */
 }
 
-/* --- (NUEVO) Estilos para HTTP CATS (Pantalla de Error) --- */
-/* Adaptados a las variables del tema oscuro */
-.http-cat-container {
-    display: flex; 
-    flex-direction: column; 
-    align-items: center; 
-    justify-content: center; 
-    height: 100vh; 
-    text-align: center;
-    padding: 20px;
-    background-color: var(--color-fondo-principal); /* ADAPTADO */
-    box-sizing: border-box;
-}
-
-.http-cat-title {
-    color: var(--color-danger-texto); /* ADAPTADO */
-    font-size: 2.5rem;
-    margin-bottom: 10px;
-}
-
-.http-cat-message {
-    font-size: 1.2rem; 
-    color: var(--color-texto-muted); /* ADAPTADO */
-    margin-bottom: 25px;
-}
-
-.http-cat-image {
-    max-width: 100%; 
-    width: 500px; 
-    height: auto; 
-    border-radius: 12px; 
-    box-shadow: 0 8px 25px rgba(0,0,0,0.5); /* Sombra más oscura */
-    margin-bottom: 30px;
-}
-
-.http-cat-button {
-    padding: 12px 25px;
-    font-size: 16px;
-    background-color: #007bff; /* Azul brillante resalta bien */
-    color: white;
-    border: none;
-    border-radius: 5px;
-    cursor: pointer;
-    box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    transition: background-color 0.2s ease, transform 0.1s ease;
-}
-
-.http-cat-button:hover {
-    background-color: #0056b3;
-}
-
-.http-cat-button:active {
-    transform: translateY(1px);
-}
-
-/* --- (NUEVO) Estilos para Estados de Carga y Vacío --- */
-/* Adaptados a las variables del tema oscuro */
-.errores-empty-state {
-    padding: 40px;
-    text-align: center;
-}
-
-.errores-empty-state.loading {
-    color: var(--color-texto-muted); /* ADAPTADO */
-    font-size: 1.1rem;
-}
-
-.errores-empty-state.success {
-    color: #34d399; /* Un verde brillante para el tema oscuro */
-}
-
-.errores-empty-state.success h2 {
-    margin: 0 0 10px 0;
-}
-
 
 /* --- RESPONSIVE --- */
 @media (max-width: 768px) { 
@@ -277,15 +201,6 @@
     }
     .error-cell {
         padding: 0.8rem 0.8rem;
-    }
-
-    /* Ajuste para el gato en móviles */
-    .http-cat-image {
-        width: 100%;
-        max-width: 400px;
-    }
-    .http-cat-title {
-        font-size: 2rem;
     }
 }
 
