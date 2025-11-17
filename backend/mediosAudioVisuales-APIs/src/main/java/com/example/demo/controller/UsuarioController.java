@@ -77,7 +77,14 @@ public class UsuarioController {
         
         return usuarioService.crearUsuario(nuevoUsuario, idUsuarioQueCrea);
     }
-
+    @PostMapping("/login")
+    public Usuario login(@RequestBody Map<String, String> credenciales) {
+        String email = credenciales.get("email");
+        String password = credenciales.get("password");
+        
+        // Llama al "cerebro" para verificar
+        return usuarioService.login(email, password);
+    }
     /**
      * Endpoint para EDITAR el rol (Pantalla "Editar Empleado")
      * - Método HTTP: PUT (PUT se usa para Actualizar)
