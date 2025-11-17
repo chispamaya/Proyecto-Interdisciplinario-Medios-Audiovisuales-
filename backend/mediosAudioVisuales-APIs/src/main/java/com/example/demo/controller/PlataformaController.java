@@ -12,6 +12,10 @@ import java.util.List;
  * @RestController: Define esta clase como un Controller que devuelve JSON.
  * @RequestMapping("/api/plataformas"): URL Base para todos los métodos.
  */
+import org.springframework.web.bind.annotation.CrossOrigin; // <-- ¡IMPORTA ESTO!
+
+
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/plataformas")
 public class PlataformaController {

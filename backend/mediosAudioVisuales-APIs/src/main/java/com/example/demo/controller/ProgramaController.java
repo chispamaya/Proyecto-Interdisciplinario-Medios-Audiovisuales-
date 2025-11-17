@@ -13,7 +13,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.CrossOrigin; // <-- ¡IMPORTA ESTO!
 
+
+@CrossOrigin(origins = "http://localhost:5173")
 
 /**
  * @RestController: Le dice a Spring que esto es un Controller y devolverá JSON.

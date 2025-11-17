@@ -8,11 +8,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import org.springframework.web.bind.annotation.CrossOrigin; // <-- ¡IMPORTA ESTO!
 
-/**
- * @RestController: Define esta clase como un Controller que devuelve JSON.
- * @RequestMapping("/api/segmentos"): URL Base para todos los métodos.
- */
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/segmentos")
 public class SegmentoController {

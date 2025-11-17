@@ -2,6 +2,7 @@ package com.example.demo.controller;
 
 // Importamos los DTOs que vamos a DEVOLVER
 import com.example.demo.dto.EmpleadoDto;
+
 import com.example.demo.dto.PerfilDTO;
 import com.example.demo.dto.Usuario;
 import com.example.demo.dto.GestionProgramaDTO;
@@ -14,13 +15,14 @@ import org.springframework.web.bind.annotation.*; // ¡Importa TODAS las anotaci
 
 import java.util.List;
 import java.util.Map;
-
+import org.springframework.web.bind.annotation.CrossOrigin;
 /**
  * @RestController: Le dice a Spring que esta clase es un Controller
  * y que todos sus métodos devolverán JSON automáticamente.
  * * @RequestMapping("/api/usuarios"): Define la URL "base" para todos
  * los métodos en esta clase (ej: http://localhost:8080/api/usuarios).
  */
+@CrossOrigin(origins = "http://localhost:5173")
 @RestController
 @RequestMapping("/api/usuarios")
 public class UsuarioController {
