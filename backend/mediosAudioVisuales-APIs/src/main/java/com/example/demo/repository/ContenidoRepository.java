@@ -20,8 +20,8 @@ public class ContenidoRepository {
     private JdbcTemplate jdbcTemplate;
 
     /**
-     * (ACTUALIZADO) Llama al SP cc (Crear Contenido) con todos los campos.
-     * Usado por 'SubidaMultimedia.jsx'.
+     * Llama al SP cc (Crear Contenido).
+     * Coincide con DB.sql: cc(formato1, rutaArchivo1, texto1, idU1, idUs, @mensaje)
      */
     public String crearContenido(Contenido contenido, Long idUsuarioAuditoria) {
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate).withProcedureName("cc");
@@ -29,22 +29,16 @@ public class ContenidoRepository {
         Map<String, Object> inParams = new HashMap<>();
         inParams.put("formato1", contenido.getFormato());
         inParams.put("rutaArchivo1", contenido.getRutaArchivo());
+        inParams.put("texto1", contenido.getTexto()); // Campo correcto de la BD
         inParams.put("idU1", contenido.getIdUsuario());
         inParams.put("idUs", idUsuarioAuditoria);
-        
-        // (5) Pasamos los nuevos parámetros al SP
-        inParams.put("titulo1", contenido.getTitulo());
-        inParams.put("tipo1", contenido.getTipo());
-        inParams.put("duracion1", contenido.getDuracion());
-        inParams.put("tamano1", contenido.getTamano());
 
         Map<String, Object> outParams = jdbcCall.execute(inParams);
         return (String) outParams.get("mensaje");
     }
 
     /**
-     * (EXISTENTE) Llama al SP bc (Borrar Contenido).
-     * Usado por 'GestionMultimedia.jsx'.
+     * Llama al SP bc (Borrar Contenido).
      */
     public String borrarContenido(Long idContenidoAEliminar, Long idUsuarioAuditoria) {
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate).withProcedureName("bc");
@@ -58,46 +52,26 @@ public class ContenidoRepository {
     }
 
     /**
-     * (NUEVO) Llama al SP 'mces' (Modificar Contenido Estado).
-     * Usado por 'EstadoAprobacion.jsx'.
-     */
-    public String modificarEstadoContenido(Long idContenido, String nuevoEstado, Long idUsuarioAuditoria) {
-        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate).withProcedureName("mces");
-
-        Map<String, Object> inParams = new HashMap<>();
-        inParams.put("idContenido1", idContenido);
-        inParams.put("nuevoEstado1", nuevoEstado);
-        inParams.put("idUs", idUsuarioAuditoria);
-
-        Map<String, Object> outParams = jdbcCall.execute(inParams);
-        return (String) outParams.get("mensaje");
-    }
-
-    /**
-     * (NUEVO) Lista TODO el contenido.
-     * Usado por 'EstadoAprobacion.jsx'.
+     * Lista TODO el contenido.
      */
     public List<Contenido> listarTodosLosContenidos() {
-        // Usamos el SP 's' genérico para traer todo
         String sql = "CALL s('contenidos', null, @mensaje)";
         return jdbcTemplate.query(sql, new ContenidoRowMapper());
     }
 
     /**
-     * (NUEVO) Lista contenido FILTRADO por usuario.
-     * Usado por 'GestionMultimedia.jsx' (que solo muestra "Tu contenido").
+     * Lista contenido FILTRADO por usuario.
      */
     public List<Contenido> listarContenidosPorUsuario(Long idUsuario) {
-        // (6) Como el SP 's' no puede filtrar por usuario, escribimos el SQL.
         String sql = "SELECT * FROM contenidos WHERE idUsuario = ?";
         return jdbcTemplate.query(sql, new ContenidoRowMapper(), idUsuario);
     }
+    
+    // NOTA: Eliminé 'modificarEstadoContenido' porque el SP 'mces' y la columna 'estado' NO existen en tu DB.sql.
 }
 
 /**
- * (NUEVO) RowMapper para Contenido.
- * Le dice a Spring cómo convertir una fila de la BD (con las nuevas columnas)
- * en un objeto DTO Contenido.java.
+ * RowMapper adaptado a las columnas reales de la tabla 'contenidos'.
  */
 class ContenidoRowMapper implements RowMapper<Contenido> {
     @Override
@@ -106,15 +80,8 @@ class ContenidoRowMapper implements RowMapper<Contenido> {
         contenido.setId(rs.getLong("id"));
         contenido.setFormato(rs.getString("formato"));
         contenido.setRutaArchivo(rs.getString("rutaArchivo"));
+        contenido.setTexto(rs.getString("texto")); // Mapeamos la columna real
         contenido.setIdUsuario(rs.getLong("idUsuario"));
-        
-        // Mapeamos los nuevos campos
-        contenido.setTitulo(rs.getString("titulo"));
-        contenido.setTipo(rs.getString("tipo"));
-        contenido.setEstado(rs.getString("estado"));
-        contenido.setDuracion(rs.getString("duracion"));
-        contenido.setTamano(rs.getString("tamano"));
-        
         return contenido;
     }
 }
