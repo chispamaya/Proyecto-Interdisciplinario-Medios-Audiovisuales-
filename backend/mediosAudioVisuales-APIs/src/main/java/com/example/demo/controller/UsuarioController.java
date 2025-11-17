@@ -4,6 +4,8 @@ package com.example.demo.controller;
 import com.example.demo.dto.EmpleadoDto;
 import com.example.demo.dto.PerfilDTO;
 import com.example.demo.dto.Usuario;
+import com.example.demo.dto.GestionProgramaDTO;
+
 // Importamos el "Cerebro" (Service)
 import com.example.demo.service.UsuarioService;
 
@@ -82,6 +84,11 @@ public class UsuarioController {
      * @RequestBody Map<String, Long>: Recibimos un JSON simple, ej:
      * { "idUsuario": 5, "idNuevoRol": 8 }
      */
+    @GetMapping("/gestion/{idUsuario}")
+    public List<GestionProgramaDTO> getGestionMultimedia(@PathVariable Long idUsuario) {
+        // Llama al método que SÍ está en UsuarioService
+        return usuarioService.listarGestionProgramasPorUsuario(idUsuario);
+    }
     @PutMapping("/rol")
     public String modificarRolUsuario(@RequestBody Map<String, Long> payload) {
         Long idUsuarioAModificar = payload.get("idUsuario");
