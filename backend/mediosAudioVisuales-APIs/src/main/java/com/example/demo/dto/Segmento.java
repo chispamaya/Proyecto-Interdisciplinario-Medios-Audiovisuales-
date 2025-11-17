@@ -14,6 +14,6 @@ public class Segmento {
     // Convertimos la relación @ManyToOne 'Programa'
     // en un simple campo para el ID (la clave foránea).
     private Long idPrograma;
-
+    private Integer orden; // O Long, o el tipo de dato que sea en tu DB
     // Lombok (@Data) se encarga de los getters/setters/etc.
 }
