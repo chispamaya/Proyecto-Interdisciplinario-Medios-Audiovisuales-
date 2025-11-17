@@ -10,6 +10,6 @@ public class Auditoria {
     private String accion;
     private Long usuarioId; // Mapeado desde 'usuario_id'
     private String tablaM;
-    private int registro_afectado_id;
+    private Long registroAfectadoId;
     private LocalDateTime fecha;
 }
