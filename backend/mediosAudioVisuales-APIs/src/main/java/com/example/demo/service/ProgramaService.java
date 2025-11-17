@@ -81,7 +81,75 @@ public class ProgramaService {
     public String quitarDia(Long idDia, Long idUsuarioQueQuita) {
         return diaRepository.borrarDia(idDia, idUsuarioQueQuita);
     }
-    
+ // ... (tus otros métodos como crearPrograma, etc. van aquí) ...
+
+    // --- 💥 ¡AGREGÁ ESTE MÉTODO COMPLETO! 💥 ---
+    /**
+     * Obtiene la lista de todos los programas asignados a días (la parrilla)
+     * con el nombre de quién los propuso.
+     * ¡ESTA ES LA LÓGICA PARA "ESTADO Y APROBACIÓN"!
+     */
+    public List<AprobacionDTO> listarProgramasParaAprobacion() {
+        
+        // --- LÓGICA DE ORQUESTACIÓN ---
+
+        // Paso 1: Traer todos los datos "crudos" de la DB
+        List<Dia> todosLosDias = diaRepository.listarTodosLosDias();
+        List<Programa> todosLosProgramas = programaRepository.listarTodosLosProgramas();
+        List<Usuario> todosLosUsuarios = usuarioRepository.listarTodosLosUsuarios();
+        List<Auditoria> auditoriasDeProgramas = auditoriaRepository.buscarAuditoriaPorTablaYAccion("programas", "INSERT");
+
+        // Paso 2: Crear "Mapas" (Diccionarios) para buscar rápido
+        
+        // Mapa 1: ID de Programa -> Objeto Programa
+        Map<Long, Programa> mapaProgramas = todosLosProgramas.stream()
+                .collect(Collectors.toMap(Programa::getId, programa -> programa));
+        
+        // Mapa 2: ID de Usuario -> Nombre de Usuario
+        Map<Long, String> mapaUsuarios = todosLosUsuarios.stream()
+                .collect(Collectors.toMap(Usuario::getId, Usuario::getNombre));
+
+        // Mapa 3: ID de Programa -> ID de Usuario que lo creó
+        Map<Long, Long> mapaPropuestas = auditoriasDeProgramas.stream()
+                .collect(Collectors.toMap(
+                    Auditoria::getRegistroAfectadoId, // Clave: ID del Programa
+                    Auditoria::getUsuarioId,          // Valor: ID del Usuario
+                    (idUsuarioExistente, idUsuarioNuevo) -> idUsuarioExistente 
+                ));
+
+        // --- LÓGICA DE COMBINACIÓN ---
+        List<AprobacionDTO> resultadoFinal = new ArrayList<>();
+
+        // Paso 3: Recorremos la lista de DÍAS (la parrilla)
+        for (Dia dia : todosLosDias) {
+            
+            Programa programa = mapaProgramas.get(dia.getIdPrograma());
+            if (programa == null) continue; 
+
+            Long idProponente = mapaPropuestas.get(programa.getId());
+            String nombreProponente = mapaUsuarios.get(idProponente);
+            
+            AprobacionDTO dto = new AprobacionDTO();
+            
+            // Llenamos el DTO con los datos que pide la pantalla
+            dto.setIdDia(dia.getId());
+            dto.setFechaEmision(dia.getDia()); 
+            
+            dto.setTituloPrograma(programa.getNombre());
+            dto.setHoraInicio(programa.getHoraInicio()); 
+            dto.setHoraFin(programa.getHoraFin());       
+            dto.setEstadoAprobacion(programa.getEstadoAprobacion());
+            
+            dto.setPropuestaDe(nombreProponente != null ? nombreProponente : "Desconocido");
+            
+            dto.setRutaArchivo(programa.getRutaArchivo());
+            dto.setRutaInforme(programa.getRutaInforme());
+
+            resultadoFinal.add(dto);
+        }
+
+        return resultadoFinal;
+    }
 
 	public List<GestionProgramaDTO> listarGestionProgramasPorUsuario(Long idUsuario) {
 	        
