@@ -1,53 +1,41 @@
-// src/components/abm/ABMPageLayout.jsx
-
 import React from 'react';
-import { Plus, ArrowLeft } from 'lucide-react';
-import { useNavigate } from 'react-router-dom';
 import ABMTable from './ABMTable';
-import '../../styles/components/abmTable.css'; 
+import { Plus } from 'lucide-react'; 
 
-export default function ABMPageLayout({ title, columns, data, onAdd, onEdit, onDelete }) {
-    
-    const navigate = useNavigate();
-    const entityName = title.replace('ABM de ', '').slice(0, -1);
-
+export default function ABMPageLayout({ 
+    title, 
+    columns, // Recibe las columnas (que ya incluyen los botones)
+    data, 
+    onAdd, 
+    // Ya no necesita recibir onEdit ni onDelete
+    addButtonText = "Añadir"
+}) {
     return (
-        <div className="abm-container">
-            {/* --- BOTÓN DE VOLVER --- */}
-            <button onClick={() => navigate(-1)} className="btn-volver">
-                <ArrowLeft size={20} />
-                Volver
-            </button>
-
-            {/* --- HEADER (SOLO TÍTULO) --- */}
-            <header className="abm-page-header">
-                <h1><span>{title}</span></h1>
-            </header>
-
-            {/* 👇 CONTENEDOR DEL BOTÓN 'AÑADIR' CON COMPROBACIÓN 👇 */}
-            {/* Esto significa: "Solo muestra este bloque si 'onAdd' existe 
-              (es decir, si la página pasó la prop onAdd)" 
-            */}
-            {onAdd && (
-                <div className="abm-actions-header">
-                    <button 
-                        className="btn-anadir" 
-                        onClick={onAdd}
-                        title={`Añadir ${entityName}`}
-                    >
+        <div className="abm-page-layout">
+            
+            {/* Header con estilos para alinear el botón a la derecha */}
+            <header 
+                className="abm-header" 
+                style={{ 
+                    display: 'flex', 
+                    justifyContent: 'space-between', 
+                    alignItems: 'center',
+                    width: '100%'
+                }}
+            >
+                <h1>{title}</h1>
+                {onAdd && (
+                    <button onClick={onAdd} className="btn-primary btn-add">
                         <Plus size={20} />
-                        Añadir
+                        {addButtonText}
                     </button>
-                </div>
-            )}
-            {/* 👆 FIN DEL BLOQUE DEL BOTÓN 👆 */}
-
-            {/* --- TABLA --- */}
+                )}
+            </header>
+            
             <ABMTable 
-                columns={columns} 
-                data={data} 
-                onEdit={onEdit} 
-                onDelete={onDelete} 
+                columns={columns} // Simplemente pasa las columnas
+                data={data}
+                // Ya no pasa onEdit/onDelete
             />
         </div>
     );

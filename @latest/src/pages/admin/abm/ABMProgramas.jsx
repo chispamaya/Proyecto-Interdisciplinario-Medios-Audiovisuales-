@@ -1,6 +1,10 @@
 import React, { useState } from 'react';
+import { useNavigate } from 'react-router-dom'; 
+// Importa los iconos aquí
+import { Edit, Trash2 } from 'lucide-react'; 
 import ABMPageLayout from '../../../components/abm/ABMPageLayout.jsx';
 import ABMProgramasForm from './ABMProgramasForm.jsx';
+
 // --- Datos de Ejemplo (Sin cambios) ---
 const programasData = [
     { id: 1, nombre: "Noticias Matinales", duracion: "60 min", categoria: "Noticias", estado: "Activo" },
@@ -14,23 +18,60 @@ const programasData = [
     { id: 9, nombre: "Resumen Semanal", duracion: "40 min", categoria: "Noticias", estado: "Activo" },
 ];
 
-const columnasProgramas = [
+
+// Función que crea la definición de columnas
+const getColumnasProgramas = (onEdit, onDelete) => [
     { key: 'id', header: 'ID' },
     { key: 'nombre', header: 'Nombre' },
     { key: 'duracion', header: 'Duración' },
     { key: 'categoria', header: 'Categoría' },
     { key: 'estado', header: 'Estado' },
+    {
+        key: 'editar',
+        header: 'Editar',
+        className: 'abm-columna-accion', // Clase para centrar
+        render: (item) => (
+            <button 
+                onClick={() => onEdit(item.id)} 
+                className="btn-accion btn-editar"
+                aria-label={`Editar ${item.id}`}
+            >
+                <Edit size={18} />
+            </button>
+        )
+    },
+    {
+        key: 'eliminar',
+        header: 'Eliminar',
+        className: 'abm-columna-accion', // Clase para centrar
+        render: (item) => (
+            <button 
+                onClick={() => onDelete(item.id)} 
+                className="btn-accion btn-eliminar"
+                aria-label={`Eliminar ${item.id}`}
+            >
+                <Trash2 size={18} />
+            </button>
+        )
+    }
 ];
 
 export default function ABMProgramas() {
     const [editingId, setEditingId] = useState(null); 
+    const navigate = useNavigate(); 
     
     const handleEdit = (id) => {
         setEditingId(id); 
     };
+
+    const handleDelete = (id) => {
+        if (window.confirm(`¿Seguro que deseas eliminar el programa ID: ${id}?`)) {
+            console.log(`Eliminar programa ID: ${id}`);
+        }
+    };
     
     const handleAdd = () => {
-        setEditingId(0); 
+        navigate('/subida'); // Sigue yendo a /subida
     };
 
     const handleCancelOrSuccess = () => {
@@ -47,18 +88,16 @@ export default function ABMProgramas() {
         );
     }
     
+    // Genera las columnas llamando a la función
+    const columnas = getColumnasProgramas(handleEdit, handleDelete);
+    
     return (
         <ABMPageLayout
             title="ABM de Programas"
-            columns={columnasProgramas}
+            columns={columnas} // Pasa las columnas listas
             data={programasData}
             onAdd={handleAdd} 
-            onEdit={handleEdit} 
-            onDelete={(id) => { 
-                if (window.confirm(`¿Seguro que deseas eliminar el programa ID: ${id}?`)) {
-                    console.log(`Eliminar programa ID: ${id}`);
-                }
-            }}
+            // Ya no pasa onEdit/onDelete aquí
         />
     );
 }
