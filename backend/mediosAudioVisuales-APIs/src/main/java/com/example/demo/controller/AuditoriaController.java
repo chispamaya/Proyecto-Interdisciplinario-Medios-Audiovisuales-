@@ -3,46 +3,30 @@ package com.example.demo.controller;
 import com.example.demo.dto.Auditoria;
 import com.example.demo.service.AuditoriaService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/api/auditoria")
-@CrossOrigin(origins = "*")
+@CrossOrigin(origins = "http://localhost:5173")
 public class AuditoriaController {
 
     @Autowired
-    private AuditoriaService auditoriaService; // Inyecta el servicio
+    private AuditoriaService auditoriaService;
 
-    // GET (Traer todos)
+    // Traer todo
     @GetMapping
-    public List<Auditoria> getAllAuditorias() {
-        return auditoriaService.findAll();
+    public ResponseEntity<List<Auditoria>> listarTodo() {
+        return ResponseEntity.ok(auditoriaService.listarAuditorias());
     }
 
-    // GET (Traer uno por ID)
-    @GetMapping("/{id}")
-    public Auditoria getAuditoriaById(@PathVariable Long id) {
-        return auditoriaService.findById(id).orElse(null);
+    // Si agregaste los métodos de filtro al Service, descomenta esto:
+    /*
+    @GetMapping("/filtro")
+    public ResponseEntity<List<Auditoria>> filtrar(@RequestParam String tabla, @RequestParam String accion) {
+        return ResponseEntity.ok(auditoriaService.filtrarPorTablaYAccion(tabla, accion));
     }
-
-    // POST (Crear uno nuevo)
-    @PostMapping
-    public Auditoria createAuditoria(@RequestBody Auditoria auditoria) {
-        return auditoriaService.save(auditoria);
-    }
-
-    // PUT (Actualizar uno existente)
-    @PutMapping("/{id}")
-    public Auditoria updateAuditoria(@PathVariable Long id, @RequestBody Auditoria auditoriaDetails) {
-        auditoriaDetails.setId(id);
-        return auditoriaService.save(auditoriaDetails);
-    }
-
-    // DELETE (Borrar uno)
-    @DeleteMapping("/{id}")
-    public void deleteAuditoria(@PathVariable Long id) {
-        auditoriaService.deleteById(id);
-    }
+    */
 }

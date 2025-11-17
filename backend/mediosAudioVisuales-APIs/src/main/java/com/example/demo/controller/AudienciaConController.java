@@ -1,48 +1,55 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.AudienciaCon;
+import com.example.demo.dto.ReporteAudienciaDTO;
 import com.example.demo.service.AudienciaConService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
-@RequestMapping("/api/audienciacon") // La URL base
-@CrossOrigin(origins = "*") // Habilita CORS
+@RequestMapping("/api/audiencia")
+@CrossOrigin(origins = "http://localhost:5173")
 public class AudienciaConController {
 
     @Autowired
-    private AudienciaConService audienciaConService; // Inyecta el servicio
+    private AudienciaConService audienciaConService;
 
-    // GET (Traer todos)
-    @GetMapping
-    public List<AudienciaCon> getAllAudienciaCon() {
-        return audienciaConService.findAll();
+    /**
+     * Endpoint para dar Like o Dislike.
+     * Recibe el objeto AudienciaCon en el cuerpo y el ID de usuario auditor en la URL.
+     */
+    @PostMapping("/voto")
+    public ResponseEntity<String> votar(@RequestBody AudienciaCon voto, @RequestParam Long idUsuarioAuditoria) {
+        try {
+            String mensaje = audienciaConService.crearOModificarVoto(voto, idUsuarioAuditoria);
+            return ResponseEntity.ok(mensaje);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error al votar: " + e.getMessage());
+        }
     }
 
-    // GET (Traer uno por ID)
-    @GetMapping("/{id}")
-    public AudienciaCon getAudienciaConById(@PathVariable Long id) {
-        return audienciaConService.findById(id).orElse(null);
+    /**
+     * Endpoint para quitar un voto existente.
+     */
+    @DeleteMapping("/voto")
+    public ResponseEntity<String> borrarVoto(@RequestParam Long idContenido, @RequestParam Long idUsuario, @RequestParam Long idUsuarioAuditoria) {
+        try {
+            String mensaje = audienciaConService.borrarVoto(idContenido, idUsuario, idUsuarioAuditoria);
+            return ResponseEntity.ok(mensaje);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
     }
 
-    // POST (Crear uno nuevo)
-    @PostMapping
-    public AudienciaCon createAudienciaCon(@RequestBody AudienciaCon audienciaCon) {
-        return audienciaConService.save(audienciaCon);
-    }
-
-    // PUT (Actualizar uno existente)
-    @PutMapping("/{id}")
-    public AudienciaCon updateAudienciaCon(@PathVariable Long id, @RequestBody AudienciaCon audienciaDetails) {
-        audienciaDetails.setId(id); // Asumimos que el DTO tiene setId
-        return audienciaConService.save(audienciaDetails);
-    }
-
-    // DELETE (Borrar uno)
-    @DeleteMapping("/{id}")
-    public void deleteAudienciaCon(@PathVariable Long id) {
-        audienciaConService.deleteById(id);
+    /**
+     * Endpoint para obtener el reporte de conteo de Likes/Dislikes.
+     * Usado en ReportesAudiencia.jsx
+     */
+    @GetMapping("/reporte")
+    public ResponseEntity<List<ReporteAudienciaDTO>> obtenerReporte() {
+        return ResponseEntity.ok(audienciaConService.obtenerReporteAudiencia());
     }
 }
