@@ -4,7 +4,6 @@ package com.example.demo.controller;
 import com.example.demo.dto.AprobacionDTO;
 import com.example.demo.dto.ControlEmisionDTO;
 import com.example.demo.dto.Dia;
-import com.example.demo.dto.GestionProgramaDTO;
 import com.example.demo.dto.Programa;
 
 // Importamos el "Cerebro" (Service)
@@ -14,7 +13,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
+
 
 /**
  * @RestController: Le dice a Spring que esto es un Controller y devolverá JSON.

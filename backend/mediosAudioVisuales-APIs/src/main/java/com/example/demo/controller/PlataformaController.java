@@ -1,12 +1,12 @@
 package com.example.demo.controller;
 
 import com.example.demo.dto.Plataforma;
+
 import com.example.demo.service.PlataformaService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
-import java.util.Map;
 
 /**
  * @RestController: Define esta clase como un Controller que devuelve JSON.
