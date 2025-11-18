@@ -180,6 +180,19 @@ CREATE PROCEDURE s(IN tabla VARCHAR(50), IN id1 INT, OUT mensaje VARCHAR(50))
 	    LEFT JOIN votar_o v ON o.id = v.idOpcion
 	    WHERE e.id = id1
 	    GROUP BY e.id, e.preguntar, e.idUsuario, o.id, o.opcion;
+     ELSEIF tabla = 'encuesta' AND id1 IS NULL THEN
+		 SELECT 
+	        e.id AS idEncuesta, 
+	        e.preguntar, 
+	        e.idUsuario AS idCreador, 
+	        o.id AS idOpcion, 
+	        o.opcion,
+	        COUNT(v.idOpcion) AS totalVotos
+	    FROM encuesta e
+	    JOIN opcion_e o ON e.id = o.idEncuesta
+	    LEFT JOIN votar_o v ON o.id = v.idOpcion
+	    GROUP BY e.id, e.preguntar, e.idUsuario, o.id, o.opcion
+        ORDER BY e.id DESC; 
 	 ELSE
 		SET @ct = CONCAT('SELECT * FROM ', tabla, ';');
 		PREPARE c FROM @ct; 
@@ -1194,6 +1207,7 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (11, 6);
 
 
 INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7); 
+
 
 
 
