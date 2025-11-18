@@ -7,7 +7,7 @@ import "../../styles/layout/sidebar.css";
 // Importamos todos los iconos necesarios
 import {
     Users, UploadCloud, CheckCircle, CalendarDays, Folders, 
-    Zap, AlertTriangle, Calendar, UserCog, BarChart, PlusSquare, History
+    Zap, AlertTriangle, Calendar, UserCog, BarChart, PlusSquare, History,FileSearch
 } from 'lucide-react';
 
 // --- CONSTANTES DE ROLES (Para traducir ID a String) ---
@@ -71,6 +71,7 @@ const ProgramadorLinks = ({ onClick }) => (
                 <span className="label">Armado de Parrilla</span>
             </Link>
         </li>
+        
     </>
 );
 
@@ -99,6 +100,12 @@ const AdminLinks = ({ onClick }) => (
             <Link to="/reportes" className="menu-item" onClick={onClick}>
                 <BarChart size={20} color="var(--texto)" style={{ marginRight: '10px' }} />
                 <span className="label">Reportes Audiencia</span>
+            </Link>
+        </li>
+        <li>
+            <Link to="/admin/auditoria" className="menu-item" onClick={onClick}>
+                <FileSearch size={20} color="var(--texto)" style={{ marginRight: '10px' }} />
+                <span className="label">Auditoria</span>
             </Link>
         </li>
     </>
