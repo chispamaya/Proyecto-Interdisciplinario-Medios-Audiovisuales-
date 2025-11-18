@@ -5,12 +5,12 @@ import java.util.List;
 
 @Data
 public class ContenidoCreacionDTO {
-    // Datos del contenido
+    // Datos del contenido (formato, ruta, texto, idUsuario)
     private Contenido contenido;
     
-    // Lista de IDs de los tags seleccionados
+    // Lista de IDs de los tags que se van a asignar (opcional)
     private List<Long> listaIdsTags;
     
-    // ID del usuario que hace la acción (generalmente vendría del token/sesión)
+    // ID del usuario que realiza la acción (para la auditoría)
     private Long idUsuarioAuditoria;
 }

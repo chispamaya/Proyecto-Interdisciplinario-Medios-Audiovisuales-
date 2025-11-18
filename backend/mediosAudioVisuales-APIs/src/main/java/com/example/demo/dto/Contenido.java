@@ -8,12 +8,6 @@ public class Contenido {
     private Long id;
     private String formato;
     private String rutaArchivo;
-    private Long idUsuario; // ID del usuario que lo subió
-    
-    // --- Campos Nuevos (Añadidos) ---
-    private String titulo;
-    private String tipo;        // 'programa', 'audio', 'informe'
-    private String estado;      // 'En Revisión', 'Aprobado', 'Rechazado'
-    private String duracion;    // "12:34"
-    private String tamano;      // "50 MB"
+    private String texto; // Campo que SÍ existe en tu tabla 'contenidos'
+    private Long idUsuario;
 }
