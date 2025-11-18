@@ -1,27 +1,24 @@
-// src/components/layout/sidebar.jsx (Modificado)
+// src/components/layout/sidebar.jsx
 
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react"; // <-- 1. Importar useEffect
 import { Link } from 'react-router-dom';
 import "../../styles/layout/sidebar.css";
 
-// 1. Importamos todos los iconos necesarios
+// Importamos todos los iconos necesarios
 import {
-    Users,        // Perfil
-    UploadCloud,  // Subida Multimedia
-    CheckCircle,  // Estado Aprobacion
-    CalendarDays, // Parrilla Semanal
-    Folders,      // Gestion Multimedia
-    Zap,          // Control de Emision
-    AlertTriangle,// Errores
-    Calendar,     // Armado de Parrilla
-    UserCog,      // Gestión de Roles (ABM)
-    BarChart,     // Reportes Audiencia
-    PlusSquare,   // Crear Publicacion
-    History       // 💥 AÑADIDO (para Auditoría) 💥
+    Users, UploadCloud, CheckCircle, CalendarDays, Folders, 
+    Zap, AlertTriangle, Calendar, UserCog, BarChart, PlusSquare, History
 } from 'lucide-react';
 
+// --- CONSTANTES DE ROLES (Para traducir ID a String) ---
+const ROLES_IDS = {
+    ADMIN: [8], 
+    EDITOR: [1, 2, 3, 4, 5, 6, 7], 
+    PROGRAMADOR: [9, 10, 11],      
+    ESPECTADOR: [12]
+};
+
 // --- Enlaces para Editor y Productor ---
-// (Sin cambios)
 const EditorLinks = ({ onClick }) => (
     <>
         <p className="panel-titulo">Panel de productores y editores</p>
@@ -53,7 +50,6 @@ const EditorLinks = ({ onClick }) => (
 );
 
 // --- Enlaces para el Programador ---
-// (Sin cambios)
 const ProgramadorLinks = ({ onClick }) => (
     <>
         <p className="panel-titulo">Panel de programacion</p>
@@ -79,24 +75,24 @@ const ProgramadorLinks = ({ onClick }) => (
 );
 
 // --- Enlaces solo para el Admin ---
-// (💥 MODIFICADO 💥)
 const AdminLinks = ({ onClick }) => (
     <>
         <p className="panel-titulo">CONTENIDO</p>
+        {/* ... tus links de admin ... */}
         <li>
             <Link to="/admin/crear-publicacion" className="menu-item" onClick={onClick}>
                 <PlusSquare size={20} color="var(--texto)" style={{ marginRight: '10px' }} />
                 <span className="label">Crear Publicación</span>
             </Link>
         </li>
-
         <p className="panel-titulo">ABM</p>
         <li>
-            <Link to="/abm" className="menu-item" onClick={onClick}>
+            <Link to="/admin/empleados" className="menu-item" onClick={onClick}>
                 <UserCog size={20} color="var(--texto)" style={{ marginRight: '10px' }} />
-                <span className="label">Gestión de Roles</span>
+                <span className="label">Gestión de Empleados</span>
             </Link>
         </li>
+        {/* ... Agregá aquí los otros ABMs si querés (Programas, Plataformas, Segmentos) ... */}
         
         <p className="panel-titulo">REPORTES</p>
         <li>
@@ -105,21 +101,35 @@ const AdminLinks = ({ onClick }) => (
                 <span className="label">Reportes Audiencia</span>
             </Link>
         </li>
-        {/* 💥 SECCIÓN AÑADIDA 💥 */}
-        <li>
-            <Link to="/admin/auditoria" className="menu-item" onClick={onClick}>
-                <History size={20} color="var(--texto)" style={{ marginRight: '10px' }} />
-                <span className="label">Auditoría</span>
-            </Link>
-        </li>
     </>
 );
 
 
 // --- Componente Principal del SideBar ---
-// (Sin cambios en la lógica)
-export default function SideBar({ idRol }) {
+export default function SideBar() { // <-- 2. Quitamos la prop 'idRol'
     const [isMenuOpen, setIsMenuOpen] = useState(false);
+    const [rolActual, setRolActual] = useState(null); // <-- 3. Estado para el rol
+
+    // 4. EFECTO PARA LEER Y TRADUCIR EL ROL
+    useEffect(() => {
+        const storedId = localStorage.getItem('usuarioRol');
+        
+        if (storedId) {
+            const id = parseInt(storedId);
+            
+            // Traducimos ID -> String para tu switch
+            if (ROLES_IDS.ADMIN.includes(id)) {
+                setRolActual('admin');
+            } else if (ROLES_IDS.PROGRAMADOR.includes(id)) {
+                setRolActual('programador');
+            } else if (ROLES_IDS.EDITOR.includes(id)) {
+                setRolActual('editor'); // o 'productor'
+            } else {
+                setRolActual('espectador');
+            }
+        }
+    }, []);
+
     const menuClasses = `sub-header ${isMenuOpen ? 'visible' : ''}`;
 
     const handleLinkClick = () => {
@@ -127,7 +137,8 @@ export default function SideBar({ idRol }) {
     };
 
     const renderRoleLinks = () => {
-        switch (idRol) {
+        // 5. Usamos el estado 'rolActual'
+        switch (rolActual) {
             case 'admin':
                 return (
                     <>
@@ -140,8 +151,9 @@ export default function SideBar({ idRol }) {
                 return <ProgramadorLinks onClick={handleLinkClick} />;
             case 'editor':
             case 'productor':
-            default:
                 return <EditorLinks onClick={handleLinkClick} />;
+            default:
+                return null; // Si no hay rol o es espectador, no muestra menú extra
         }
     };
 
@@ -149,7 +161,8 @@ export default function SideBar({ idRol }) {
         <>
             {!isMenuOpen && (
                 <button className="menu" onClick={() => setIsMenuOpen(true)}>
-                    <i className="bi bi-list"></i>
+                    {/* Usamos un ícono de Lucide en lugar de bi-list si querés, o dejalo así */}
+                    <i className="bi bi-list"></i> 
                 </button>
             )}
             
@@ -160,12 +173,15 @@ export default function SideBar({ idRol }) {
                     </button>
 
                     <ul className="lista">
+                        {/* El perfil siempre visible */}
                         <li>
                             <Link to="/perfil" className="menu-item " onClick={handleLinkClick}>
                                 <Users size={20} color="var(--texto)" style={{ marginRight: '10px' }} />
                                 <span className="label">Perfil</span>
                             </Link>
                         </li>
+                        
+                        {/* Los links dinámicos */}
                         {renderRoleLinks()}
                     </ul>
                 </nav>
