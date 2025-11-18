@@ -71,8 +71,7 @@ public class SegmentoRepository {
 
   
     public List<Segmento> listarTodosLosSegmentos() {
-        String sql = "CALL s('segmentos', null, @mensaje)";
-        
+    	String sql = "SELECT * FROM segmentos";        
         return jdbcTemplate.query(sql, new SegmentoRowMapper());
     }
     public List<Segmento> listarSegmentosPorPrograma(Long idPrograma) {
