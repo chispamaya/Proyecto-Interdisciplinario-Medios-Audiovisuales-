@@ -1,6 +1,7 @@
 // src/pages/programador/errores.jsx
 import React, { useState, useEffect } from 'react';
-
+// 🟢 Importamos axios
+import axios from 'axios';
 // CORRECCIÓN: La ruta correcta para ir de 'pages/programador' a 'src' es bajar 2 niveles (../../)
 import '../../styles/pages/errores.css'; 
 
@@ -54,48 +55,49 @@ export default function Errores() {
     const [httpError, setHttpError] = useState(null); // Estado para el modo HTTP CATS
 
     // Función para traer los datos
-    const fetchErrores = () => {
+    const fetchErrores = async () => {
         setIsLoading(true);
         setHttpError(null);
 
-        // URL CORRECTA del backend
-        fetch("http://localhost:8080/api/errores")
-            .then(async (response) => {
-                if (!response.ok) {
-                    // Si la respuesta no es 200 OK (ej: 404, 500)
-                    let errorData = { message: response.statusText };
-                    try {
-                        // Intentamos leer el JSON de error del backend
-                        errorData = await response.json();
-                    } catch (e) {
-                        // Si no es JSON, nos quedamos con el texto por defecto
-                    }
-                    // Lanzamos el error para que lo atrape el .catch() de abajo
-                    throw { ...errorData, status: response.status };
-                }
-                return response.json();
-            })
-            .then((data) => {
-                // ÉXITO: Ordenamos los datos (más nuevo primero)
-                const sortedData = data.sort((a, b) => {
-                    // Reconstruimos fechas temporalmente solo para comparar
-                    const dateA = new Date(a.fechaYHora[0], a.fechaYHora[1]-1, a.fechaYHora[2], a.fechaYHora[3]||0, a.fechaYHora[4]||0, a.fechaYHora[5]||0);
-                    const dateB = new Date(b.fechaYHora[0], b.fechaYHora[1]-1, b.fechaYHora[2], b.fechaYHora[3]||0, b.fechaYHora[4]||0, b.fechaYHora[5]||0);
-                    return dateB - dateA; 
-                });
-                setListaErrores(sortedData);
-            })
-            .catch((error) => {
-                console.error("Error fetching errores:", error);
-                // ERROR: Si es error de red (fetch failed), no tiene status.
-                // Le ponemos 503 (Service Unavailable) para mostrar ese gato.
-                const status = error.status || 503; 
-                setHttpError({ ...error, status: status });
-            })
-            .finally(() => {
-                // SIEMPRE: Apagamos el indicador de carga
-                setIsLoading(false);
+        try {
+            // 🟢 Usamos axios.get
+            const response = await axios.get("http://localhost:8080/api/errores");
+            
+            // Axios devuelve el cuerpo en response.data
+            const data = response.data;
+
+            // ÉXITO: Ordenamos los datos (más nuevo primero)
+            const sortedData = data.sort((a, b) => {
+                // Reconstruimos fechas temporalmente solo para comparar
+                const dateA = new Date(a.fechaYHora[0], a.fechaYHora[1]-1, a.fechaYHora[2], a.fechaYHora[3]||0, a.fechaYHora[4]||0, a.fechaYHora[5]||0);
+                const dateB = new Date(b.fechaYHora[0], b.fechaYHora[1]-1, b.fechaYHora[2], b.fechaYHora[3]||0, b.fechaYHora[4]||0, b.fechaYHora[5]||0);
+                return dateB - dateA; 
             });
+            setListaErrores(sortedData);
+
+        } catch (error) {
+            console.error("Error fetching errores:", error);
+            
+            let status = 503; 
+            let message = "No se pudo conectar al servidor";
+
+            if (error.response) {
+                // El servidor respondió (4xx/5xx)
+                status = error.response.status;
+                // Intentamos obtener el mensaje de error del cuerpo de la respuesta
+                message = error.response.data?.message || error.response.data?.error || (typeof error.response.data === 'string' ? error.response.data : error.response.statusText);
+            } else if (error.request) {
+                // La solicitud fue hecha, pero no hubo respuesta (error de red/servidor caído)
+                message = "El servidor no respondió. Asegúrate de que esté corriendo en http://localhost:8080.";
+            }
+
+            // Guardamos el error con status
+            setHttpError({ status: status, message: message });
+            
+        } finally {
+            // SIEMPRE: Apagamos el indicador de carga
+            setIsLoading(false);
+        }
     };
 
     // Hook: Se ejecuta una vez al cargar la página
