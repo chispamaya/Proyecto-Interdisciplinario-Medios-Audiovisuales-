@@ -1,16 +1,16 @@
-// src/pages/SubidaMultimedia.jsx (Lógica Central)
-import React, { useState } from 'react';
-import CargaArchivos from '../../components/ui/CargaArchivos.jsx'; // Nuevo componente
-import DetallesEmision from '../../components/ui/DetallesEmision.jsx'; // Nuevo componente
+// src/pages/SubidaMultimedia.jsx
+import React, { useState, useEffect } from 'react'; // Importamos useEffect
+import axios from 'axios'; // Importamos axios
+import CargaArchivos from '../../components/ui/CargaArchivos.jsx';
+import DetallesEmision from '../../components/ui/DetallesEmision.jsx';
 import '../../styles/pages/subidaMultimedia.css';
 
-// Estado inicial del formulario (limpio y modular)
 const INITIAL_FORM_STATE = {
     tituloPrograma: '',
     horaEmision: '',
     horaFinalizacion: '',
     fechasEmision: [''],
-    lugarTransmision: '',
+    lugarTransmision: '', // Esto guardará el ID de la plataforma seleccionada
     archivo: null,
     informe: null,
 };
@@ -18,52 +18,67 @@ const INITIAL_FORM_STATE = {
 export default function SubidaMultimedia() {
     const [formData, setFormData] = useState(INITIAL_FORM_STATE);
     const [isUploading, setIsUploading] = useState(false);
+    
+    // 💥 ESTADO NUEVO: Para guardar la lista de plataformas de la API 💥
+    const [listaPlataformas, setListaPlataformas] = useState([]);
 
-    // Función unificada para manejar todos los cambios de campos y archivos
+    // 💥 EFECTO NUEVO: Cargar plataformas al iniciar el componente 💥
+    useEffect(() => {
+        const cargarPlataformas = async () => {
+            try {
+                const response = await axios.get('http://localhost:8080/api/plataformas');
+                setListaPlataformas(response.data);
+            } catch (error) {
+                console.error("Error al cargar plataformas:", error);
+                // Opcional: Mostrar un mensaje de error al usuario
+            }
+        };
+        cargarPlataformas();
+    }, []);
+
+
     const handleChange = (name, value) => {
         setFormData(prev => ({
             ...prev,
             [name]: value
         }));
     };
+
     const handleDateChange = (index, value) => {
         setFormData(prev => {
-            // Copia el array de fechas actual
             const newFechas = [...prev.fechasEmision];
-            // Actualiza el valor en la posición (index) específica
             newFechas[index] = value;
-            // Devuelve el nuevo estado con el array de fechas modificado
             return { ...prev, fechasEmision: newFechas };
         });
     };
+
     const addFecha = () => {
         setFormData(prev => ({
             ...prev,
-            // Añade un string vacío al final del array de fechas
             fechasEmision: [...prev.fechasEmision, ''] 
         }));
     };
 
-    // 💥 NUEVA FUNCIÓN: Elimina una fecha del array por su índice
     const removeFecha = (index) => {
         setFormData(prev => ({
             ...prev,
-            // Crea un nuevo array excluyendo el elemento en la posición 'index'
             fechasEmision: prev.fechasEmision.filter((_, i) => i !== index)
         }));
     };
-    // Función de envío con manejo asíncrono
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsUploading(true);
         console.log('Datos a subir:', formData);
         
+        // TODO: Aquí iría la lógica real de subida del programa
+        // Usando los datos de formData, incluyendo el ID de la plataforma (lugarTransmision)
+        
         try {
-            // 💥 Aquí se llamaría a la API con fetch o Axios
-            await new Promise(resolve => setTimeout(resolve, 2000)); // Simular espera
+            await new Promise(resolve => setTimeout(resolve, 2000)); 
             
             alert('Programa subido exitosamente!');
-            setFormData(INITIAL_FORM_STATE); // Limpiar formulario
+            setFormData(INITIAL_FORM_STATE); 
         } catch (error) {
             console.error('Error durante la subida:', error);
             alert('Error al subir el programa.');
@@ -76,10 +91,8 @@ export default function SubidaMultimedia() {
         <div className="subida-multimedia-container">
             <form className="formulario-subida" onSubmit={handleSubmit}>
                 
-                {/* 1. ÁREA DE CARGA DE ARCHIVOS (Componente Abstraído) */}
                 <CargaArchivos handleChange={handleChange} formData={formData} />
                 
-                {/* 2. TÍTULO DEL PROGRAMA (Sigue siendo simple, se queda aquí) */}
                 <div className="titulo-programa-box">
                     <label htmlFor="tituloPrograma">Título del programa</label>
                     <input 
@@ -93,20 +106,20 @@ export default function SubidaMultimedia() {
                     />
                 </div>
 
-                {/* 3. DETALLES DE EMISIÓN (Componente Abstraído) */}
+                {/* 💥 PASO LA LISTA DE PLATAFORMAS COMO PROP 💥 */}
                 <DetallesEmision 
                     formData={formData} 
-                    handleChange={handleChange} // Para campos simples (hora, lugar)
-                    handleDateChange={handleDateChange} // Para manejar cambios en fechas
-                    addFecha={addFecha} // Para agregar fechas
-                    removeFecha={removeFecha} // Para quitar fechas
+                    handleChange={handleChange} 
+                    handleDateChange={handleDateChange} 
+                    addFecha={addFecha} 
+                    removeFecha={removeFecha} 
+                    listaPlataformas={listaPlataformas} // <--- AQUÍ
                 />
 
-                {/* 4. BOTÓN DE ENVÍO */}
                 <button 
                     type="submit" 
                     className="btn-subir-programa"
-                    disabled={isUploading} // Deshabilita durante la subida
+                    disabled={isUploading} 
                 >
                     {isUploading ? 'Subiendo...' : 'Subir Programa'}
                 </button>
