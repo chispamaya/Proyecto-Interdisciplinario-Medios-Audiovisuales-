@@ -12,7 +12,7 @@ export default function CrearPublicacion() {
   
   // Campos Comunes
   const [texto, setTexto] = useState(''); // Opcional para ambos
-  const [tags, setTags] = useState(''); // Opcional para ambos
+  const [tags, setTags] = useState(''); // Opcional SOLO PARA MENSAJE
 
   // Campos de Mensaje
   const [imagen, setImagen] = useState(null); // Obligatoria para mensaje
@@ -51,17 +51,18 @@ export default function CrearPublicacion() {
     }
   };
 
-  // --- Lógica de Envío ---
+  // --- Lógica de Envío (MODIFICADA) ---
   const handleSubmit = (e) => {
     e.preventDefault();
     
-    // 1. Parsear Tags (común para ambos)
-    const tagsArray = tags.split(',')
-      .map(tag => tag.trim()) 
-      .filter(tag => tag.length > 0 && tag.startsWith('#'));
-
     // 2. Enviar según el tipo
     if (tipoPublicacion === 'mensaje') {
+      
+      // 1. Parsear Tags (SOLO PARA MENSAJE)
+      const tagsArray = tags.split(',')
+        .map(tag => tag.trim()) 
+        .filter(tag => tag.length > 0 && tag.startsWith('#'));
+
       // Validar Mensaje (Imagen es obligatoria)
       if (!imagen) {
         alert('Por favor, sube una imagen para el mensaje.');
@@ -73,7 +74,7 @@ export default function CrearPublicacion() {
       formData.append('tipo', 'mensaje');
       formData.append('texto', texto);
       formData.append('imagen', imagen);
-      formData.append('tags', JSON.stringify(tagsArray));
+      formData.append('tags', JSON.stringify(tagsArray)); // Se envían tags
 
       console.log('Enviando Mensaje (FormData):', Object.fromEntries(formData));
       // Lógica de fetch con FormData...
@@ -91,8 +92,8 @@ export default function CrearPublicacion() {
         tipo: 'encuesta',
         titulo: tituloEncuesta,
         texto: texto, // El texto/pregunta es opcional
-        opciones: opcionesValidas,
-        tags: tagsArray
+        opciones: opcionesValidas
+        // CAMBIO: Ya no se incluye 'tags'
       };
 
       console.log('Enviando Encuesta (JSON):', publicacionJSON);
@@ -223,17 +224,19 @@ export default function CrearPublicacion() {
           </>
         )}
 
-        {/* --- CAMPO COMÚN: TAGS --- */}
-        <div className="form-group">
-          <label htmlFor="tags">Tags (Opcional)</label>
-          <input
-            type="text"
-            id="tags"
-            value={tags}
-            onChange={(e) => setTags(e.target.value)}
-            placeholder="Ej: #debate, #noticias, #vivo"
-          />
-        </div>
+        {/* --- CAMBIO: CAMPO DE TAGS (SOLO PARA MENSAJE) --- */}
+        {tipoPublicacion === 'mensaje' && (
+          <div className="form-group">
+            <label htmlFor="tags">Tags (Opcional)</label>
+            <input
+              type="text"
+              id="tags"
+              value={tags}
+              onChange={(e) => setTags(e.target.value)}
+              placeholder="Ej: #debate, #noticias, #vivo"
+            />
+          </div>
+        )}
 
         <div className="form-actions">
           <button type="submit" className="btn-submit-publicacion">

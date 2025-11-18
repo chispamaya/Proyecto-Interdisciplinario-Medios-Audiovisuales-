@@ -1,20 +1,40 @@
 import React, { useState } from 'react';
-// 1. Importamos Link y useState DE VUELTA
-import { Link } from 'react-router-dom'; 
+// 1. Importamos Link y AÑADIMOS useNavigate
+import { Link, useNavigate } from 'react-router-dom'; 
 import './EnVivo.css'; 
 
-// --- Componente PostCard (ACTUALIZADO CON CLASES DINÁMICAS) ---
-const PostCard = ({ post }) => {
+// --- Componente PostCard ---
+// 2. Recibe 'isLoggedIn' como prop
+const PostCard = ({ post, isLoggedIn }) => {
   const [selectedOption, setSelectedOption] = useState(null);
+  
+  // 3. Estado para mostrar el modal de inicio de sesión
+  const [showLoginPrompt, setShowLoginPrompt] = useState(false);
+  const navigate = useNavigate();
 
+  // 4. Lógica de Votación (Actualizada con Auth)
   const handleVote = (e) => {
     e.preventDefault();
+    
+    // Si no está logueado, muestra el prompt y detiene
+    if (!isLoggedIn) {
+      setShowLoginPrompt(true);
+      return;
+    }
+    
     if (selectedOption) {
       console.log(`Votado por opción: ${selectedOption} en post: ${post.id}`);
     } else {
       console.log("No se seleccionó opción");
     }
   };
+
+  // 5. Función para redirigir al login
+  const handleGoToLogin = () => {
+    // Asumimos que la ruta de login del espectador es esta
+    navigate('/login-espectador'); 
+  };
+
 
   return (
     <div className="post-card">
@@ -28,31 +48,26 @@ const PostCard = ({ post }) => {
 
       <div className="post-body">
         
-        {/* 1. Título (Solo para Encuestas) */}
+        {/* Título (Solo para Encuestas) */}
         {post.tipo === 'encuesta' && post.titulo && (
           <h3 className="post-titulo-encuesta">{post.titulo}</h3>
         )}
 
-        {/* 2. Texto (Para ambos, si existe) */}
+        {/* Texto (Para ambos, si existe) */}
         {post.texto && (
           <p className="post-text">{post.texto}</p>
         )}
 
-        {/* 3. Imagen (Solo para Mensajes) */}
+        {/* Imagen (Solo para Mensajes) */}
         {post.tipo === 'mensaje' && post.imageUrl && (
           <img src={post.imageUrl} alt="Contenido" className="post-main-image" />
         )}
         
-        {/* 4. Encuesta (Solo para Encuestas) */}
+        {/* Encuesta (Solo para Encuestas) */}
         {post.tipo === 'encuesta' && (
           <form className="poll-form-x" onSubmit={handleVote}>
             <div className="poll-options-list-x">
               {post.options.map((option) => (
-                
-                /* =======================================
-                 * 👇 CAMBIOS ACÁ: CLASE DINÁMICA Y SPAN NUEVO 👇
-                 * =======================================
-                 */
                 <label 
                   key={option.id} 
                   className={`poll-option-x ${selectedOption === option.id ? 'selected' : ''}`}
@@ -81,8 +96,8 @@ const PostCard = ({ post }) => {
           </form>
         )}
 
-        {/* 5. Tags (Para ambos, si existen) */}
-        {post.tags && post.tags.length > 0 && (
+        {/* Tags (SOLO PARA MENSAJES, si existen) */}
+        {post.tipo === 'mensaje' && post.tags && post.tags.length > 0 && (
           <div className="post-tags-container">
             {post.tags.map((tag, index) => (
               <span key={index} className="post-tag">
@@ -95,8 +110,34 @@ const PostCard = ({ post }) => {
       </div>
 
       <div className="post-footer">
-        {/* Iconos... */}
+        {/* Dejado vacío como en tu CSS */}
       </div>
+
+      {/* 7. NUEVO: Modal de Inicio de Sesión (CON DOS BOTONES, SIN 'X') */}
+      {showLoginPrompt && (
+        <div className="login-prompt-overlay">
+          <div className="login-prompt-box">
+            {/* 'X' ELIMINADA */}
+            <p>ups.. no has iniciado sesion ,inicia para disfrutar de todas las funciones del usuario</p>
+            
+            {/* NUEVO CONTENEDOR DE BOTONES */}
+            <div className="login-prompt-actions">
+              <button 
+                className="login-prompt-btn-later" 
+                onClick={() => setShowLoginPrompt(false)}
+              >
+                Más Tarde
+              </button>
+              <button 
+                className="login-prompt-btn-login" 
+                onClick={handleGoToLogin}
+              >
+                Iniciar Sesión
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
@@ -105,7 +146,14 @@ const PostCard = ({ post }) => {
 // --- Componente Principal de la Página de Encuestas ---
 export default function EncuestasEspectador() {
   
-  // Datos dummy (ACTUALIZADOS A LA NUEVA ESTRUCTURA)
+  // 8. LÓGICA DE AUTH:
+  // ¡IMPORTANTE! Reemplaza esto con tu lógica de autenticación real
+  // (Por ejemplo, de tu Contexto de Auth: const { user } = useAuth(); const isLoggedIn = !!user;)
+  const isLoggedIn = false; 
+  // (Pone 'true' o 'false' acá para probar)
+
+  
+  // Datos dummy
   const dummyPosts = [
     { 
       id: 1, 
@@ -115,7 +163,7 @@ export default function EncuestasEspectador() {
       avatar: 'https://via.placeholder.com/48/FFA500/000000?text=C',
       titulo: 'Debate Caliente: ¿Quién tiene razón?', // TÍTULO NUEVO
       texto: 'Vimos el informe y la discusión en el piso, pero queremos saber tu opinión.', // Texto/Pregunta Opcional
-      tags: ['#debate', '#noticias', '#vivo'], 
+      tags: ['#debate', '#noticias', '#vivo'], // Estos tags ya no se mostrarán
       options: [
         { id: 'a', text: 'El analista A' },
         { id: 'b', text: 'La conductora B' },
@@ -129,8 +177,8 @@ export default function EncuestasEspectador() {
       username: 'canal_oficial',
       avatar: 'https://via.placeholder.com/48/FFA500/000000?text=C',
       texto: '¡Tremenda foto del backstage! Miren quién nos visitó hoy.', // Texto Opcional
-      tags: ['#backstage', '#invitado'], 
-      imageUrl: 'https://via.placeholder.com/600x400' // Imagen Obligatoria
+      tags: ['#backstage', '#invitado'], // Estos tags SÍ se mostrarán
+      imageUrl: 'https://via.placeholder.com/600x400' // Imagen ObligatorIA
     },
     { 
       id: 3, 
@@ -139,7 +187,7 @@ export default function EncuestasEspectador() {
       username: 'canal_oficial',
       avatar: 'https://via.placeholder.com/48/FFA500/000000?text=C',
       texto: '¡No se olviden que mañana arrancamos 10am!', // Solo texto (backend debe permitirlo)
-      tags: ['#programacion', '#importante'], 
+      tags: ['#programacion', '#importante'], // Estos tags SÍ se mostrarán
       imageUrl: null // Asumimos que si el tipo es 'mensaje' la imagen es obligatoria
     }
   ];
@@ -161,7 +209,12 @@ export default function EncuestasEspectador() {
         {/* <NewPostForm /> */}
         
         {dummyPosts.map(post => (
-          <PostCard key={post.id} post={post} />
+          // 9. Pasamos el estado de login al PostCard
+          <PostCard 
+            key={post.id} 
+            post={post} 
+            isLoggedIn={isLoggedIn} 
+          />
         ))}
       </div>
     </main>

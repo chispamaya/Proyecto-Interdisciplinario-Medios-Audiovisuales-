@@ -1,19 +1,19 @@
 /* =================================================
    --- PALETA DE COLORES Y VARIABLES GLOBALES ---
    ================================================= */
-:root {
+   :root {
     /* Colores base (tomados del layout) */
-    --espectador-bg: #333;             
-    --espectador-header-accent: #00AFFF; 
+    --espectador-bg: #333;
+    --espectador-header-accent: #00AFFF;
     --espectador-header-accent-hover: #008fcc;
     
     /* Colores de UI (nuevos) */
-    --espectador-card-bg: #222;       
-    --espectador-border: #444;       
-    --espectador-text-primary: #f5f5f5; 
-    --espectador-text-secondary: #aaa;   
-    --espectador-live-red: #e53935;     
-    --espectador-like-blue: #3498db;  /* Azul para Like */
+    --espectador-card-bg: #222;
+    --espectador-border: #444;
+    --espectador-text-primary: #f5f5f5;
+    --espectador-text-secondary: #aaa;
+    --espectador-live-red: #e53935;
+    --espectador-like-blue: #3498db; /* Azul para Like */
     --espectador-dislike-red: #e74c3c; /* Rojo para Dislike */
 
     /* Tipografía */
@@ -332,15 +332,16 @@
     border-radius: 8px;
     padding: 0.8rem 1rem;
     cursor: pointer;
-    transition: all 0.2s ease-in-out;
     position: relative;
+    
+    /* --- CAMBIO DEFINITIVO: MATAR ANIMACIÓN --- */
+    transition: none !important;
+    animation: none !important;
 }
 
-/* Efecto hover profesional */
+/* --- CAMBIO RADICAL: Efecto hover ELIMINADO --- */
 .poll-option-x:hover {
-    border-color: var(--espectador-header-accent-hover, #008fcc);
-    transform: translateY(-2px);
-    box-shadow: 0 4px 15px rgba(0, 123, 255, 0.1);
+    /* NADA. CERO EFECTO. NI SALTO, NI COLOR, NI NADA. */
 }
 
 /* El input original se oculta */
@@ -369,6 +370,7 @@
 }
 
 /* --- ESTADO SELECCIONADO --- */
+/* (La transición acá SÍ se queda, para que el click sea suave) */
 
 /* Cuando el label tiene la clase .selected (via JS) */
 .poll-option-x.selected {
@@ -401,7 +403,7 @@
     color: var(--espectador-header-accent, #00AFFF);
 }
 
-/* Botón de votar (sin cambios) */
+/* Botón de votar (con hover) */
 .poll-submit-btn-x {
     background: var(--espectador-header-accent);
     color: white;
@@ -441,7 +443,7 @@
     color: var(--espectador-header-accent); /* Se pone azul al pasar */
 }
 
-/* 💥 ELIMINAMOS TODOS LOS ESTILOS .new-post-* 💥 */
+/* ELIMINAMOS TODOS LOS ESTILOS .new-post-* */
 
 /* =================================================
    --- ESTILOS PARA LOS TAGS (#) ---
@@ -551,17 +553,110 @@
    AÑADIR ESTO AL FINAL DE EnVivo.css
    ======================================= */
 
-/* --- PARCHE PARA BUG DE ANIMACIÓN HOVER --- */
+/* --- PARCHE PARA BUG DE ANIMACIÓN HOVER (CORREGIDO) --- */
 .rating-btn,
 .poll-submit-btn-x,
 .footer-icon {
     position: static;
     overflow: visible;
-    animation: none !important;
+    animation: none !important; /* <-- ARREGLADO */
 }
 
 .rating-btn::after,
 .poll-submit-btn-x::after,
 .footer-icon::after {
     content: none !important;
+}
+
+/* =================================================
+   --- NUEVO: ESTILOS PARA EL MODAL DE LOGIN ---
+   ================================================= */
+
+.login-prompt-overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background: rgba(0, 0, 0, 0.7); /* Fondo oscuro semi-transparente */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 1000;
+  backdrop-filter: blur(4px); /* Efecto borroso */
+}
+
+.login-prompt-box {
+  background: var(--espectador-card-bg, #222);
+  border: 1px solid var(--espectador-border, #444);
+  padding: 2rem;
+  border-radius: 12px;
+  text-align: center;
+  color: var(--espectador-text-primary, #f5f5f5);
+  width: 90%;
+  max-width: 400px;
+  position: relative;
+  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+}
+
+.login-prompt-box p {
+  margin: 0; /* <- CAMBIO: Quitamos margen de abajo */
+  font-size: 1.1rem;
+  line-height: 1.5;
+  color: var(--espectador-text-secondary, #aaa);
+}
+
+/* --- CAMBIO: 'X' ELIMINADA --- */
+.login-prompt-close {
+  /* NADA. ELIMINADA. */
+}
+
+/* --- NUEVO: Contenedor para los dos botones --- */
+.login-prompt-actions {
+  display: flex;
+  gap: 1rem;
+  width: 100%;
+  margin-top: 1.5rem; /* Espacio entre el texto y los botones */
+}
+
+/* --- NUEVO: Botón "Más Tarde" (SIN HOVER) --- */
+.login-prompt-btn-later {
+  background: var(--espectador-border, #444);
+  color: var(--espectador-text-primary, #f5f5f5);
+  border: none;
+  border-radius: 20px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  text-transform: capitalize;
+  transition: none !important; /* SIN ANIMACIÓN */
+  animation: none !important; /* SIN ANIMACIÓN */
+}
+.login-prompt-btn-later:hover {
+  /* NADA. SIN HOVER. */
+  background: var(--espectador-border, #444); /* Se queda igual */
+}
+
+
+/* --- CAMBIO: Botón "Iniciar Sesión" (SIN HOVER) --- */
+.login-prompt-btn-login {
+  background: var(--espectador-header-accent, #00AFFF);
+  color: white;
+  border: none;
+  border-radius: 20px;
+  padding: 0.75rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 700;
+  cursor: pointer;
+  width: 100%;
+  text-transform: capitalize;
+  transition: none !important; /* SIN ANIMACIÓN */
+  animation: none !important; /* SIN ANIMACIÓN */
+}
+
+.login-prompt-btn-login:hover {
+  /* NADA. SIN HOVER. */
+  background: var(--espectador-header-accent, #00AFFF); /* Se queda igual */
 }
