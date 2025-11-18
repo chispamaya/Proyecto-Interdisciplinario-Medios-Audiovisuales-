@@ -1,16 +1,7 @@
-import React, { useState } from 'react';
-import { Video, Music, CheckCircle, AlertCircle, Clock, Trash2 } from 'lucide-react'; // Íconos
-import '../../styles/pages/gestionMultimedia.css'; // Asegúrate de crear este archivo
-
-// --- Datos de Ejemplo ---
-// Reemplaza esto con datos de tu API
-const contenidoEjemplo = [
-    { id: 1, titulo: "Entrevista Cliente 2024", tipo: 'programa', estado: 'aprobado', fecha: '25/10/2025', duracion: '12:34', tamano: '2.4 GB', usuario: 'Luis Enrique' },
-    { id: 2, titulo: "Música de Fondo Vol. 3", tipo: 'audio', estado: 'pendiente', fecha: '24/10/2025', duracion: '05:15', tamano: '50 MB', usuario: 'Luis Enrique' },
-    { id: 3, titulo: "Spot Publicitario Navidad", tipo: 'programa', estado: 'rechazado', fecha: '23/10/2025', duracion: '00:30', tamano: '150 MB', usuario: 'Otro Usuario' },
-    { id: 4, titulo: "Podcast Episodio 10", tipo: 'audio', estado: 'aprobado', fecha: '22/10/2025', duracion: '45:10', tamano: '120 MB', usuario: 'Luis Enrique' },
-    // Agrega más contenido aquí
-];
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import '../../styles/pages/gestionMultimedia.css'; 
+import { Video, Music, CheckCircle, AlertCircle, Clock, Trash2 } from 'lucide-react'; 
 
 // Mapeo de estados a íconos y clases
 const estadoInfo = {
@@ -20,26 +11,74 @@ const estadoInfo = {
 };
 
 export default function GestionMultimedia() {
-    // Estado para controlar qué tipo de contenido se muestra ('programa' o 'audio')
+    // Estado para almacenar el contenido REAL de la API
+    const [contenido, setContenido] = useState([]);
+    const [loading, setLoading] = useState(true);
     const [tipoContenidoActivo, setTipoContenidoActivo] = useState('programa');
-    // Estado para almacenar el contenido (inicialmente con datos de ejemplo)
-    const [contenido, setContenido] = useState(contenidoEjemplo);
+    const [nombreUsuario, setNombreUsuario] = useState('');
+    
+    // Función para obtener datos (se ejecutará al cargar y después de borrar)
+    const cargarContenido = () => {
+        setLoading(true);
+        // Obtenemos el ID del usuario logueado del localStorage
+        const idUsuario = localStorage.getItem('usuarioId');
+        const nombre = localStorage.getItem('usuarioNombre');
+        
+        if (!idUsuario) {
+            setLoading(false);
+            console.warn("Usuario no logueado.");
+            return;
+        }
 
-    // Filtra el contenido basado en el tipo activo y el usuario (ej: Luis Enrique)
-    // En una app real, el filtrado por usuario se haría en el backend
+        setNombreUsuario(nombre); // Mostramos el nombre
+        
+        // 1. Llamada al endpoint de filtrado por usuario (UsuarioController)
+        axios.get(`http://localhost:8080/api/usuarios/gestion/${idUsuario}`)
+            .then(response => {
+                // response.data ya es la lista de GestionProgramaDTO
+                setContenido(response.data);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error('Error al cargar la gestión:', error);
+                setLoading(false);
+            });
+    };
+
+    // Al cargar el componente, pedimos los datos
+    useEffect(() => {
+        cargarContenido();
+    }, []);
+
+    // Filtra el contenido basado en el tipo activo (solo se muestran Programas)
+    // NOTA: Como tu backend solo devuelve PROGRAMAS (GestionProgramaDTO),
+    // el filtro por tipo de contenido es solo una SIMULACIÓN.
     const contenidoFiltrado = contenido.filter(item =>
-        item.tipo === tipoContenidoActivo && item.usuario === 'Luis Enrique'
+        // item.tipo === tipoContenidoActivo  <-- ESTO NO ESTÁ EN TU DTO, LO QUITO
+        item.titulo !== '' // Filtro básico si necesitas uno
     );
 
-    // Función para manejar la eliminación (simulada)
-    const handleEliminar = (id) => {
-        // En una app real, usarías confirm() o un modal, no window.confirm
-        if (confirm(`¿Estás seguro de que quieres eliminar el contenido con ID ${id}?`)) {
-            setContenido(prevContenido => prevContenido.filter(item => item.id !== id));
-            console.log(`Contenido ${id} eliminado (simulado)`);
-            // Aquí llamarías a la API para eliminar realmente el contenido
+    // Lógica real para eliminar (Llamando al DELETE del ProgramaController)
+    const handleEliminar = async (idPrograma) => {
+        if (window.confirm(`¿Seguro que quieres eliminar el Programa con ID ${idPrograma}?`)) {
+            try {
+                // Llama al DELETE /api/programas/{id}
+                const response = await axios.delete(`http://localhost:8080/api/programas/${idPrograma}`);
+                
+                if (response.data === "Programa borrado con éxito.") {
+                    alert(`Programa ${idPrograma} eliminado.`);
+                    cargarContenido(); // Recargamos la lista
+                } else {
+                    alert(`No se pudo eliminar: ${response.data}`);
+                }
+            } catch (error) {
+                console.error("Error al eliminar:", error);
+                alert("Error de conexión al intentar eliminar.");
+            }
         }
     };
+
+    if (loading) return <div className="loading">Cargando tu contenido...</div>;
 
     return (
         <div className="gestion-container">
@@ -47,23 +86,18 @@ export default function GestionMultimedia() {
             <div className="tu-contenido-header">
                 <h2>Tu contenido</h2>
                 <div className="nombre-usuario-display">
-                    Luis Enrique {/* Reemplaza foto por nombre */}
+                    {nombreUsuario || "Usuario Desconocido"} 
                 </div>
             </div>
 
-            {/* 2. Toggle Programa / Audio */}
+            {/* 2. Toggle Programa / Audio (Usamos solo la sección de programas ya que es lo que la API devuelve) */}
             <div className="toggle-tipo-contenido">
+                {/* Dejamos solo un botón para simplificar, ya que la API solo devuelve programas */}
                 <button
-                    className={`toggle-btn ${tipoContenidoActivo === 'programa' ? 'active' : ''}`}
+                    className={`toggle-btn active`}
                     onClick={() => setTipoContenidoActivo('programa')}
                 >
                     <Video size={20} /> Programa
-                </button>
-                <button
-                    className={`toggle-btn ${tipoContenidoActivo === 'audio' ? 'active' : ''}`}
-                    onClick={() => setTipoContenidoActivo('audio')}
-                >
-                    <Music size={20} /> Audio
                 </button>
             </div>
 
@@ -74,48 +108,47 @@ export default function GestionMultimedia() {
                         <tr>
                             <th>Título</th>
                             <th>Estado</th>
-                            <th>Fecha</th>
-                            <th>Duración</th>
-                            <th>Tamaño</th>
+                            <th>Fecha Creación</th>
+                            <th>Duración (min)</th>
                             <th>Acciones</th>
                         </tr>
                     </thead>
                     <tbody>
                         {contenidoFiltrado.length > 0 ? (
                             contenidoFiltrado.map((item) => {
-                                const info = estadoInfo[item.estado] || { icon: AlertCircle, color: '', texto: 'Desconocido' };
-                                const EstadoIcon = info.icon; // Renombramos para usar como componente
+                                // Mapeamos el estado a la información visual
+                                const info = estadoInfo[item.estadoAprobacion.toLowerCase()] || estadoInfo.pendiente;
+                                const EstadoIcon = info.icon; 
 
                                 return (
-                                    <tr key={item.id}>
-                                        {/* 💥 Añadido data-label para responsive 💥 */}
+                                    <tr key={item.idPrograma}>
                                         <td data-label="Título">{item.titulo}</td>
                                         <td data-label="Estado">
                                             <span className={`estado-cell ${info.color}`}>
                                                 <EstadoIcon size={18} />
-                                                <span>{info.texto}</span>
+                                                <span>{item.estadoAprobacion}</span>
                                             </span>
                                         </td>
-                                        <td data-label="Fecha">{item.fecha}</td>
-                                        <td data-label="Duración">{item.duracion}</td>
-                                        <td data-label="Tamaño">{item.tamano}</td>
-                                        <td data-label="Acciones"> {/* También a la celda de acciones */}
+                                        <td data-label="Fecha">
+                                            {new Date(item.fechaCreacion).toLocaleDateString()}
+                                        </td>
+                                        <td data-label="Duración">{item.duracionEnMinutos} min</td>
+                                        <td data-label="Acciones">
                                             <button
                                                 className="btn-accion-tabla btn-eliminar"
-                                                onClick={() => handleEliminar(item.id)}
-                                                title="Eliminar"
+                                                onClick={() => handleEliminar(item.idPrograma)}
+                                                title="Eliminar Programa"
                                             >
                                                 <Trash2 size={18} />
                                             </button>
-                                            {/* Puedes añadir botones de editar, ver, etc. aquí */}
                                         </td>
                                     </tr>
                                 );
                             })
                         ) : (
                             <tr>
-                                <td colSpan="6" className="no-data-cell">
-                                    No hay {tipoContenidoActivo === 'programa' ? 'programas' : 'audios'} para mostrar.
+                                <td colSpan="5" className="no-data-cell">
+                                    No has creado programas todavía.
                                 </td>
                             </tr>
                         )}
@@ -125,4 +158,3 @@ export default function GestionMultimedia() {
         </div>
     );
 }
-
