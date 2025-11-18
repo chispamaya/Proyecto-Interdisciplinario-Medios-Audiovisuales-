@@ -87,9 +87,9 @@ const AdminLinks = ({ onClick }) => (
         </li>
         <p className="panel-titulo">ABM</p>
         <li>
-            <Link to="/admin/empleados" className="menu-item" onClick={onClick}>
+            <Link to="/abm" className="menu-item" onClick={onClick}> {/* Antes era /admin/abm */}
                 <UserCog size={20} color="var(--texto)" style={{ marginRight: '10px' }} />
-                <span className="label">Gestión de Empleados</span>
+                <span className="label">Menú ABM (General)</span>
             </Link>
         </li>
         {/* ... Agregá aquí los otros ABMs si querés (Programas, Plataformas, Segmentos) ... */}
