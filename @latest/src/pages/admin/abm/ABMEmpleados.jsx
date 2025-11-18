@@ -1,52 +1,115 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+// Importamos los íconos (igual que en Programas)
+import { Edit, Trash2 } from 'lucide-react'; 
 
-// --- Importaciones Corregidas ---
-// 1. El layout principal que te faltaba
 import ABMPageLayout from '../../../components/abm/ABMPageLayout.jsx'; 
-// 2. El formulario para agregar (asumiendo que está en la misma carpeta)
 import ABMEmpleadosAddForm from './ABMEmpleadosAddForm.jsx';
-// 3. El formulario para editar (asumiendo que está en la misma carpeta)
 import ABMEmpleadosEditForm from './ABMEmpleadosEditForm.jsx';
-
-// Nota: No estabas usando ABMFormLayout, así que lo quité.
-// import ABMFormLayout from '../../../components/abm/ABMFormLayout.jsx'; 
-
 import '../../../styles/components/abmForm.css';
 
-// --- Datos de Ejemplo (Sin cambios) ---
-const empleadosData = [
-    { id: 1, empleado: "Carlos Perez", correo: "carlos.perez@gmail.com", cargo: "Editor", permisos: "Crear, editar" },
-    { id: 2, empleado: "Carlos Lopez", correo: "carlos.lopez@gmail.com", cargo: "Editor", permisos: "Crear, editar" },
-    { id: 3, empleado: "Luis Garcia", correo: "luis.g@gmail.com", cargo: "Productor", permisos: "Crear, subir" },
-    { id: 4, empleado: "Ana Torres", correo: "a.torres@gmail.com", cargo: "Admin", permisos: "Full" },
-];
-
-const columnasEmpleados = [
+// --- 1. DEFINICIÓN DE COLUMNAS (DENTRO DE UNA FUNCIÓN) ---
+// Ahora recibe 'onEdit' y 'onDelete' para conectar los botones
+const getColumnasEmpleados = (onEdit, onDelete) => [
     { key: 'id', header: 'ID' },
-    { key: 'empleado', header: 'Empleado' },
-    { key: 'correo', header: 'Correo' },
-    { key: 'cargo', header: 'Cargo' },
-    { key: 'permisos', header: 'Permisos' },
+    { key: 'nombre', header: 'Empleado' },
+    { key: 'email', header: 'Correo' },
+    { key: 'nombreRol', header: 'Cargo' },
+    { 
+        key: 'permisos', 
+        header: 'Permisos',
+        render: (rowData) => rowData.permisos.join(', ') 
+    },
+    // Columna EDITAR
+    {
+        key: 'editar',
+        header: 'Editar',
+        className: 'abm-columna-accion',
+        render: (item) => (
+            <button 
+                onClick={() => onEdit(item.id)} 
+                className="btn-accion btn-editar"
+                aria-label={`Editar ${item.nombre}`}
+            >
+                <Edit size={18} />
+            </button>
+        )
+    },
+    // Columna ELIMINAR
+    {
+        key: 'eliminar',
+        header: 'Eliminar',
+        className: 'abm-columna-accion',
+        render: (item) => (
+            <button 
+                onClick={() => onDelete(item.id)} 
+                className="btn-accion btn-eliminar"
+                aria-label={`Eliminar ${item.nombre}`}
+            >
+                <Trash2 size={18} />
+            </button>
+        )
+    }
 ];
 
 export default function ABMEmpleados() {
     const [editingId, setEditingId] = useState(null); 
-    
+    const [empleados, setEmpleados] = useState([]); 
+    const [loading, setLoading] = useState(true);
+
+    // URL Base de la API
+    const API_URL = 'http://localhost:8080/api/usuarios';
+
+    // --- Cargar Datos (GET) ---
+    const cargarEmpleados = () => {
+        setLoading(true);
+        axios.get(API_URL)
+            .then(response => {
+                setEmpleados(response.data);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error('Error al cargar empleados:', error);
+                setLoading(false);
+            });
+    };
+
+    useEffect(() => {
+        cargarEmpleados();
+    }, []);
+
     const handleAdd = () => {
-        setEditingId(0); // 0 significa "agregando nuevo"
+        setEditingId(0); 
     };
 
     const handleEdit = (id) => {
         setEditingId(id);
     };
 
+    // --- Lógica para BORRAR (DELETE) ---
+    const handleDelete = (id) => {
+        if (window.confirm(`¿Seguro que deseas eliminar al empleado con ID: ${id}?`)) {
+            // Llamada a la API para borrar
+            axios.delete(`${API_URL}/${id}`)
+                .then(() => {
+                    alert('Empleado eliminado correctamente.');
+                    // Recargamos la lista para que desaparezca de la tabla
+                    cargarEmpleados(); 
+                })
+                .catch(error => {
+                    console.error('Error al eliminar:', error);
+                    alert('No se pudo eliminar el empleado.');
+                });
+        }
+    };
+
     const handleCancelOrSuccess = () => {
-        setEditingId(null); // Vuelve a la lista principal
+        setEditingId(null); 
+        cargarEmpleados(); // Recargamos la lista al volver de editar/agregar
     };
     
     // --- Renderizado Condicional ---
 
-    // Estado 1: Creando un nuevo empleado
     if (editingId === 0) {
         return (
             <ABMEmpleadosAddForm 
@@ -56,27 +119,28 @@ export default function ABMEmpleados() {
         );
     }
 
-    // Estado 2: Editando un empleado existente
     if (editingId !== null) {
         return (
             <ABMEmpleadosEditForm 
                 empleadoId={editingId} 
                 onCancel={handleCancelOrSuccess} 
                 onSuccess={handleCancelOrSuccess}
-                initialData={empleadosData.find(e => e.id === editingId)}
+                initialData={empleados.find(e => e.id === editingId)}
             />
         );
     }
     
-    // Estado 3: Mostrando la lista principal (Default)
+    // --- Generamos las columnas con las funciones ---
+    const columnas = getColumnasEmpleados(handleEdit, handleDelete);
+
     return (
         <ABMPageLayout
             title="ABM de Empleados"
-            columns={columnasEmpleados}
-            data={empleadosData}
+            columns={columnas} // Pasamos las columnas nuevas
+            data={empleados}
+            isLoading={loading}
             onAdd={handleAdd} 
-            onEdit={handleEdit} 
-            onDelete={() => { console.log("La eliminación se maneja desde el formulario de edición."); }}
+            // Ya no pasamos onEdit/onDelete acá porque están en las columnas
         />
     );
 }
