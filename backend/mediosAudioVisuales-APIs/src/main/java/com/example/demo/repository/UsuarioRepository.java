@@ -85,8 +85,8 @@ public class UsuarioRepository {
 
    
     public List<Usuario> listarTodosLosUsuarios() {
-    	String sql = "SELECT * FROM usuario";        
-       
+        // 💥 CAMBIO: Filtramos solo los activos 💥
+        String sql = "SELECT * FROM usuario WHERE activo = TRUE";       
         return jdbcTemplate.query(sql, new UsuarioRowMapper());
     }
     class UsuarioRowMapper implements RowMapper<Usuario> {
@@ -100,7 +100,7 @@ public class UsuarioRepository {
             usuario.setNombre(rs.getString("nombre"));
             usuario.setContrasenia(rs.getString("contrasenia"));
             usuario.setIdRol(rs.getLong("idRol"));
-            
+            usuario.setActivo(rs.getBoolean("activo"));
             return usuario;
         }
     }
