@@ -14,4 +14,5 @@ public class Usuario {
     // Convertimos la relación @ManyToOne 'Rol'
     // en un simple campo para el ID (la clave foránea).
     private Long idRol;
+    private Boolean activo;
 }
