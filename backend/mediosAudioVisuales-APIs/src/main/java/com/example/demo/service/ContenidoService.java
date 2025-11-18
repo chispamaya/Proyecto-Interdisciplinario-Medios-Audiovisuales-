@@ -13,40 +13,36 @@ public class ContenidoService {
     private ContenidoRepository contenidoRepository;
 
     /**
-     * Subir contenido (SP 'cc').
+     * Lógica para subir contenido (SP 'cc').
      */
     public String crearContenido(Contenido contenido, Long idUsuarioAuditoria) {
-        // Validaciones simples compatibles con la BD actual
-        if (contenido.getRutaArchivo() == null || contenido.getRutaArchivo().isEmpty()) {
-             // Si es solo texto, quizás no necesite ruta, depende de tu regla de negocio.
-             // Por ahora validamos que al menos haya formato.
-             if(contenido.getFormato() == null) throw new IllegalArgumentException("El formato es obligatorio");
+        // Validación básica: si hay ruta de archivo, el formato es obligatorio.
+        if (contenido.getRutaArchivo() != null && !contenido.getRutaArchivo().isEmpty()) {
+             if(contenido.getFormato() == null || contenido.getFormato().isEmpty()) {
+                 throw new IllegalArgumentException("Si sube un archivo, debe especificar el formato.");
+             }
         }
-        
         return contenidoRepository.crearContenido(contenido, idUsuarioAuditoria);
     }
 
     /**
-     * Borrar contenido (SP 'bc').
+     * Lógica para borrar contenido (SP 'bc').
      */
     public String borrarContenido(Long idContenido, Long idUsuarioAuditoria) {
         return contenidoRepository.borrarContenido(idContenido, idUsuarioAuditoria);
     }
 
     /**
-     * Listar TODO.
+     * Lógica para listar todo.
      */
     public List<Contenido> listarTodosLosContenidos() {
         return contenidoRepository.listarTodosLosContenidos();
     }
 
     /**
-     * Listar por usuario.
+     * Lógica para listar por usuario.
      */
     public List<Contenido> listarContenidosPorUsuario(Long idUsuario) {
         return contenidoRepository.listarContenidosPorUsuario(idUsuario);
     }
-    
-    // NOTA: Se eliminaron 'modificarEstadoContenido' y 'listarContenidosPorUsuarioYTipo'
-    // porque la BD no soporta 'estado' ni 'tipo'.
 }
