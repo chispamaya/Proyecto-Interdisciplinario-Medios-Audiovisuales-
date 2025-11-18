@@ -21,7 +21,7 @@ public class ContenidoRepository {
 
     /**
      * Llama al SP cc (Crear Contenido).
-     * Coincide con DB.sql: cc(formato1, rutaArchivo1, texto1, idU1, idUs, @mensaje)
+     * Parámetros: cc(formato1, rutaArchivo1, texto1, idU1, idUs, @mensaje)
      */
     public String crearContenido(Contenido contenido, Long idUsuarioAuditoria) {
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate).withProcedureName("cc");
@@ -29,7 +29,7 @@ public class ContenidoRepository {
         Map<String, Object> inParams = new HashMap<>();
         inParams.put("formato1", contenido.getFormato());
         inParams.put("rutaArchivo1", contenido.getRutaArchivo());
-        inParams.put("texto1", contenido.getTexto()); // Campo correcto de la BD
+        inParams.put("texto1", contenido.getTexto()); 
         inParams.put("idU1", contenido.getIdUsuario());
         inParams.put("idUs", idUsuarioAuditoria);
 
@@ -52,7 +52,7 @@ public class ContenidoRepository {
     }
 
     /**
-     * Lista TODO el contenido.
+     * Lista TODO el contenido (usando SP 's').
      */
     public List<Contenido> listarTodosLosContenidos() {
         String sql = "CALL s('contenidos', null, @mensaje)";
@@ -66,12 +66,10 @@ public class ContenidoRepository {
         String sql = "SELECT * FROM contenidos WHERE idUsuario = ?";
         return jdbcTemplate.query(sql, new ContenidoRowMapper(), idUsuario);
     }
-    
-    // NOTA: Eliminé 'modificarEstadoContenido' porque el SP 'mces' y la columna 'estado' NO existen en tu DB.sql.
 }
 
 /**
- * RowMapper adaptado a las columnas reales de la tabla 'contenidos'.
+ * RowMapper adaptado a las columnas reales (formato, rutaArchivo, texto) de la tabla 'contenidos'.
  */
 class ContenidoRowMapper implements RowMapper<Contenido> {
     @Override
@@ -80,7 +78,7 @@ class ContenidoRowMapper implements RowMapper<Contenido> {
         contenido.setId(rs.getLong("id"));
         contenido.setFormato(rs.getString("formato"));
         contenido.setRutaArchivo(rs.getString("rutaArchivo"));
-        contenido.setTexto(rs.getString("texto")); // Mapeamos la columna real
+        contenido.setTexto(rs.getString("texto")); 
         contenido.setIdUsuario(rs.getLong("idUsuario"));
         return contenido;
     }
