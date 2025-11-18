@@ -1,3 +1,5 @@
+/* src/styles/pages/crearPublicacion.css */
+
 /* --- Contenedor Principal --- */
 .crear-publicacion-container {
     max-width: 800px;
@@ -202,10 +204,84 @@
     font-size: 1.1rem;
     font-weight: 700;
     cursor: pointer;
-    transition: background-color 0.2s, box-shadow 0.2s;
+    
+    /* --- Eliminación de Animaciones Molestas (Solicitado) --- */
+    position: static; 
+    overflow: visible; 
+    animation: none !important; 
+    transition: none !important; /* O puedes dejar background-color 0.2s si quieres suavidad mínima */
 }
 
-.btn-submit-publicacion:hover {
+/* Eliminamos cualquier pseudo-elemento (brillos, efectos) */
+.btn-submit-publicacion::after {
+    content: none !important; 
+}
+
+.btn-submit-publicacion:hover:not(:disabled) {
     background-color: #218838;
-    box-shadow: 0 4px 15px rgba(40, 167, 69, 0.2);
+}
+
+/* Estilo para el estado deshabilitado (Cargando...) */
+.btn-submit-publicacion:disabled {
+    background-color: #1e5430;
+    opacity: 0.7;
+    cursor: not-allowed;
+    box-shadow: none;
+}
+
+/* --- (NUEVO) ESTILOS PARA HTTP CATS y MENSAJES --- */
+.http-cat-container {
+    display: flex; 
+    flex-direction: column; 
+    align-items: center; 
+    justify-content: center; 
+    height: 100%;
+    min-height: 500px;
+    text-align: center;
+    padding: 20px;
+    color: #e0e6f0;
+}
+
+.http-cat-title {
+    color: #f87171; /* Rojo error */
+    font-size: 2rem;
+    margin-bottom: 10px;
+}
+
+.http-cat-message {
+    font-size: 1.2rem; 
+    color: #aab8c9;
+    margin-bottom: 25px;
+}
+
+.http-cat-image {
+    max-width: 100%; 
+    width: 450px; 
+    border-radius: 12px; 
+    box-shadow: 0 8px 20px rgba(0,0,0,0.5);
+    margin-bottom: 30px;
+}
+
+.http-cat-button {
+    padding: 12px 25px;
+    font-size: 1rem;
+    background-color: #007bff; /* Azul de acento */
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    
+    /* Quitamos animaciones también en el botón de reintentar */
+    position: static; 
+    overflow: visible; 
+    animation: none !important; 
+    transition: none !important;
+}
+
+.http-cat-button::after {
+    content: none !important;
+}
+
+.http-cat-button:hover {
+    background-color: #0056b3;
 }
