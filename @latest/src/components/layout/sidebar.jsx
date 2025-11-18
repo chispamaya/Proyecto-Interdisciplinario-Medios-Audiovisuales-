@@ -172,7 +172,7 @@ export default function SideBar() {
                         )}
 
                         {/* REPORTES */}
-                        {(puedeVer(PERMISOS.SUBIR_CONTENIDO) || esAdmin) && (
+                        {(puedeVer(PERMISOS.ADMIN_TOTAL) || esAdmin) && (
                             <>
                                 <p className="panel-titulo">REPORTES</p>
                                 <li>
