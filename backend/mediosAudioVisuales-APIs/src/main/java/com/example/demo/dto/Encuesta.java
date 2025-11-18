@@ -1,5 +1,7 @@
 package com.example.demo.dto; // (O el paquete que estés usando, ej: com.example.mediosAudioVisuales.model)
 
+import java.util.List;
+
 import lombok.Data;
 // Se eliminan todas las importaciones de jakarta.persistence.*
 // Se elimina la importación de java.util.List
@@ -18,4 +20,5 @@ public class Encuesta {
 
     // Se va @OneToMany
     // Se elimina la lista 'private List<OpcionE> opciones;'
+    private List<OpcionE> opciones;
 }
