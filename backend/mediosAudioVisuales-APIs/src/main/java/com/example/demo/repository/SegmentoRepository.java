@@ -12,7 +12,8 @@ import java.sql.SQLException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+//En SegmentoRepository.java, junto a los otros imports
+import com.example.demo.dto.SegmentoABMDTO;
 @Repository
 public class SegmentoRepository {
 
@@ -94,6 +95,42 @@ public class SegmentoRepository {
             return null; 
         }
     }
+    public List<SegmentoABMDTO> listarSegmentosParaABM() { // <<-- ¡El tipo de retorno AHORA es SegmentoABMDTO!
+        
+        // Consulta SQL con LEFT JOIN (Tu consulta es correcta, la mantenemos)
+        String sql = 
+            "SELECT " +
+            "   s.id, s.titulo, s.duracion, s.estadoAprobacion, " +
+            "   p.nombre AS nombrePrograma " + // Usamos un alias
+            "FROM " +
+            "   segmentos s " +
+            "LEFT JOIN " + // <<-- ESTO ES LO QUE PERMITE ver segmentos SIN programa
+            "   programas p ON s.idPrograma = p.id " + 
+            "ORDER BY s.id DESC"; 
+            
+        // 💥 CORRECCIÓN: Usar el SegmentoABMDTORowMapper
+        return jdbcTemplate.query(sql, new SegmentoABMDTORowMapper()); 
+    }
+ // ✅ AGREGA ESTA CLASE (Junto a tus otros mappers)
+
+ // EN SegmentoRepository.java (Añade esta clase)
+ // Este mapper se encarga de leer el resultado del JOIN para el ABMDTO
+ class SegmentoABMDTORowMapper implements RowMapper<SegmentoABMDTO> {
+     @Override
+     public SegmentoABMDTO mapRow(ResultSet rs, int rowNum) throws SQLException {
+         SegmentoABMDTO dto = new SegmentoABMDTO();
+         
+         dto.setId(rs.getLong("id"));
+         dto.setTitulo(rs.getString("titulo"));
+         dto.setDuracion(rs.getFloat("duracion"));
+         dto.setEstadoAprobacion(rs.getString("estadoAprobacion"));
+         
+         // ¡CRÍTICO!: Lee la columna "nombrePrograma" del LEFT JOIN
+         dto.setNombrePrograma(rs.getString("nombrePrograma")); 
+         
+         return dto;
+     }
+ }
     class SegmentoRowMapper implements RowMapper<Segmento> {
         @Override
         public Segmento mapRow(ResultSet rs, int rowNum) throws SQLException {
@@ -104,7 +141,7 @@ public class SegmentoRepository {
             segmento.setDuracion(rs.getFloat("duracion"));
             segmento.setTitulo(rs.getString("titulo"));
             segmento.setIdPrograma(rs.getLong("idPrograma"));
-            
+            segmento.setOrden(rs.getInt("orden"));
             return segmento;
         }
     }
