@@ -1208,6 +1208,8 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (11, 6);
 
 INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7); 
 
+ALTER TABLE usuario ADD COLUMN activo BOOLEAN DEFAULT TRUE;
+
 
 
 
