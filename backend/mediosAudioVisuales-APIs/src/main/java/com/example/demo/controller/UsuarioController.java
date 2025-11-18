@@ -117,4 +117,15 @@ public class UsuarioController {
         Long idUsuarioQueBorra = 1L; // Asumimos Admin (esto vendrá de la seguridad)
         return usuarioService.borrarUsuario(id, idUsuarioQueBorra);
     }
+    
+    /**
+     * Endpoint para OBTENER un usuario por ID y saber su idRol
+     * URL: http://localhost:8080/api/usuarios/5
+     */
+    @GetMapping("/{id}")
+    public Usuario obtenerUsuarioPorId(@PathVariable Long id) {
+        // Asumimos que tu UsuarioService tiene un método buscarUsuarioPorId
+        // Si no se llama así, revisa tu UsuarioService.java (ej: findById, getById, etc.)
+        return usuarioService.buscarUsuarioPorId(id);
+    }
 }
