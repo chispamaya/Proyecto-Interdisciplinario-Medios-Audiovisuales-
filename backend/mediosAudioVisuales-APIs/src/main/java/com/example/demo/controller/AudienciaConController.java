@@ -19,7 +19,6 @@ public class AudienciaConController {
 
     /**
      * Endpoint para dar Like o Dislike.
-     * Recibe el objeto AudienciaCon en el cuerpo y el ID de usuario auditor en la URL.
      */
     @PostMapping("/voto")
     public ResponseEntity<String> votar(@RequestBody AudienciaCon voto, @RequestParam Long idUsuarioAuditoria) {
@@ -46,7 +45,6 @@ public class AudienciaConController {
 
     /**
      * Endpoint para obtener el reporte de conteo de Likes/Dislikes.
-     * Usado en ReportesAudiencia.jsx
      */
     @GetMapping("/reporte")
     public ResponseEntity<List<ReporteAudienciaDTO>> obtenerReporte() {

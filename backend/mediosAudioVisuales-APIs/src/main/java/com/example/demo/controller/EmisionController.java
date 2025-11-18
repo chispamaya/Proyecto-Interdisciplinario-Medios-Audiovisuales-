@@ -16,17 +16,13 @@ public class EmisionController {
     @Autowired
     private EmisionService emisionService;
 
-    /**
-     * Listar todas las emisiones (para ver cuál está en vivo).
-     */
+    // 1. Listar todas las emisiones (ControlDeEmision.jsx)
     @GetMapping
     public ResponseEntity<List<Emision>> listarEmisiones() {
         return ResponseEntity.ok(emisionService.listarEmisiones());
     }
 
-    /**
-     * Poner una emisión EN VIVO.	
-     */
+    // 2. Poner una emisión EN VIVO
     @PutMapping("/{id}/vivo")
     public ResponseEntity<String> ponerEnVivo(@PathVariable Long id, @RequestParam Long idUsuarioAuditoria) {
         try {
@@ -37,9 +33,7 @@ public class EmisionController {
         }
     }
 
-    /**
-     * Sacar una emisión del aire (APAGAR).
-     */
+    // 3. Sacar una emisión del aire (APAGAR)
     @PutMapping("/{id}/apagado")
     public ResponseEntity<String> sacarDeVivo(@PathVariable Long id, @RequestParam Long idUsuarioAuditoria) {
         try {

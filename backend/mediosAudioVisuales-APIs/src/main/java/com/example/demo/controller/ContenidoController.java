@@ -22,18 +22,17 @@ public class ContenidoController {
     private ContenidoTagService contenidoTagService;
 
     /**
-     * 1. Crear Contenido.
+     * 1. Crear Contenido (SubidaMultimedia.jsx).
      */
     @PostMapping("/crear")
     public ResponseEntity<String> crearContenidoConTags(@RequestBody ContenidoCreacionDTO request) {
         try {
             if (request.getContenido() == null) {
-                return ResponseEntity.badRequest().body("Error: Sin datos.");
+                return ResponseEntity.badRequest().body("Error: No se enviaron datos del contenido.");
             }
 
+            // Llamada al servicio para crear el contenido (SP 'cc')
             String mensaje = contenidoService.crearContenido(request.getContenido(), request.getIdUsuarioAuditoria());
-            
-            // (Tags opcional: lógica pendiente si se implementa retorno de ID)
             
             return ResponseEntity.ok(mensaje);
         } catch (Exception e) {
@@ -42,7 +41,25 @@ public class ContenidoController {
     }
 
     /**
-     * 2. Listar TODO.
+     * 2. Borrar Contenido (GestionMultimedia.jsx).
+     * Incluye la lógica para borrar tags primero.
+     */
+    @DeleteMapping("/{id}")
+    public ResponseEntity<String> borrarContenido(@PathVariable Long id, @RequestParam Long idUsuarioAuditoria) {
+        try {
+            // Primero intentamos limpiar los tags asociados
+            contenidoTagService.eliminarTagsDeContenido(id, idUsuarioAuditoria);
+            
+            // Luego borramos el contenido (SP 'bc')
+            String mensaje = contenidoService.borrarContenido(id, idUsuarioAuditoria);
+            return ResponseEntity.ok(mensaje);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body(e.getMessage());
+        }
+    }
+
+    /**
+     * 3. Listar TODO el contenido.
      */
     @GetMapping("/todos")
     public ResponseEntity<List<Contenido>> listarTodos() {
@@ -50,7 +67,7 @@ public class ContenidoController {
     }
 
     /**
-     * 3. Listar por Usuario.
+     * 4. Listar contenido de un usuario específico (GestionMultimedia.jsx).
      */
     @GetMapping("/usuario/{idUsuario}")
     public ResponseEntity<List<Contenido>> listarPorUsuario(@PathVariable Long idUsuario) {
@@ -58,25 +75,12 @@ public class ContenidoController {
     }
 
     /**
-     * 4. Borrar Contenido.
-     */
-    @DeleteMapping("/{id}")
-    public ResponseEntity<String> borrarContenido(@PathVariable Long id, @RequestParam Long idUsuarioAuditoria) {
-        try {
-            contenidoTagService.eliminarTagsDeContenido(id, idUsuarioAuditoria);
-            String mensaje = contenidoService.borrarContenido(id, idUsuarioAuditoria);
-            return ResponseEntity.ok(mensaje);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body(e.getMessage());
-        }
-    }
-    
-    /**
-     * 5. Actualizar Tags.
+     * 5. Actualizar los tags de un contenido existente (Gestión).
      */
     @PutMapping("/{id}/tags")
     public ResponseEntity<String> actualizarTags(@PathVariable Long id, @RequestBody List<Long> nuevosTags, @RequestParam Long idUsuarioAuditoria) {
         try {
+            // Usa la lógica transaccional del servicio ContenidoTagService
             contenidoTagService.actualizarTagsParaContenido(id, nuevosTags, idUsuarioAuditoria);
             return ResponseEntity.ok("Tags actualizados.");
         } catch (Exception e) {
