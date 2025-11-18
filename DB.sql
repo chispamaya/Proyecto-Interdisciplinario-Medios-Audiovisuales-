@@ -370,7 +370,7 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	 END;
     SET @current_user_id = idUs;
     START TRANSACTION;
-	 DELETE FROM usuario where id = id1;
+		UPDATE usuario SET activo = FALSE WHERE id = id1;
 	COMMIT;
    SET @current_user_id = NULL; 
    SET mensaje = 'Usuario borrado con éxito.';
@@ -1209,6 +1209,7 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (11, 6);
 INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7); 
 
 ALTER TABLE usuario ADD COLUMN activo BOOLEAN DEFAULT TRUE;
+
 
 
 
