@@ -1,33 +1,90 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { Edit, Trash2 } from 'lucide-react';
+
 import ABMPageLayout from '../../../components/abm/ABMPageLayout.jsx';
 import ABMSegmentosForm from './ABMSegmentosForm.jsx';
-// --- Datos de Ejemplo (Sin cambios) ---
-const segmentosData = [
-    { id: 1, programa: "Noticias Matinales", nombre: "Bloque Nacional", duracion: "20 min", orden: 1 },
-    { id: 2, programa: "Noticias Matinales", nombre: "Bloque Internacional", duracion: "25 min", orden: 2 },
-    { id: 3, programa: "Deportes Hoy", nombre: "Resumen Fútbol", duracion: "30 min", orden: 1 },
-    { id: 4, programa: "Cine en Casa", nombre: "Inicio Película A", duracion: "15 min", orden: 1 },
-    { id: 5, programa: "Cine en Casa", nombre: "Corte Publicitario", duracion: "10 min", orden: 2 },
-    { id: 6, programa: "El Debate Político", nombre: "Introducción", duracion: "15 min", orden: 1 },
-    { id: 7, programa: "El Debate Político", nombre: "Bloque Temático 1", duracion: "30 min", orden: 2 },
-    { id: 8, programa: "Recetas de Mamá", nombre: "Preparación", duracion: "15 min", orden: 1 },
-    { id: 9, programa: "Series Retro", nombre: "Episodio 1", duracion: "60 min", orden: 1 },
-];
 
-const columnasSegmentos = [
+// Definición de columnas
+const getColumnasSegmentos = (onEdit, onDelete) => [
     { key: 'id', header: 'ID' },
-    { key: 'programa', header: 'Programa' },
-    { key: 'nombre', header: 'Nombre Segmento' },
-    { key: 'duracion', header: 'Duración' },
-    { key: 'orden', header: 'Orden' },
+    // Nota: El backend devuelve 'nombrePrograma', no 'programa'
+    { key: 'nombrePrograma', header: 'Programa' }, 
+    { key: 'titulo', header: 'Nombre Segmento' }, // 'titulo' es el nombre en tu DTO
+    { key: 'duracion', header: 'Duración (min)' },
+    // { key: 'orden', header: 'Orden' }, // Si decidís agregarlo al DTO de lista
+    { key: 'estadoAprobacion', header: 'Estado' },
+    {
+        key: 'editar',
+        header: 'Editar',
+        className: 'abm-columna-accion',
+        render: (item) => (
+            <button onClick={() => onEdit(item.id)} className="btn-accion btn-editar">
+                <Edit size={18} />
+            </button>
+        )
+    },
+    {
+        key: 'eliminar',
+        header: 'Eliminar',
+        className: 'abm-columna-accion',
+        render: (item) => (
+            <button onClick={() => onDelete(item.id)} className="btn-accion btn-eliminar">
+                <Trash2 size={18} />
+            </button>
+        )
+    }
 ];
 
 export default function ABMSegmentos() {
-    const [editingId, setEditingId] = useState(null); 
+    const [editingId, setEditingId] = useState(null);
+    const [segmentos, setSegmentos] = useState([]);
+    const [loading, setLoading] = useState(true);
+
+    // Cargar datos
+    const cargarSegmentos = () => {
+        setLoading(true);
+        axios.get('http://localhost:8080/api/segmentos')
+            .then(response => {
+                setSegmentos(response.data);
+                setLoading(false);
+            })
+            .catch(error => {
+                console.error("Error cargando segmentos:", error);
+                setLoading(false);
+            });
+    };
+
+    useEffect(() => {
+        cargarSegmentos();
+    }, []);
     
-    const handleEdit = (id) => setEditingId(id);
     const handleAdd = () => setEditingId(0);
-    const handleCancelOrSuccess = () => setEditingId(null);
+    const handleEdit = (id) => setEditingId(id);
+
+    // Borrar Segmento
+    const handleDelete = async (id) => {
+        if (window.confirm(`¿Seguro que deseas eliminar el segmento ID: ${id}?`)) {
+            try {
+                const response = await axios.delete(`http://localhost:8080/api/segmentos/${id}`);
+                
+                if (response.data === "Segmento borrado con éxito.") {
+                    alert("Segmento eliminado.");
+                    cargarSegmentos();
+                } else {
+                    alert("No se pudo eliminar: " + response.data);
+                }
+            } catch (error) {
+                console.error("Error al eliminar:", error);
+                alert("Ocurrió un error de conexión.");
+            }
+        }
+    };
+
+    const handleCancelOrSuccess = () => {
+        setEditingId(null);
+        cargarSegmentos(); 
+    };
 
     if (editingId !== null) {
         return (
@@ -39,18 +96,15 @@ export default function ABMSegmentos() {
         );
     }
     
+    const columnas = getColumnasSegmentos(handleEdit, handleDelete);
+
     return (
         <ABMPageLayout
             title="ABM de Segmentos"
-            columns={columnasSegmentos}
-            data={segmentosData}
+            columns={columnas}
+            data={segmentos}
+            isLoading={loading}
             onAdd={handleAdd}
-            onEdit={handleEdit}
-            onDelete={(id) => { 
-                if (window.confirm(`¿Seguro que deseas eliminar el segmento ID: ${id}?`)) {
-                    console.log(`Eliminar segmento ID: ${id}`);
-                }
-            }}
         />
     );
 }
