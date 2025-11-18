@@ -1,22 +1,18 @@
 package com.example.demo.service;
 
 import org.springframework.stereotype.Service;
+
 import com.example.demo.dto.SegmentoABMDTO;
-import com.example.demo.dto.Programa;
 import com.example.demo.dto.Segmento;
-import com.example.demo.repository.ProgramaRepository;
 import com.example.demo.repository.SegmentoRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
+
 @Service
 public class SegmentoService {
 	@Autowired
     private SegmentoRepository segmentoRepository;
-	private ProgramaRepository programaRepository;
 	
 	public String crearSegmento(Segmento nuevoSegmento, Long idUsuarioQueCrea) {
 		if (nuevoSegmento.getTitulo() == null || nuevoSegmento.getTitulo().isEmpty()) {
@@ -45,36 +41,9 @@ public class SegmentoService {
     }
     
     public List<SegmentoABMDTO> listarSegmentosParaABM() {
-       
-        List<Segmento> segmentos = segmentoRepository.listarTodosLosSegmentos();
-        List<Programa> programas = programaRepository.listarTodosLosProgramas();
-
-        Map<Long, String> mapaDeProgramas = programas.stream()
-                .collect(Collectors.toMap(Programa::getId, Programa::getNombre));
-
-       
-        List<SegmentoABMDTO> resultadoFinal = new ArrayList<>();
         
-       
-        for (Segmento seg : segmentos) {
-       
-            SegmentoABMDTO dto = new SegmentoABMDTO();
-            
-       
-            dto.setId(seg.getId());
-            dto.setTitulo(seg.getTitulo());
-            dto.setDuracion(seg.getDuracion());
-            dto.setEstadoAprobacion(seg.getEstadoAprobacion());
-            
-       
-            String nombreProg = mapaDeProgramas.get(seg.getIdPrograma());
-            dto.setNombrePrograma(nombreProg);
-            
-       
-            resultadoFinal.add(dto);
-        }
-
-        return resultadoFinal;
+        // ✅ SIMPLIFICACIÓN: Llama directamente al Repository, que ya trae el DTO completo
+        return segmentoRepository.listarSegmentosParaABM();
     }
     
     public Segmento buscarSegmentoPorId(Long id) {
