@@ -81,6 +81,7 @@ CREATE TABLE contenidos (
     rutaArchivo VARCHAR(500),
 	texto varchar(500),
     idUsuario INT,
+	fechaCreacion DATETIME,
     FOREIGN KEY (idUsuario) REFERENCES usuario(id)
 );
 
@@ -110,6 +111,7 @@ CREATE TABLE encuesta (
     id INT AUTO_INCREMENT PRIMARY KEY,
     preguntar VARCHAR(50),
     idUsuario INT,
+	fechaCreacion DATETIME,
     FOREIGN KEY (idUsuario) REFERENCES usuario(id)
 );
 
@@ -591,7 +593,7 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	 END;
      SET @current_user_id = idUs;
 	START TRANSACTION;
-	 INSERT INTO contenidos(formato,rutaArchivo, texto, idUsuario) VALUES(formato1,rutaArchivo1,texto1,idU1);
+	 INSERT INTO contenidos(formato,rutaArchivo, texto, idUsuario, fechaCreacion) VALUES(formato1,rutaArchivo1,texto1,idU, NOW());
 	COMMIT;
 	SET @current_user_id = NULL;
    SET mensaje = 'Contenido subido con éxito.';
@@ -764,7 +766,7 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	 END;
       SET @current_user_id = idUs;
 	START TRANSACTION;
-	 INSERT INTO encuesta(preguntar, idUsuario) VALUES (preguntar1, idU);
+	 INSERT INTO encuesta(preguntar, idUsuario, fechaCreacion) VALUES (preguntar1, idU, NOW());
 	 COMMIT;
    SET idE = LAST_INSERT_ID();
    SET mensaje = 'Encuesta creada con éxito.';
@@ -1209,6 +1211,7 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (11, 6);
 INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7); 
 
 ALTER TABLE usuario ADD COLUMN activo BOOLEAN DEFAULT TRUE;
+
 
 
 
