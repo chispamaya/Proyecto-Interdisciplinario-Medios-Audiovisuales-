@@ -34,6 +34,7 @@ import LoginEspectador from './pages/espectador/LoginEspectador.jsx';
 import { ParrillaProvider } from './context/ParrillaContext.jsx'; // 💥 .jsx AÑADIDO
 import CrearEncuesta from './pages/admin/CrearEncuesta.jsx'; 
 import Auditoria from './pages/admin/Auditoria.jsx'; 
+import NotFound from './pages/NotFound.jsx';
 
 function App() {
   return (
@@ -73,6 +74,7 @@ function App() {
 
               <Route path="/admin/crear-publicacion" element={<CrearEncuesta />} /> 
               <Route path="/admin/auditoria" element={<Auditoria />} /> 
+              <Route path="*" element={<NotFound />} />
             </Route>
 
           </Routes>
