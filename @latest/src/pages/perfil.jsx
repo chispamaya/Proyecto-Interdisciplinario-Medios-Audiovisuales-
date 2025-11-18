@@ -1,106 +1,140 @@
-import React, { useState, useEffect } from 'react'; // <-- 1. IMPORTAMOS a useState y useEffect
-import axios from 'axios'; // <-- 2. IMPORTAMOS AXIOS
-
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { useNavigate } from 'react-router-dom'; // Para redirigir al login
 import logoImage from '../assets/logo.png'
 import '../styles/pages/perfil.css'
 import { ShieldCheck } from 'lucide-react';
 
-export default function Perfil({idUsuario}) { 
+export default function Perfil() { 
+    const navigate = useNavigate();
 
-    // --- 3. CREAMOS ESTADOS ---
-    // (Para guardar los datos que vienen de la API)
-    const [perfil, setPerfil] = useState(null); // Para el DTO PerfilDTO
-    const [loading, setLoading] = useState(true); // Para el mensaje "Cargando..."
-    const [error, setError] = useState(null); // Para cualquier error
+    // Estados
+    const [perfil, setPerfil] = useState(null);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState(null);
+    
+    // Estado para el input de nueva contraseña
+    const [nuevaPassword, setNuevaPassword] = useState("");
 
-    // --- 4. USEEFFECT (LA LLAMADA A LA API) ---
-    // (Esto se ejecuta 1 sola vez cuando la página carga)
+    // ID del usuario logueado
+    const [idUsuario, setIdUsuario] = useState(null);
+
+    // 1. Al cargar, buscamos el ID en localStorage
     useEffect(() => {
-        // TODO: Tenés que sacar el ID del usuario logueado de algún lado
-        // Por ahora, usamos el 'idUsuario' que pasaste como prop.
-        // Si 'idUsuario' no existe, usamos 1 como fallback.
-        const idUsuarioLogueado = idUsuario || 1; 
+        const storedId = localStorage.getItem('usuarioId');
+        
+        if (storedId) {
+            setIdUsuario(storedId);
+        } else {
+            // Si no hay ID, no está logueado -> Redirigir al Login
+            navigate('/'); 
+        }
+    }, [navigate]);
 
-        // Esta es la URL de tu UsuarioController (@GetMapping("/perfil/{id}"))
-        const API_URL = `http://localhost:8080/api/usuarios/perfil/${idUsuarioLogueado}`;
+    // 2. Cuando tenemos el ID, buscamos los datos en la API
+    useEffect(() => {
+        if (idUsuario) {
+            axios.get(`http://localhost:8080/api/usuarios/perfil/${idUsuario}`)
+                .then(response => {
+                    setPerfil(response.data);
+                    setLoading(false);
+                })
+                .catch(err => {
+                    console.error("Error al cargar el perfil:", err);
+                    setError("No se pudo cargar el perfil.");
+                    setLoading(false);
+                });
+        }
+    }, [idUsuario]);
 
-        axios.get(API_URL)
-            .then(response => {
-                // ¡ÉXITO! response.data es tu PerfilDTO
-                setPerfil(response.data);
-                setLoading(false);
-            })
-            .catch(err => {
-                // ¡ERROR!
-                console.error("Error al cargar el perfil:", err);
-                setError("No se pudo cargar el perfil.");
-                setLoading(false);
-            });
-    }, [idUsuario]); // Se ejecuta cada vez que 'idUsuario' cambie
+    // --- LÓGICA: CAMBIAR CONTRASEÑA ---
+    const handleSubmit = async (e) => {
+        e.preventDefault();
+        
+        if (!nuevaPassword) {
+            alert("Por favor, ingrese una nueva contraseña.");
+            return;
+        }
 
-  const handleSubmit = (e) => {
-    e.preventDefault();
-    console.log('Contraseña actualizada');
-  }
+        try {
+            // Como no tenés un endpoint específico para "cambiar contraseña",
+            // podemos usar el de 'modificarRolUsuario' si lo adaptamos, 
+            // OJO: Tu backend actual solo permite cambiar ROL.
+            // 
+            // Para que esto funcione REALMENTE, necesitarías un endpoint nuevo 
+            // en el UsuarioController: @PutMapping("/password")
+            
+            // POR AHORA (Simulación):
+            console.log(`Cambiando contraseña del usuario ${idUsuario} a: ${nuevaPassword}`);
+            alert("Funcionalidad pendiente de backend (necesita endpoint).");
+            setNuevaPassword(""); // Limpiar campo
 
-  const handleLogout = () => {
-    console.log('Cerrar Sesión');
-  }
-
-    // --- 5. RENDERIZADO CONDICIONAL ---
-    // (Mostramos mensajes mientras la API responde)
-
-    if (loading) {
-        return <div className="contenedor-principal"><h1>Cargando perfil...</h1></div>;
+        } catch (error) {
+            console.error("Error al cambiar contraseña:", error);
+            alert("Error al cambiar la contraseña.");
+        }
     }
 
-    if (error) {
-        return <div className="contenedor-principal"><h1>{error}</h1></div>;
+    // --- LÓGICA: CERRAR SESIÓN ---
+    const handleLogout = () => {
+        if (window.confirm("¿Estás seguro de que querés cerrar sesión?")) {
+            // 1. Limpiamos el almacenamiento
+            localStorage.removeItem('usuarioId');
+            localStorage.removeItem('usuarioNombre');
+            localStorage.removeItem('usuarioRol');
+            
+            // 2. Redirigimos al Login
+            navigate('/'); 
+        }
     }
 
-    if (!perfil) {
-        return <div className="contenedor-principal"><h1>No se encontró el perfil.</h1></div>;
-    }
+    // --- RENDERIZADO ---
+    if (loading) return <div className="contenedor-principal"><h1>Cargando perfil...</h1></div>;
+    if (error) return <div className="contenedor-principal"><h1>{error}</h1></div>;
+    if (!perfil) return <div className="contenedor-principal"><h1>No se encontró el perfil.</h1></div>;
 
-    // --- 6. RENDERIZADO CON DATOS REALES ---
-    // (Una vez que 'perfil' tiene los datos de la API)
-  return (
-    <>
-      <div className="contenedor-principal">
-        <main className="contenido-perfil">
+    return (
+        <>
+            <div className="contenedor-principal">
+                <main className="contenido-perfil">
 
-          <div className="logo-contenedor">
-            <img className="logo-perfil" src={logoImage} alt="Logo" />
-          </div>
-          
-          <div className="datos-perfil"> 
-                        {/* 💥 CAMBIO HECHO AQUÍ 💥 */}
-            <h1>{perfil.nombreUsuario}</h1> 
-            <ShieldCheck size={20} color="var(--texto)" style={{ marginRight: '10px' }} />
-                        {/* 💥 CAMBIO HECHO AQUÍ 💥 */}
-            <h2 className='adm'>{perfil.nombreRol.toUpperCase()}</h2> 
-          </div>
+                    <div className="logo-contenedor">
+                        <img className="logo-perfil" src={logoImage} alt="Logo" />
+                    </div>
+                    
+                    <div className="datos-perfil"> 
+                        <h1>{perfil.nombreUsuario}</h1> 
+                        <div style={{display: 'flex', alignItems: 'center', justifyContent: 'center'}}>
+                            <ShieldCheck size={20} color="var(--texto)" style={{ marginRight: '10px' }} />
+                            <h2 className='adm'>{perfil.nombreRol.toUpperCase()}</h2> 
+                        </div>
+                    </div>
 
-          <form className="formulario-perfil" onSubmit={handleSubmit}>
-            <div className="campo-form">
-              <label htmlFor="password">Contraseña</label>
-              <input 
-                type="password" 
-                id="password" 
-                name="pass" 
-                placeholder="Cambiar contraseña"
-              />
+                    <form className="formulario-perfil" onSubmit={handleSubmit}>
+                        <div className="campo-form">
+                            <label htmlFor="password">Contraseña</label>
+                            <input 
+                                type="password" 
+                                id="password" 
+                                name="pass" 
+                                placeholder="Nueva contraseña"
+                                value={nuevaPassword}
+                                onChange={(e) => setNuevaPassword(e.target.value)}
+                            />
+                        </div>
+
+                        <div className="acciones-form-centrado">
+                            <button type="button" className="btn-descartar" onClick={handleLogout}>
+                                Cerrar Sesión
+                            </button>
+                            <button type="submit" className="btn-guardar">
+                                Guardar
+                            </button>
+                        </div>
+                    </form>
+
+                </main>
             </div>
-
-
-            <div className="acciones-form-centrado">
-              <button type="button" className="btn-descartar" onClick={handleLogout}>Cerrar Sesión</button>
-              <button type="submit" className="btn-guardar">Guardar</button>
-            </div>
-          </form>
-
-        </main>
-      </div>
-    </>
-  )
+        </>
+    )
 }
