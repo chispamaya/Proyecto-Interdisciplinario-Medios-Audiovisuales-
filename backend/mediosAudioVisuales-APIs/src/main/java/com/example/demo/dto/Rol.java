@@ -1,5 +1,7 @@
 package com.example.demo.dto;
 
+import java.util.List;
+
 import lombok.Data;
 // Ya no se importa jakarta.persistence.*
 // Ya no se importa java.util.List
@@ -12,7 +14,7 @@ public class Rol {
     
     private Long id;
     private String nombre;
-    
+    private List<String> detallesPermisos;
     // --- NOTA IMPORTANTE ---
     // La lista '@OneToMany private List<Usuario> usuarios;' se elimina
     // porque eso es algo que JPA resuelve "mágicamente".
