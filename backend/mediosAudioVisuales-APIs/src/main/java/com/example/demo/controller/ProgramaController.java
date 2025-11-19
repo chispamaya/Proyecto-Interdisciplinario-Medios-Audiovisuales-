@@ -1,164 +1,122 @@
 package com.example.demo.controller;
 
-// Importamos los DTOs que vamos a recibir o devolver
-import com.example.demo.dto.AprobacionDTO;
-import com.example.demo.dto.ControlEmisionDTO;
-import com.example.demo.dto.Dia;
-import com.example.demo.dto.ParrillaDTO;
-import com.example.demo.dto.Programa;
-
-// Importamos el "Cerebro" (Service)
+import com.example.demo.dto.*;
 import com.example.demo.service.ProgramaService;
-
+import jakarta.annotation.PostConstruct;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.core.io.Resource;
+import org.springframework.core.io.UrlResource;
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
 import java.util.Map;
-
-import org.springframework.web.bind.annotation.CrossOrigin; // <-- ¡IMPORTA ESTO!
-
+import java.util.UUID;
 
 @CrossOrigin(origins = "http://localhost:5173")
-
-/**
- * @RestController: Le dice a Spring que esto es un Controller y devolverá JSON.
- * @RequestMapping("/api/programas"): URL Base para todos los métodos de esta clase.
- */
 @RestController
 @RequestMapping("/api/programas")
-
 public class ProgramaController {
 
-    // --- 1. Conectamos el "Cerebro" (Service) ---
     @Autowired
     private ProgramaService programaService;
 
-    
-    // --- 2. Endpoints para el ABM de Programas ---
+    // Carpeta de almacenamiento
+    private final Path fileStorageLocation = Paths.get("archivos_multimedia").toAbsolutePath().normalize();
 
-    /**
-     * Endpoint para CREAR un Programa (SP 'cpr')
-     * - Método: POST
-     * - URL: /api/programas
-     */
-    @PostMapping
-    public String crearPrograma(@RequestBody Programa nuevoPrograma) {
-        // TODO: Reemplazar '1L' con el ID del usuario logueado (seguridad)
-        Long idUsuarioQueCrea = 1L; 
-        return programaService.crearPrograma(nuevoPrograma, idUsuarioQueCrea);
-    }
-
-    /**
-     * Endpoint para EDITAR un Programa (SP 'mpr')
-     * - Método: PUT
-     * - URL: /api/programas/5
-     */
-    @PutMapping("/{id}")
-    public String modificarPrograma(@PathVariable Long id, @RequestBody Programa programa) {
-        programa.setId(id); // Aseguramos que el ID de la URL sea el usado
-        Long idUsuarioQueModifica = 1L; // TODO: Reemplazar con ID de seguridad
-        return programaService.modificarPrograma(programa, idUsuarioQueModifica);
-    }
-    @PutMapping("/{id}/estado")
-    public String actualizarEstado(@PathVariable Long id, @RequestBody Map<String, String> payload) {
-        String nuevoEstado = payload.get("estado");
-        // Validamos que venga el estado
-        if (nuevoEstado == null || nuevoEstado.isEmpty()) {
-            return "Error: Estado no proporcionado.";
+    @PostConstruct
+    public void init() {
+        try {
+            Files.createDirectories(this.fileStorageLocation);
+            System.out.println("📂 [CONTROLLER] Carpeta lista en: " + this.fileStorageLocation);
+        } catch (Exception ex) {
+            throw new RuntimeException("Error al crear directorio.", ex);
         }
-        // Llamamos al servicio (asumiendo usuario ID 1 para auditoría)
-        return programaService.actualizarEstadoPrograma(id, nuevoEstado, 1L);
-    }
-    /**
-     * Endpoint para BORRAR un Programa (SP 'bpr')
-     * - Método: DELETE
-     * - URL: /api/programas/5
-     */
-    @DeleteMapping("/{id}")
-    public String borrarPrograma(@PathVariable Long id) {
-        Long idUsuarioQueBorra = 1L; // TODO: Reemplazar con ID de seguridad
-        return programaService.borrarPrograma(id, idUsuarioQueBorra);
     }
 
-    /**
-     * Endpoint para BUSCAR un Programa por ID (para llenar el form de "Editar")
-     * - Método: GET
-     * - URL: /api/programas/5
-     */
-    @GetMapping("/{id}")
-    public Programa buscarProgramaPorId(@PathVariable Long id) {
-        return programaService.buscarProgramaPorId(id);
+    // --- UPLOAD CON LOGS ---
+    @PostMapping("/upload")
+    public ResponseEntity<Map<String, String>> uploadFile(@RequestParam("file") MultipartFile file) {
+        try {
+            System.out.println("📥 [UPLOAD] Recibiendo: " + file.getOriginalFilename());
+            String fileName = UUID.randomUUID().toString() + "_" + file.getOriginalFilename();
+            Path targetLocation = this.fileStorageLocation.resolve(fileName);
+            
+            Files.copy(file.getInputStream(), targetLocation, StandardCopyOption.REPLACE_EXISTING);
+            System.out.println("   ✅ Guardado en disco como: " + fileName);
+            
+            return ResponseEntity.ok(Map.of("fileName", fileName, "message", "Subida exitosa"));
+        } catch (IOException ex) {
+            System.err.println("   ❌ Error upload: " + ex.getMessage());
+            return ResponseEntity.status(500).body(Map.of("error", ex.getMessage()));
+        }
     }
 
-    /**
-     * Endpoint para LISTAR todos los Programas (para la tabla del ABM)
-     * - Método: GET
-     * - URL: /api/programas
-     */
-    @GetMapping
-    public List<Programa> listarTodosLosProgramas() {
-        return programaService.listarTodosLosProgramas();
+    // --- DOWNLOAD CON LOGS Y LIMPIEZA ---
+    @GetMapping("/download/{fileName:.+}")
+    public ResponseEntity<Resource> downloadFile(@PathVariable String fileName) {
+        try {
+            System.out.println("📤 [DOWNLOAD] Solicitud: " + fileName);
+            
+            // Limpieza de ruta
+            Path pathObj = Paths.get(fileName);
+            String cleanName = pathObj.getFileName().toString();
+            System.out.println("   🧹 Nombre limpiado: " + cleanName);
+
+            Path filePath = this.fileStorageLocation.resolve(cleanName).normalize();
+            Resource resource = new UrlResource(filePath.toUri());
+
+            if (resource.exists() && resource.isReadable()) {
+                System.out.println("   ✅ Enviando archivo...");
+                return ResponseEntity.ok()
+                        .contentType(MediaType.APPLICATION_OCTET_STREAM)
+                        .header(HttpHeaders.CONTENT_DISPOSITION, "attachment; filename=\"" + resource.getFilename() + "\"")
+                        .body(resource);
+            } else {
+                System.out.println("   ❌ Archivo NO encontrado en disco.");
+                return ResponseEntity.notFound().build();
+            }
+        } catch (Exception ex) {
+            return ResponseEntity.notFound().build();
+        }
     }
 
-    
-    // --- 3. Endpoints para "Armado Parrilla Horaria" ---
-
-    /**
-     * Endpoint para ASIGNAR un Día a un Programa (SP 'cd')
-     * - Método: POST
-     * - URL: /api/programas/dias
-     */
-    @GetMapping("/dias")
-    public List<Dia> listarDiasAsignados() {
-        return programaService.listarTodosLosDias();
-    }
-
-    /**
-     * Endpoint para QUITAR un Día de un Programa (SP 'bd')
-     * - Método: DELETE
-     * - URL: /api/programas/dias/10 (donde 10 es el ID de la fila 'dias')
-     */
-    @DeleteMapping("/dias/{idDia}")
-    public String quitarDia(@PathVariable Long idDia) {
-        Long idUsuarioQueQuita = 1L; // TODO: Reemplazar con ID de seguridad
-        return programaService.quitarDia(idDia, idUsuarioQueQuita);
-    }
-
-    
-    // --- 4. Endpoints para Pantallas de Lógica Combinada ---
-
-    /**
-     * Endpoint para "Estado de Aprobación"
-     * - Método: GET
-     * - URL: /api/programas/aprobacion
-     */
+    // --- ENDPOINTS DELEGADOS ---
     @GetMapping("/aprobacion")
-    public List<AprobacionDTO> getListaDeAprobacion() {
-        // Llama al método que combina dias, programas, auditoria y usuarios
-        return programaService.listarProgramasParaAprobacion();
-    }
+    public List<AprobacionDTO> getListaDeAprobacion() { return programaService.listarProgramasParaAprobacion(); }
     
-
-    /**
-     * Endpoint para "Control de Emisión"
-     * - Método: GET
-     * - URL: /api/programas/control-emision
-     */
+    @GetMapping("/{id}")
+    public Programa buscarProgramaPorId(@PathVariable Long id) { return programaService.buscarProgramaPorId(id); }
+    
+    @PutMapping("/{id}/estado")
+    public String actualizarEstado(@PathVariable Long id, @RequestBody Map<String, String> p) { return programaService.actualizarEstadoPrograma(id, p.get("estado"), 1L); }
+    
+    @PostMapping
+    public String crearPrograma(@RequestBody Programa p) { return programaService.crearPrograma(p, 1L); }
+    
+    @PutMapping("/{id}")
+    public String modificarPrograma(@PathVariable Long id, @RequestBody Programa p) { p.setId(id); return programaService.modificarPrograma(p, 1L); }
+    
+    @DeleteMapping("/{id}")
+    public String borrarPrograma(@PathVariable Long id) { return programaService.borrarPrograma(id, 1L); }
+    
+    @GetMapping("/dias")
+    public List<Dia> listarDiasAsignados() { return programaService.listarTodosLosDias(); }
+    
+    @DeleteMapping("/dias/{idDia}")
+    public String quitarDia(@PathVariable Long idDia) { return programaService.quitarDia(idDia, 1L); }
+    
     @GetMapping("/control-emision")
-    public ControlEmisionDTO getControlEmision() {
-        // Llama al método que arma el DTO "Maestro"
-        return programaService.getControlEmisionDashboard();
-    }
+    public ControlEmisionDTO getControlEmision() { return programaService.getControlEmisionDashboard(); }
+    
     @GetMapping("/parrilla-semanal")
-    public Map<String, List<ParrillaDTO>> getParrillaSemanal() {
-        return programaService.obtenerParrillaSemanal();
-    }
-    /**
-     * Endpoint para "SACAR DEL AIRE" (Botón en)
-     * - Método: PUT
-     * - URL: /api/programas/control-emision/sacar-del-aire
-     * (Recibe un JSON como: { "idEmision": 3 } )
-     */
-   
+    public Map<String, List<ParrillaDTO>> getParrillaSemanal() { return programaService.obtenerParrillaSemanal(); }
 }
