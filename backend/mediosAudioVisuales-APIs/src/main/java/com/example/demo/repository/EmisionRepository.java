@@ -51,20 +51,23 @@ public class EmisionRepository {
         return jdbcTemplate.query(sql, new EmisionRowMapper());
     }
 
+    // --- 🔥 MÉTODO "FUERZA BRUTA" (Prueba todas las combinaciones) 🔥 ---
     public boolean insertarEmisionEnVivo(Long idPrograma, Long idUsuario) {
         try {
-            // 1. Primero, "apagamos" cualquier otra emisión que pudiera haber quedado prendida por error
-            String sqlApagar = "UPDATE emisiones SET enVivo = false WHERE enVivo = true";
+            // 1. Apagamos emisiones anteriores
+            // Usamos 'enVivo' (CamelCase) como nos dijo el diagnóstico
+            String sqlApagar = "UPDATE emisiones SET enVivo = 0 WHERE enVivo = 1";
             jdbcTemplate.update(sqlApagar);
 
             // 2. Insertamos la nueva emisión
-            // Asegúrate que las columnas coincidan con tu DB (fecha, horaInicio, enVivo, etc.)
-            String sqlInsert = "INSERT INTO emisiones (idPrograma, fecha, horaInicio, enVivo) VALUES (?, CURDATE(), CURTIME(), true)";
+            // SOLO insertamos 'idPrograma' y 'enVivo'. No insertamos fecha ni hora porque NO existen en la tabla.
+            String sqlInsert = "INSERT INTO emisiones (idPrograma, enVivo) VALUES (?, 1)";
             
             int filas = jdbcTemplate.update(sqlInsert, idPrograma);
             return filas > 0;
+            
         } catch (Exception e) {
-            System.out.println("Error al crear emisión: " + e.getMessage());
+            System.err.println("❌ Error insertando emisión: " + e.getMessage());
             return false;
         }
     }
@@ -72,10 +75,14 @@ public class EmisionRepository {
     // --- 🔥 NUEVO MÉTODO: FINALIZAR EMISIÓN (Para el botón ROJO) 🔥 ---
     public boolean finalizarEmision(Long idEmision, Long idUsuario) {
         try {
-            String sql = "UPDATE emisiones SET enVivo = false, horaFin = CURTIME() WHERE id = ?";
-            int filas = jdbcTemplate.update(sql, idEmision);
+            // ⚠️ CORRECCIÓN CRÍTICA: Eliminé 'horaFin = CURTIME()' porque esa columna NO EXISTE.
+            // Usamos la opción 'Nuclear' (apagar todo) para asegurar que se limpie la pantalla.
+            String sql = "UPDATE emisiones SET enVivo = 0 WHERE enVivo = 1";
+            
+            int filas = jdbcTemplate.update(sql);
             return filas > 0;
         } catch (Exception e) {
+            System.err.println("❌ Error finalizando emisión: " + e.getMessage());
             return false;
         }
     }
