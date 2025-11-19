@@ -26,10 +26,7 @@ export default function CrearPublicacion() {
 
   // --- Helper para obtener ID Usuario ---
   const obtenerIdUsuario = () => {
-    // CORRECCIÓN: Usar 'usuarioId' que es como lo guardaste en el Login
     const guardado = localStorage.getItem('usuarioId');
-
-    // Si no hay nada, devolvemos null (o 1 si quieres forzar un admin por defecto para pruebas)
     return guardado ? parseInt(guardado) : 1;
   };
 
@@ -63,16 +60,96 @@ export default function CrearPublicacion() {
     setIsLoading(false);
   };
 
+  // -----------------------------------------------------------
+  // 🟢 LÓGICA NUEVA: PROCESAMIENTO DE TAGS
+  // -----------------------------------------------------------
+  const procesarTagsConApi = async () => {
+    // 1. Limpiar el string (quitar #, espacios extra y separar por comas)
+    if (!tags.trim()) return [];
+
+    const listaNombresTags = tags.split(',')
+      .map(tag => tag.trim().replace(/^#/, '')) // Quita el '#' inicial si existe
+      .filter(tag => tag !== ''); // Elimina vacíos
+
+    if (listaNombresTags.length === 0) return [];
+
+    // 2. Llamar al TagController por CADA tag
+    // El backend verifica: si existe devuelve el ID, si no lo crea y devuelve el ID.
+    const promesasDeTags = listaNombresTags.map(async (nombreTag) => {
+      try {
+        // Endpoint de Tags
+        const response = await axios.post('http://localhost:8080/api/tags', { 
+          nombre: nombreTag 
+        });
+        return response.data; // Retornamos el objeto Tag completo (con ID)
+      } catch (error) {
+        console.error(`Error al procesar el tag "${nombreTag}":`, error);
+        return null; 
+      }
+    });
+
+    const resultados = await Promise.all(promesasDeTags);
+    return resultados.filter(res => res !== null); // Filtramos los que fallaron
+  };
+
   // --- Envío del Formulario ---
   const handleSubmit = async (e) => {
     e.preventDefault();
     setHttpError(null);
 
+    // =======================================================
+    // 🟢 CASO MENSAJE (Modificado para Tags)
+    // =======================================================
     if (tipoPublicacion === 'mensaje') {
-      // Lógica de mensaje (No implementada aún)
-      alert("Funcionalidad de subir Mensaje no conectada aún.");
+      
+      // Validación básica
+      if (!imagen) {
+        alert("Debes seleccionar una imagen para el mensaje.");
+        return;
+      }
+
+      setIsLoading(true);
+
+      try {
+        // 1. Procesamos los tags primero (Backend: Buscar o Crear)
+        const listaTagsConfirmados = await procesarTagsConApi();
+        console.log("Tags procesados:", listaTagsConfirmados);
+
+        // 2. Preparamos el FormData (Necesario para subir imágenes)
+        const idUsuario = obtenerIdUsuario();
+        const formData = new FormData();
+
+        formData.append('texto', texto);
+        formData.append('idUsuario', idUsuario);
+        formData.append('file', imagen);
+        
+        // Enviamos los tags como string JSON (El backend debe parsearlo a List<Tag>)
+        formData.append('tags', JSON.stringify(listaTagsConfirmados));
+
+        // 3. Enviamos al endpoint de Publicaciones
+        // Ajusta la URL si es necesario
+        const API_URL_MENSAJE = `http://localhost:8080/api/publicaciones?idUsuarioAuditoria=${idUsuario}`;
+
+        await axios.post(API_URL_MENSAJE, formData, {
+          headers: { "Content-Type": "multipart/form-data" }
+        });
+
+        alert("¡Publicación creada exitosamente!");
+        navigate('/home'); // O redirección deseada
+
+      } catch (error) {
+        console.error("Error creando mensaje:", error);
+        const status = error.response ? error.response.status : 500;
+        const msg = error.response?.data?.message || "Error al subir la publicación.";
+        setHttpError({ status, message: msg });
+      } finally {
+        setIsLoading(false);
+      }
 
     } else if (tipoPublicacion === 'encuesta') {
+      // =======================================================
+      // 🔴 CASO ENCUESTA (Sin cambios, tal cual tu código)
+      // =======================================================
 
       // 1. Validación Frontend
       if (tituloEncuesta.trim() === '') {
@@ -90,18 +167,14 @@ export default function CrearPublicacion() {
       // 2. Obtener ID real
       const idActual = obtenerIdUsuario();
 
-      // 3. Preparar JSON - CORRECCIÓN CRÍTICA DE ESTRUCTURA Y NOMBRE DE CAMPO
+      // 3. Preparar JSON
       const publicacionJSON = {
-        // ESTRUCTURA PLANA: Eliminar el objeto "encuesta" y colocar todo en el nivel superior
-        preguntar: tituloEncuesta, // <--- CORRECCIÓN 1: VUELVE a 'preguntar' (coincide con Encuesta.java)
+        preguntar: tituloEncuesta,
         idUsuario: idActual,
         opciones: opcionesValidas.map(op => ({ opcion: op }))
       };
 
       const API_URL = `http://localhost:8080/api/encuestas?idUsuarioAuditoria=${idActual}`;
-
-     
-
 
       try {
         // 4. Llamada al Backend usando Axios
@@ -118,14 +191,13 @@ export default function CrearPublicacion() {
         setOpciones(['', '']);
 
       } catch (error) {
-
-        // 🟢 DEBUGGING: Mostrar el error exacto del backend
-        console.error("🛑 Error al crear encuesta (Objeto completo de Axios):", error);
+        // 🟢 DEBUGGING
+        console.error("🛑 Error al crear encuesta:", error);
         if (error.response) {
-          console.error("🛑 Cuerpo de la respuesta de error (response.data):", error.response.data);
+          console.error("🛑 Cuerpo respuesta error:", error.response.data);
         }
 
-        let errorStatus = 503; // Default
+        let errorStatus = 503;
         let errorMessage = "No se pudo conectar con el servidor";
 
         if (error.response) {
