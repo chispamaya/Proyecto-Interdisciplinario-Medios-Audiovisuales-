@@ -1,40 +1,29 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios'; // Importamos Axios
 import {
   format, addMonths, subMonths, startOfMonth, endOfMonth,
   startOfWeek, endOfWeek, eachDayOfInterval, isSameMonth
 } from 'date-fns';
 import { es } from 'date-fns/locale';
-import '../../styles/pages/armadoParrilla.css'; // (Usamos el mismo CSS)
+import '../../styles/pages/armadoParrilla.css'; 
 
-// --- 1. Importaciones de DND-Kit ---
+// --- Importaciones de DND-Kit ---
 import {
   DndContext,
-  DragOverlay, // Para clonar el ítem al arrastrar
+  DragOverlay,
   useDraggable,
   useDroppable,
 } from '@dnd-kit/core';
 
-// --- AÑADIDO ---
-import { X } from 'lucide-react'; // Importamos el ícono para cerrar el modal
-
-// --- Datos de Ejemplo ---
-const programasDisponibles = [
-  { id: 'prog-1', nombre: 'La Parrilla' },
-  { id: 'prog-2', nombre: 'Deportes Hoy' },
-  { id: 'prog-3', nombre: 'Cine Clásico' },
-  { id: 'prog-4', nombre: 'Música' },
-  { id: 'prog-5', nombre: 'Noticias' },
-  { id: 'prog-6', nombre: 'Infantiles' },
-];
+import { X } from 'lucide-react';
 
 const diasSemana = ["DOM", "LUN", "MAR", "MIE", "JUE", "VIE", "SAB"];
 
 // --- 2. Componente "Programa Arrastrable" ---
-// (Sin cambios)
 function DraggablePrograma({ programa }) {
   const { attributes, listeners, setNodeRef } = useDraggable({
-    id: programa.id,
-    data: programa, // Pasamos el objeto completo del programa
+    id: `prog-source-${programa.id}`, // ID único para el drag source
+    data: { ...programa, type: 'source' }, 
   });
 
   return (
@@ -44,17 +33,15 @@ function DraggablePrograma({ programa }) {
       {...attributes}
       className="programa-chip"
     >
-      {programa.nombre}
+      {programa.titulo || programa.nombre} {/* Soporte para 'titulo' (DTO) o 'nombre' */}
     </div>
   );
 }
 
 // --- 3. Componente "Celda del Día" (Receptora) ---
-// --- MODIFICADO ---
-// Ahora recibe 'onOpenModal'
 function DroppableDia({ day, isOtherMonth, children, onOpenModal }) {
   const { setNodeRef, isOver } = useDroppable({
-    id: format(day, 'yyyy-MM-dd'), // Usamos la fecha como ID
+    id: format(day, 'yyyy-MM-dd'), 
   });
 
   const style = isOver ? { backgroundColor: '#415a77', transform: 'scale(1.02)' } : {};
@@ -64,7 +51,7 @@ function DroppableDia({ day, isOtherMonth, children, onOpenModal }) {
       ref={setNodeRef}
       style={style}
       className={`dia-cell ${isOtherMonth ? 'dia-otro-mes' : ''}`}
-      onMouseUp={onOpenModal}
+      onMouseUp={onOpenModal} // Mantenemos tu lógica original del modal
     >
       <span className="dia-numero">{format(day, 'dd')}</span>
       <div className="programas-asignados-lista">
@@ -74,12 +61,10 @@ function DroppableDia({ day, isOtherMonth, children, onOpenModal }) {
   );
 }
 
-// --- AÑADIDO: Componente del Modal ---
+// --- Componente del Modal ---
 const DayDetailModal = ({ dayId, programs, onClose }) => {
   return (
-    // El fondo oscuro
     <div className="modal-overlay" onClick={onClose}>
-      {/* El contenido del modal */}
       <div className="modal-content" onClick={(e) => e.stopPropagation()}>
         <button className="modal-close-btn" onClick={onClose}>
           <X size={24} />
@@ -87,8 +72,8 @@ const DayDetailModal = ({ dayId, programs, onClose }) => {
         <h3>Programas para el {dayId}</h3>
         <div className="modal-program-list">
           {programs.length > 0 ? (
-            programs.map(prog => (
-              <div key={prog.id} className="modal-program-item">
+            programs.map((prog, index) => (
+              <div key={`${prog.id}-${index}`} className="modal-program-item">
                 {prog.nombre}
               </div>
             ))
@@ -101,17 +86,64 @@ const DayDetailModal = ({ dayId, programs, onClose }) => {
   );
 };
 
-
 // --- Componente Principal de la Página ---
 export default function ArmadoParrilla() {
   const [currentMonth, setCurrentMonth] = useState(new Date());
-  const [asignaciones, setAsignaciones] = useState({});
+  
+  // Estados de Datos Reales
+  const [programasDisponibles, setProgramasDisponibles] = useState([]); // Lista lateral
+  const [asignaciones, setAsignaciones] = useState({}); // Mapa: "YYYY-MM-DD" -> [Array de programas]
+  
   const [activeDragItem, setActiveDragItem] = useState(null);
+  const [modalDay, setModalDay] = useState(null); 
 
-  // --- AÑADIDO: Estado para el modal ---
-  const [modalDay, setModalDay] = useState(null); // null = cerrado
+  // --- 1. Cargar Datos Iniciales (Programas y Parrilla) ---
+  useEffect(() => {
+    cargarDatos();
+  }, [currentMonth]); // Recargar si cambia el mes (opcional, por si filtras por mes en backend)
 
-  // --- Lógica del Calendario (sin cambios) ---
+  const cargarDatos = async () => {
+    try {
+      // A. Traer lista de programas (para la barra lateral)
+      // Ajusta el endpoint si tu controller de programas tiene otra ruta
+      const resProgramas = await axios.get('http://localhost:8080/api/programas/todos'); 
+      setProgramasDisponibles(resProgramas.data);
+
+      // B. Traer parrilla completa (asignaciones)
+      const resParrilla = await axios.get('http://localhost:8080/api/dias/todos');
+      
+      // C. Transformar la lista plana del backend al formato del frontend
+      // Backend: [{ id: 1, dia: "2025-11-18", idPrograma: 5 }, ...]
+      // Frontend espera: { "2025-11-18": [ { id: 5, nombre: "Noticias" } ] }
+      
+      const mapaAsignaciones = {};
+      
+      resParrilla.data.forEach(item => {
+        const fechaStr = item.dia; // "YYYY-MM-DD"
+        
+        // Buscar el nombre del programa usando el ID
+        const programaEncontrado = resProgramas.data.find(p => p.id === item.idPrograma);
+        
+        const objetoPrograma = {
+          id: item.idPrograma,
+          idAsignacion: item.id, // Guardamos el ID de la tabla 'Dia' por si queremos borrar luego
+          nombre: programaEncontrado ? (programaEncontrado.titulo || programaEncontrado.nombre) : "Programa Desconocido"
+        };
+
+        if (!mapaAsignaciones[fechaStr]) {
+          mapaAsignaciones[fechaStr] = [];
+        }
+        mapaAsignaciones[fechaStr].push(objetoPrograma);
+      });
+
+      setAsignaciones(mapaAsignaciones);
+
+    } catch (error) {
+      console.error("Error cargando datos:", error);
+    }
+  };
+
+  // --- Lógica del Calendario ---
   const generateCalendarDays = () => {
     const monthStart = startOfMonth(currentMonth);
     const monthEnd = endOfMonth(monthStart);
@@ -124,62 +156,77 @@ export default function ArmadoParrilla() {
   const goToNextMonth = () => setCurrentMonth(addMonths(currentMonth, 1));
   const goToPrevMonth = () => setCurrentMonth(subMonths(currentMonth, 1));
 
-  // --- AÑADIDO: Funciones para manejar el modal ---
+  // --- Modal Handlers ---
   const handleOpenModal = (dayId) => {
-    setModalDay(dayId);
+    // Solo abrimos si no estamos arrastrando (para evitar conflicto con mouseUp)
+    if (!activeDragItem) setModalDay(dayId);
   };
   const handleCloseModal = () => {
     setModalDay(null);
   };
 
-  // --- Lógica de Drag and Drop (sin cambios) ---
+  // --- Drag & Drop Handlers ---
   function handleDragStart(event) {
     setActiveDragItem(event.active.data.current);
   }
 
-  function handleDragEnd(event) {
+  async function handleDragEnd(event) {
     const { active, over } = event;
     setActiveDragItem(null);
 
-    if (!over) {
+    if (!over) return;
+
+    const diaId = over.id; // "YYYY-MM-DD"
+    const programa = active.data.current; // Objeto programa completo
+    const usuarioId = localStorage.getItem('usuarioId');
+
+    // Validar login
+    if (!usuarioId) {
+      alert("Debes iniciar sesión para modificar la parrilla.");
       return;
     }
 
-    const diaId = over.id;
-    const programa = active.data.current;
-
-    setAsignaciones(prev => {
-      const programasDelDia = prev[diaId] || [];
-
-      if (programasDelDia.find(p => p.id === programa.id)) {
-        return prev;
-      }
-
-      const nuevaListaDia = [...programasDelDia, programa];
-
-      return {
-        ...prev,
-        [diaId]: nuevaListaDia,
+    try {
+      // 1. Enviar al Backend
+      const nuevoDiaDTO = {
+        dia: diaId,
+        idPrograma: programa.id
       };
-    });
+
+      // POST: Crear la asignación
+      await axios.post('http://localhost:8080/api/dias', nuevoDiaDTO, {
+        params: { idUsuarioAuditoria: usuarioId }
+      });
+
+      // 2. Actualizar estado local (Optimista o recargando)
+      // Aquí optamos por recargar para obtener el ID real de la asignación y estar sincronizados
+      cargarDatos();
+
+    } catch (error) {
+      console.error("Error al asignar programa:", error);
+      alert("Error al guardar en la parrilla: " + (error.response?.data || error.message));
+    }
   }
 
   return (
     <DndContext onDragStart={handleDragStart} onDragEnd={handleDragEnd}>
       <div className="armado-parrilla-container">
 
-        {/* Barra de Programas (sin cambios) */}
+        {/* Barra de Programas */}
         <div className="programas-disponibles-bar">
           <h3>Programas disponibles</h3>
           <div className="programas-lista">
             {programasDisponibles.map(prog => (
               <DraggablePrograma key={prog.id} programa={prog} />
             ))}
-            <span className="programas-mas">+10 más</span>
+            {/* Indicador simple si hay muchos */}
+            <span className="programas-mas">
+               {programasDisponibles.length > 0 ? "" : "Cargando..."}
+            </span>
           </div>
         </div>
 
-        {/* Contenedor del Calendario (sin cambios) */}
+        {/* Contenedor del Calendario */}
         <div className="calendario-container">
           <div className="calendario-header">
             <button className="flecha" onClick={goToPrevMonth}>&lt;</button>
@@ -195,7 +242,6 @@ export default function ArmadoParrilla() {
             ))}
           </div>
 
-          {/* Grilla de Días (MODIFICADO) */}
           <div className="calendario-grid-body">
             {calendarDays.map(day => {
               const diaId = format(day, 'yyyy-MM-dd');
@@ -206,12 +252,10 @@ export default function ArmadoParrilla() {
                   key={diaId}
                   day={day}
                   isOtherMonth={!isSameMonth(day, currentMonth)}
-                  // --- MODIFICADO: Pasamos la función al DroppableDia ---
                   onOpenModal={() => handleOpenModal(diaId)}
                 >
-                  {/* Renderizado de los chips (sin cambios) */}
-                  {programasDelDia.map(prog => (
-                    <div key={prog.id} className="programa-chip-asignado">
+                  {programasDelDia.map((prog, idx) => (
+                    <div key={`${prog.idAsignacion}-${idx}`} className="programa-chip-asignado">
                       {prog.nombre}
                     </div>
                   ))}
@@ -222,7 +266,7 @@ export default function ArmadoParrilla() {
         </div>
       </div>
 
-      {/* --- AÑADIDO: Renderizado condicional del modal --- */}
+      {/* Modal Detalle */}
       {modalDay && (
         <DayDetailModal
           dayId={modalDay}
@@ -231,11 +275,11 @@ export default function ArmadoParrilla() {
         />
       )}
 
-      {/* Drag Overlay (sin cambios) */}
+      {/* Drag Overlay */}
       <DragOverlay>
         {activeDragItem ? (
           <div className="programa-chip chip-en-overlay">
-            {activeDragItem.nombre}
+            {activeDragItem.titulo || activeDragItem.nombre}
           </div>
         ) : null}
       </DragOverlay>
