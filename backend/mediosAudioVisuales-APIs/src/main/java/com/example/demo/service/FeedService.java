@@ -20,39 +20,60 @@ public class FeedService {
     @Autowired
     private EncuestaRepository encuestaRepository;
 
-    public List<PublicacionDTO> obtenerFeedUnificado() {
+    // Ahora recibimos el ID del usuario (puede ser null si es un invitado)
+    public List<PublicacionDTO> obtenerFeedUnificado(Long idUsuario) {
         List<PublicacionDTO> feed = new ArrayList<>();
 
-        // 1. Obtener y convertir CONTENIDOS
+        // 1. Obtener y procesar CONTENIDOS
         List<Contenido> contenidos = contenidoRepository.listarTodosLosContenidos();
+        
         for (Contenido c : contenidos) {
+            // A. Cargar Tags
+            c.setTags(contenidoRepository.obtenerIdsTagsPorContenido(c.getId()));
+            
+            // B. Cargar Reacción del usuario (Si está logueado)
+            if (idUsuario != null) {
+                // Busca en la tabla 'audiencia_con' si hay like/dislike
+                Boolean reaccion = contenidoRepository.obtenerReaccionUsuario(c.getId(), idUsuario);
+                c.setMiReaccion(reaccion);
+            }
+
             PublicacionDTO item = new PublicacionDTO();
             item.setId(c.getId());
             item.setTipo("CONTENIDO");
             item.setFechaCreacion(c.getFechaCreacion());
-            item.setDetalle(c); // Guardamos todo el objeto contenido
+            item.setDetalle(c); 
             feed.add(item);
         }
 
-        // 2. Obtener y convertir ENCUESTAS
+        // 2. Obtener y procesar ENCUESTAS
         List<EncuestaResultado> encuestas = encuestaRepository.listarTodasLasEncuestas();
+        
         for (EncuestaResultado e : encuestas) {
+            // Verificar si el usuario votó ESTA opción específica
+            if (idUsuario != null) {
+                Long idOpcionVotada = encuestaRepository.obtenerOpcionVotadaPorUsuario(e.getIdEncuesta(), idUsuario);
+                
+                // Si el ID de la opción votada coincide con esta opción, marcamos true
+                if (idOpcionVotada != null && idOpcionVotada.equals(e.getIdOpcion())) {
+                    e.setVotadaPorMi(true);
+                } else {
+                    e.setVotadaPorMi(false);
+                }
+            }
+
             PublicacionDTO item = new PublicacionDTO();
             item.setId(e.getIdEncuesta());
             item.setTipo("ENCUESTA");
             item.setFechaCreacion(e.getFechaCreacion());
-            item.setDetalle(e); // Guardamos todo el resultado de la encuesta
+            item.setDetalle(e);
             feed.add(item);
         }
 
-        // 3. ORDENAR la lista combinada por fecha (DESCENDENTE)
+        // 3. Ordenar por fecha descendente
         feed.sort((p1, p2) -> {
-            // Si alguna fecha es nula, la mandamos al final para que no rompa
-            if (p1.getFechaCreacion() == null && p2.getFechaCreacion() == null) return 0;
             if (p1.getFechaCreacion() == null) return 1;
             if (p2.getFechaCreacion() == null) return -1;
-            
-            // Orden descendente (más nuevo arriba)
             return p2.getFechaCreacion().compareTo(p1.getFechaCreacion());
         });
 
