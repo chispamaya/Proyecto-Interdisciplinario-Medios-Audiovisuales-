@@ -152,6 +152,9 @@ public class ProgramaService {
 
         return resultadoFinal;
     }
+    public String actualizarEstadoPrograma(Long idPrograma, String nuevoEstado, Long idUsuario) {
+        return programaRepository.actualizarEstado(idPrograma, nuevoEstado, idUsuario);
+    }
 
 	public List<GestionProgramaDTO> listarGestionProgramasPorUsuario(Long idUsuario) {
 	        
