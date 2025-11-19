@@ -1,61 +1,98 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
+import { format, startOfWeek, addDays } from 'date-fns';
+import { es } from 'date-fns/locale';
+// CORRECCIÓN AQUÍ: Subimos dos niveles con ../../
 import '../../styles/pages/parrillaSemanal.css';
-import { useParrilla } from '../../context/ParrillaContext'; // 1. Importamos el Hook
-
-const diasSemana = ["LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO", "DOMINGO"];
 
 export default function ParrillaSemanal() {
+    const [parrilla, setParrilla] = useState({});
+    const [cargando, setCargando] = useState(true);
     
-    // 2. Leemos la parrilla real desde el Contexto
-    const { parrilla } = useParrilla(); 
-    // 'parrilla' ahora es un objeto: { LUNES: [...], MARTES: [...] }
+    // Generamos los días de la semana actual para las cabeceras
+    const hoy = new Date();
+    const inicioSemana = startOfWeek(hoy, { weekStartsOn: 1 }); // Lunes
+    const diasSemana = Array.from({ length: 7 }).map((_, i) => addDays(inicioSemana, i));
+
+    useEffect(() => {
+        cargarDatos();
+    }, []);
+
+    const cargarDatos = async () => {
+        try {
+            // 1. Cargar Programas (para tener los nombres)
+            const resProgramas = await axios.get('http://localhost:8080/api/programas/todos'); 
+            const programasMap = {};
+            resProgramas.data.forEach(p => {
+                programasMap[p.id] = p.nombre || p.titulo;
+            });
+
+            // 2. Cargar la Parrilla (Días asignados)
+            const resDias = await axios.get('http://localhost:8080/api/dias/todos');
+            
+            // 3. Organizar por fecha
+            const parrillaOrganizada = {};
+
+            resDias.data.forEach(item => {
+                const fechaStr = item.dia; // "YYYY-MM-DD"
+                if (!parrillaOrganizada[fechaStr]) {
+                    parrillaOrganizada[fechaStr] = [];
+                }
+                parrillaOrganizada[fechaStr].push({
+                    programa: programasMap[item.idPrograma] || "Programa Desconocido",
+                    hora: "Horario a definir" 
+                });
+            });
+
+            setParrilla(parrillaOrganizada);
+            setCargando(false);
+
+        } catch (error) {
+            console.error("Error cargando parrilla:", error);
+            setCargando(false);
+        }
+    };
 
     return (
         <div className="parrilla-container">
             <div className="parrilla-titulo-barra">
-                <h1>PROGRAMACIÓN</h1>
+                <h1>PROGRAMACIÓN SEMANAL</h1>
             </div>
 
-            <div className="parrilla-grid">
-                
-                {diasSemana.map((dia) => {
-                    
-                    // 3. Obtenemos los bloques específicos PARA ESE DÍA
-                    const bloquesDelDia = parrilla[dia] || []; 
+            {cargando ? (
+                <div style={{color:'white', textAlign:'center', padding:'20px'}}>Cargando programación...</div>
+            ) : (
+                <div className="parrilla-grid">
+                    {diasSemana.map((diaDate) => {
+                        const fechaKey = format(diaDate, 'yyyy-MM-dd');
+                        const nombreDia = format(diaDate, 'EEEE', { locale: es }).toUpperCase();
+                        const bloques = parrilla[fechaKey] || [];
 
-                    return (
-                        <div key={`wrapper-${dia}`} className="dia-wrapper"> 
-                            
-                            <div className="dia-columna-header">
-                                {dia}
-                            </div>
-                            
-                            <div className="dia-columna-contenido">
+                        return (
+                            <div key={fechaKey} className="dia-wrapper">
+                                <div className="dia-columna-header">
+                                    {nombreDia} <br/>
+                                    <span style={{fontSize:'0.8em', opacity:0.8}}>{format(diaDate, 'dd/MM')}</span>
+                                </div>
                                 
-                                {/* 4. Mapeamos los bloques DE ESE DÍA */}
-                                {bloquesDelDia.length > 0 ? (
-                                    bloquesDelDia.map((bloque, index) => (
-                                        <div key={`${dia}-${index}`} className="bloque-programa">
-                                            <p className="programa-nombre">{bloque.programa}</p>
-                                            <p className="programa-hora">{bloque.hora}</p>
-                                            
-                                            {/* 5. Lógica 'enVivo' simplificada (viene de los datos) */}
-                                            {bloque.enVivo && (
-                                                <span className="en-vivo-badge">En vivo</span>
-                                            )}
+                                <div className="dia-columna-contenido">
+                                    {bloques.length > 0 ? (
+                                        bloques.map((bloque, index) => (
+                                            <div key={`${fechaKey}-${index}`} className="bloque-programa">
+                                                <p className="programa-nombre">{bloque.programa}</p>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <div className="bloque-vacio" style={{padding:'10px', opacity:0.5, fontSize:'0.9rem'}}>
+                                            Sin programación
                                         </div>
-                                    ))
-                                ) : (
-                                    // Opcional: Mostrar algo si el día está vacío
-                                    <div className="bloque-vacio">
-                                        <p>Sin programación</p>
-                                    </div>
-                                )}
+                                    )}
+                                </div>
                             </div>
-                        </div> 
-                    );
-                })}
-            </div>
+                        );
+                    })}
+                </div>
+            )}
         </div>
     );
 }
