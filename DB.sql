@@ -183,18 +183,19 @@ CREATE PROCEDURE s(IN tabla VARCHAR(50), IN id1 INT, OUT mensaje VARCHAR(50))
 	    WHERE e.id = id1
 	    GROUP BY e.id, e.preguntar, e.idUsuario, o.id, o.opcion;
      ELSEIF tabla = 'encuesta' AND id1 IS NULL THEN
-		 SELECT 
-	        e.id AS idEncuesta, 
-	        e.preguntar, 
-	        e.idUsuario AS idCreador, 
-	        o.id AS idOpcion, 
-	        o.opcion,
-	        COUNT(v.idOpcion) AS totalVotos
-	    FROM encuesta e
-	    JOIN opcion_e o ON e.id = o.idEncuesta
-	    LEFT JOIN votar_o v ON o.id = v.idOpcion
-	    GROUP BY e.id, e.preguntar, e.idUsuario, o.id, o.opcion
-        ORDER BY e.id DESC; 
+         SELECT 
+            e.id AS idEncuesta, 
+            e.preguntar, 
+            e.idUsuario AS idCreador, 
+            e.fechaCreacion,  -- <--- 1. AGREGAR ESTO
+            o.id AS idOpcion, 
+            o.opcion,
+            COUNT(v.idOpcion) AS totalVotos
+        FROM encuesta e
+        JOIN opcion_e o ON e.id = o.idEncuesta
+        LEFT JOIN votar_o v ON o.id = v.idOpcion
+        GROUP BY e.id, e.preguntar, e.idUsuario, e.fechaCreacion, o.id, o.opcion 
+        ORDER BY e.fechaCreacion DESC; 
 	 ELSE
 		SET @ct = CONCAT('SELECT * FROM ', tabla, ';');
 		PREPARE c FROM @ct; 
@@ -1213,6 +1214,7 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7);
 ALTER TABLE usuario ADD COLUMN activo BOOLEAN DEFAULT TRUE;
 
 INSERT INTO usuario(email, nombre, contrasenia, idRol, activo) VALUES('admin@gmail.com', 'Admin1', '1', 8, 1);
+
 
 
 
