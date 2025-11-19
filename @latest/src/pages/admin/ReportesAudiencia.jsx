@@ -1,31 +1,24 @@
-// src/pages/admin/ReportesAudiencia.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios'; 
 import '../../styles/pages/reportesAudiencia.css';
 import { Tags, BarChart3, ThumbsUp, ThumbsDown, RefreshCw, AlertTriangle } from 'lucide-react';
 
-// 🔴 BORRAMOS LOS DATOS MOCK DE TAGS
-// Ya no usamos MOCK_TAGS_DATA
-
-// --- Sub-componente para Reporte de Tags (AHORA DINÁMICO) ---
-// Recibe props igual que el de encuestas para manejar estados
+// --- Sub-componente para Reporte de Tags ---
 function TagsReport({ data, loading, error, onRetry }) {
     
-    // 1. Estado de Carga
     if (loading) {
         return (
             <div className="report-content-wrapper state-message-container">
                 <RefreshCw size={40} className="spinner-icon" />
-                <p>Cargando listado de tags...</p>
+                <p>Cargando métricas de tags...</p>
             </div>
         );
     }
 
-    // 2. Estado de Error
     if (error) {
         return (
             <div className="report-content-wrapper state-message-container">
-                <h3 className="error-title">Error al cargar los Tags</h3>
+                <h3 className="error-title">Error al cargar los Tags ({error})</h3>
                 <div className="http-cat-wrapper">
                     <img 
                         src={`https://http.cat/${error}`} 
@@ -40,32 +33,30 @@ function TagsReport({ data, loading, error, onRetry }) {
         );
     }
 
-    // 3. Estado Vacío
     if (!data || data.length === 0) {
         return (
             <div className="report-content-wrapper state-message-container">
                 <AlertTriangle size={48} className="empty-state-icon" />
-                <h3 className="empty-state-text">No hay tags creados aún.</h3>
+                <h3 className="empty-state-text">No hay datos de interacción en tags aún.</h3>
             </div>
         );
     }
 
     return (
         <div className="report-content-wrapper tags-report-container">
-            {data.map(tag => (
-                <div key={tag.id} className="report-card tag-card">
-                    {/* TU PARTE: Mostrar el nombre real que viene de la DB */}
-                    <h3>{tag.tag}</h3> 
+            {data.map((tag, index) => (
+                <div key={index} className="report-card tag-card">
+                    <h3>#{tag.tag}</h3> 
                     
                     <div className="tag-stats">
                         <div className="stat-item likes">
                             <ThumbsUp size={20} />
-                            {/* PARTE DE TU AMIGO: Mientras él no haga la API de likes, mostramos 0 */}
+                            {/* Datos REALES calculados en el backend */}
                             <span>{(tag.likes || 0).toLocaleString()}</span>
                         </div>
                         <div className="stat-item dislikes">
                             <ThumbsDown size={20} />
-                            {/* PARTE DE TU AMIGO: Default a 0 */}
+                            {/* Datos REALES calculados en el backend */}
                             <span>{(tag.dislikes || 0).toLocaleString()}</span>
                         </div>
                     </div>
@@ -75,7 +66,7 @@ function TagsReport({ data, loading, error, onRetry }) {
     );
 }
 
-// --- Sub-componente para Reporte de Encuestas (INTACTO) ---
+// --- Sub-componente para Reporte de Encuestas (Sin cambios mayores) ---
 function PollsReport({ data, loading, error, onRetry }) {
     if (loading) {
         return (
@@ -104,15 +95,12 @@ function PollsReport({ data, loading, error, onRetry }) {
         return (
             <div className="report-content-wrapper state-message-container">
                 <AlertTriangle size={48} className="empty-state-icon" />
-                <h3 className="empty-state-text">No hay encuestas disponibles en este momento.</h3>
+                <h3 className="empty-state-text">No hay encuestas disponibles.</h3>
             </div>
         );
     }
 
-    const calculatePercentage = (votes, total) => {
-        if (total === 0) return 0;
-        return (votes / total) * 100;
-    };
+    const calculatePercentage = (votes, total) => total === 0 ? 0 : (votes / total) * 100;
 
     return (
         <div className="report-content-wrapper polls-report-container">
@@ -149,26 +137,26 @@ function PollsReport({ data, loading, error, onRetry }) {
 export default function ReportesAudiencia() {
     const [activeView, setActiveView] = useState('tags');
     
-    // --- Estados Encuestas (Existing) ---
+    // Estados Encuestas
     const [pollsData, setPollsData] = useState([]);
-    const [loading, setLoading] = useState(false); // Loading de encuestas
-    const [error, setError] = useState(null);      // Error de encuestas
+    const [loading, setLoading] = useState(false); 
+    const [error, setError] = useState(null);
 
-    // --- 🟢 NUEVOS ESTADOS PARA TAGS ---
+    // Estados Tags
     const [tagsData, setTagsData] = useState([]);
     const [tagsLoading, setTagsLoading] = useState(false);
     const [tagsError, setTagsError] = useState(null);
 
-    // --- 🟢 FETCH TAGS (Tu responsabilidad) ---
+    // --- FETCH TAGS CON LIKES/DISLIKES ---
     const fetchTags = async () => {
         setTagsLoading(true);
         setTagsError(null);
         try {
-            // Llamamos al endpoint que ya existe: TagController -> listarTodosLosTags()
-            const response = await axios.get('http://localhost:8080/api/tags');
+            // Llamamos al nuevo endpoint del reporte
+            const response = await axios.get('http://localhost:8080/api/tags/reporte');
             setTagsData(response.data); 
         } catch (err) {
-            console.error("Error fetching tags:", err);
+            console.error("Error fetching tags report:", err);
             const status = err.response?.status || 503;
             setTagsError(status);
         } finally {
@@ -176,7 +164,7 @@ export default function ReportesAudiencia() {
         }
     };
 
-    // --- FETCH ENCUESTAS (Lógica de tu compañero - INTACTA) ---
+    // --- FETCH ENCUESTAS ---
     const fetchPolls = async () => {
         setLoading(true);
         setError(null);
@@ -210,18 +198,12 @@ export default function ReportesAudiencia() {
         }
     };
 
-    // 🟢 Efecto para cargar TAGS cuando se selecciona esa vista
     useEffect(() => {
-        if (activeView === 'tags') {
-            fetchTags();
-        }
+        if (activeView === 'tags') fetchTags();
     }, [activeView]);
 
-    // Efecto para cargar ENCUESTAS cuando se selecciona esa vista
     useEffect(() => {
-        if (activeView === 'polls') {
-            fetchPolls();
-        }
+        if (activeView === 'polls') fetchPolls();
     }, [activeView]);
 
     return (
@@ -247,7 +229,6 @@ export default function ReportesAudiencia() {
                 <h2 className="reportes-title">Reportes de Audiencia</h2>
                 
                 {activeView === 'tags' ? (
-                    // 🟢 Renderizamos el componente de Tags con los datos reales
                     <TagsReport 
                         data={tagsData}
                         loading={tagsLoading}
