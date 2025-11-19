@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
 import { Plus, Trash2, UploadCloud } from 'lucide-react';
 import axios from 'axios';
+// Asegúrate de que la ruta al CSS sea correcta según tu estructura
 import '../../styles/pages/crearPublicacion.css';
 
 export default function CrearPublicacion() {
@@ -14,7 +15,7 @@ export default function CrearPublicacion() {
   // --- Estados del Formulario ---
   const [tipoPublicacion, setTipoPublicacion] = useState('mensaje');
 
-  // Mensaje
+  // Mensaje (Contenido)
   const [texto, setTexto] = useState('');
   const [tags, setTags] = useState('');
   const [imagen, setImagen] = useState(null);
@@ -27,7 +28,7 @@ export default function CrearPublicacion() {
   // --- Helper para obtener ID Usuario ---
   const obtenerIdUsuario = () => {
     const guardado = localStorage.getItem('usuarioId');
-    return guardado ? parseInt(guardado) : 1;
+    return guardado ? parseInt(guardado) : null;
   };
 
   // --- Funciones Auxiliares ---
@@ -60,168 +61,145 @@ export default function CrearPublicacion() {
     setIsLoading(false);
   };
 
-  // -----------------------------------------------------------
-  // 🟢 LÓGICA NUEVA: PROCESAMIENTO DE TAGS
-  // -----------------------------------------------------------
-  const procesarTagsConApi = async () => {
-    // 1. Limpiar el string (quitar #, espacios extra y separar por comas)
-    if (!tags.trim()) return [];
-
-    const listaNombresTags = tags.split(',')
-      .map(tag => tag.trim().replace(/^#/, '')) // Quita el '#' inicial si existe
-      .filter(tag => tag !== ''); // Elimina vacíos
-
-    if (listaNombresTags.length === 0) return [];
-
-    // 2. Llamar al TagController por CADA tag
-    // El backend verifica: si existe devuelve el ID, si no lo crea y devuelve el ID.
-    const promesasDeTags = listaNombresTags.map(async (nombreTag) => {
-      try {
-        // Endpoint de Tags
-        const response = await axios.post('http://localhost:8080/api/tags', { 
-          nombre: nombreTag 
-        });
-        return response.data; // Retornamos el objeto Tag completo (con ID)
-      } catch (error) {
-        console.error(`Error al procesar el tag "${nombreTag}":`, error);
-        return null; 
-      }
-    });
-
-    const resultados = await Promise.all(promesasDeTags);
-    return resultados.filter(res => res !== null); // Filtramos los que fallaron
-  };
-
   // --- Envío del Formulario ---
   const handleSubmit = async (e) => {
     e.preventDefault();
     setHttpError(null);
+    setIsLoading(true);
 
-    // =======================================================
-    // 🟢 CASO MENSAJE (Modificado para Tags)
-    // =======================================================
-    if (tipoPublicacion === 'mensaje') {
-      
-      // Validación básica
-      if (!imagen) {
-        alert("Debes seleccionar una imagen para el mensaje.");
+    const idActual = obtenerIdUsuario();
+    console.log("👤 [DEBUG] ID Usuario obtenido:", idActual);
+
+    if (!idActual) {
+        alert("Error: No has iniciado sesión.");
+        setIsLoading(false);
         return;
-      }
+    }
 
-      setIsLoading(true);
+    try {
+        if (tipoPublicacion === 'mensaje') {
+            // --- LÓGICA MENSAJE (CONTENIDO) ---
+            
+            console.log("🚀 [DEBUG] Iniciando subida de MENSAJE...");
 
-      try {
-        // 1. Procesamos los tags primero (Backend: Buscar o Crear)
-        const listaTagsConfirmados = await procesarTagsConApi();
-        console.log("Tags procesados:", listaTagsConfirmados);
+            if (!fileName || fileName === 'Ningún archivo seleccionado') {
+                alert("Debes seleccionar una imagen.");
+                setIsLoading(false);
+                return;
+            }
 
-        // 2. Preparamos el FormData (Necesario para subir imágenes)
-        const idUsuario = obtenerIdUsuario();
-        const formData = new FormData();
+            // Convertir tags
+            const listaIdsTags = tags.split(',')
+                .map(t => parseInt(t.trim()))
+                .filter(t => !isNaN(t));
 
-        formData.append('texto', texto);
-        formData.append('idUsuario', idUsuario);
-        formData.append('file', imagen);
+            console.log("🏷️ [DEBUG] Tags procesados:", listaIdsTags);
+
+            // Armar el objeto a enviar
+            const contenidoPayload = {
+                contenido: {
+                    // 🔴 ANTES: titulo: texto || "Mensaje...",
+                    // 🟢 AHORA (Nombre correcto en BD):
+                    texto: texto || "Mensaje con Imagen", 
+                    
+                    // 🔴 ANTES: ruta: "/uploads/" + fileName,
+                    // 🟢 AHORA (Nombre correcto en BD):
+                    rutaArchivo: "/uploads/" + fileName, 
+                    
+                    formato: "IMAGEN",
+                    idUsuario: idActual
+                },
+                listaIdsTags: listaIdsTags,
+                idUsuarioAuditoria: idActual
+            };
+
+            // IMPRIMIR EL JSON EXACTO QUE SE ENVÍA
+            console.log("📦 [DEBUG] JSON a enviar al Backend:", JSON.stringify(contenidoPayload, null, 2));
+
+            // Enviar POST
+            const response = await axios.post('http://localhost:8080/api/contenido/crear', contenidoPayload);
+            
+            // IMPRIMIR LA RESPUESTA DEL SERVIDOR
+            console.log("✅ [DEBUG] ¡Éxito! Respuesta completa del servidor:", response);
+            console.log("✅ [DEBUG] Datos recibidos (response.data):", response.data);
+            console.log("✅ [DEBUG] Código de estado (response.status):", response.status);
+            
+            alert("¡Mensaje publicado con éxito!");
+            
+            // Limpiar
+            setTexto("");
+            setTags("");
+            setImagen(null);
+            setFileName('Ningún archivo seleccionado');
+
+        } else if (tipoPublicacion === 'encuesta') {
+            // --- LÓGICA ENCUESTA ---
+            console.log("📊 [DEBUG] Iniciando creación de ENCUESTA...");
+
+            if (tituloEncuesta.trim() === '') {
+                alert('Por favor, ingresa una pregunta.');
+                setIsLoading(false);
+                return;
+            }
+            const opcionesValidas = opciones.filter(op => op.trim() !== '');
+            if (opcionesValidas.length < 2) {
+                alert('Mínimo 2 opciones.');
+                setIsLoading(false);
+                return;
+            }
+
+            const encuestaPayload = {
+                preguntar: tituloEncuesta,
+                idUsuario: idActual,
+                opciones: opcionesValidas.map(op => ({ opcion: op }))
+            };
+
+            console.log("📦 [DEBUG] Payload Encuesta:", JSON.stringify(encuestaPayload, null, 2));
+
+            const response = await axios.post(`http://localhost:8080/api/encuestas?idUsuarioAuditoria=${idActual}`, encuestaPayload);
+
+            console.log("✅ [DEBUG] Respuesta Encuesta:", response.data);
+
+            alert("¡Encuesta creada exitosamente!");
+            setTituloEncuesta('');
+            setOpciones(['', '']);
+        }
+
+    } catch (error) {
+        console.error("❌ [DEBUG] OCURRIÓ UN ERROR:", error);
         
-        // Enviamos los tags como string JSON (El backend debe parsearlo a List<Tag>)
-        formData.append('tags', JSON.stringify(listaTagsConfirmados));
-
-        // 3. Enviamos al endpoint de Publicaciones
-        // Ajusta la URL si es necesario
-        const API_URL_MENSAJE = `http://localhost:8080/api/publicaciones?idUsuarioAuditoria=${idUsuario}`;
-
-        await axios.post(API_URL_MENSAJE, formData, {
-          headers: { "Content-Type": "multipart/form-data" }
-        });
-
-        alert("¡Publicación creada exitosamente!");
-        navigate('/home'); // O redirección deseada
-
-      } catch (error) {
-        console.error("Error creando mensaje:", error);
-        const status = error.response ? error.response.status : 500;
-        const msg = error.response?.data?.message || "Error al subir la publicación.";
-        setHttpError({ status, message: msg });
-      } finally {
-        setIsLoading(false);
-      }
-
-    } else if (tipoPublicacion === 'encuesta') {
-      // =======================================================
-      // 🔴 CASO ENCUESTA (Sin cambios, tal cual tu código)
-      // =======================================================
-
-      // 1. Validación Frontend
-      if (tituloEncuesta.trim() === '') {
-        alert('Por favor, ingresa una pregunta para la encuesta.');
-        return;
-      }
-      const opcionesValidas = opciones.filter(op => op.trim() !== '');
-      if (opcionesValidas.length < 2) {
-        alert('La encuesta debe tener al menos 2 opciones válidas.');
-        return;
-      }
-
-      setIsLoading(true);
-
-      // 2. Obtener ID real
-      const idActual = obtenerIdUsuario();
-
-      // 3. Preparar JSON
-      const publicacionJSON = {
-        preguntar: tituloEncuesta,
-        idUsuario: idActual,
-        opciones: opcionesValidas.map(op => ({ opcion: op }))
-      };
-
-      const API_URL = `http://localhost:8080/api/encuestas?idUsuarioAuditoria=${idActual}`;
-
-      try {
-        // 4. Llamada al Backend usando Axios
-        const response = await axios.post(API_URL, publicacionJSON, {
-          headers: {
-            "Content-Type": "application/json"
-          }
-        });
-
-        alert("¡Encuesta creada exitosamente!");
-
-        // Resetear formulario
-        setTituloEncuesta('');
-        setOpciones(['', '']);
-
-      } catch (error) {
-        // 🟢 DEBUGGING
-        console.error("🛑 Error al crear encuesta:", error);
-        if (error.response) {
-          console.error("🛑 Cuerpo respuesta error:", error.response.data);
-        }
-
-        let errorStatus = 503;
-        let errorMessage = "No se pudo conectar con el servidor";
+        let status = 500;
+        let msg = "Error desconocido";
 
         if (error.response) {
-          errorStatus = error.response.status;
-          errorMessage = error.response.data?.message || error.response.data?.error || (typeof error.response.data === 'string' ? error.response.data : error.response.statusText);
+            // El servidor respondió con un código de error (4xx, 5xx)
+            console.error("❌ [DEBUG] Datos de error del servidor (response.data):", error.response.data);
+            console.error("❌ [DEBUG] Status code:", error.response.status);
+            console.error("❌ [DEBUG] Headers:", error.response.headers);
+
+            status = error.response.status;
+            msg = typeof error.response.data === 'string' 
+                  ? error.response.data 
+                  : (error.response.data?.message || "Error en el servidor");
         } else if (error.request) {
-          errorMessage = "El servidor no respondió. Asegúrate de que esté corriendo en http://localhost:8080.";
+            // La petición se hizo pero no hubo respuesta
+            console.error("❌ [DEBUG] No hubo respuesta del servidor (posiblemente apagado o CORS):", error.request);
+            status = 503;
+            msg = "No se pudo conectar con el servidor (localhost:8080).";
+        } else {
+             console.error("❌ [DEBUG] Error al configurar la petición:", error.message);
         }
 
-        setHttpError({
-          status: errorStatus,
-          message: errorMessage
-        });
-      } finally {
+        setHttpError({ status, message: msg });
+    } finally {
         setIsLoading(false);
-      }
     }
   };
-
-  // --- Vista Error (HTTP Cats) ---
+  // --- Renderizado de Error ---
   if (httpError) {
     return (
       <div className="http-cat-container">
-        <h2 className="http-cat-title">¡Miau! Error {httpError.status}</h2>
+        <h2 className="http-cat-title">¡Ups! Error {httpError.status}</h2>
         <p className="http-cat-message">{httpError.message}</p>
         <img
           src={`https://http.cat/${httpError.status}`}
@@ -229,7 +207,7 @@ export default function CrearPublicacion() {
           className="http-cat-image"
         />
         <button onClick={handleRetry} className="http-cat-button">
-          Volver al formulario
+          Intentar de nuevo
         </button>
       </div>
     );
@@ -262,7 +240,7 @@ export default function CrearPublicacion() {
         {tipoPublicacion === 'mensaje' && (
           <>
             <div className="form-group">
-              <label htmlFor="imagen" className="label-required">Imagen (Obligatoria)</label>
+              <label htmlFor="imagen" className="label-required">Imagen (Simulación)</label>
               <label htmlFor="imagen" className="file-upload-label">
                 <UploadCloud size={18} />
                 <span>{fileName}</span>
@@ -273,27 +251,28 @@ export default function CrearPublicacion() {
                 className="file-upload-input"
                 onChange={handleImageChange}
                 accept="image/png, image/jpeg, image/gif"
-                required
+                // required // Lo validamos manualmente en el submit
               />
             </div>
             <div className="form-group">
-              <label htmlFor="texto-mensaje">Texto (Opcional)</label>
+              <label htmlFor="texto-mensaje">Texto (Se usará como Título)</label>
               <textarea
                 id="texto-mensaje"
                 value={texto}
                 onChange={(e) => setTexto(e.target.value)}
-                placeholder="Añade un texto si lo deseas..."
+                placeholder="Escribe el texto de tu publicación..."
                 rows={4}
+                required
               />
             </div>
             <div className="form-group">
-              <label htmlFor="tags">Tags (Opcional)</label>
+              <label htmlFor="tags">IDs de Tags (separados por coma)</label>
               <input
                 type="text"
                 id="tags"
                 value={tags}
                 onChange={(e) => setTags(e.target.value)}
-                placeholder="Ej: #debate, #noticias, #vivo"
+                placeholder="Ej: 1, 3, 5 (Debe coincidir con IDs existentes)"
               />
             </div>
           </>
@@ -312,7 +291,7 @@ export default function CrearPublicacion() {
                 value={tituloEncuesta}
                 onChange={(e) => setTituloEncuesta(e.target.value)}
                 placeholder="¿Qué quieres preguntar a la audiencia?"
-                required
+                required={tipoPublicacion === 'encuesta'}
               />
             </div>
 
@@ -326,7 +305,7 @@ export default function CrearPublicacion() {
                     onChange={(e) => handleOptionChange(index, e.target.value)}
                     placeholder={`Opción ${index + 1}`}
                     maxLength={50}
-                    required={index < 2}
+                    required={tipoPublicacion === 'encuesta' && index < 2}
                   />
                   {opciones.length > 2 && (
                     <button
