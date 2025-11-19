@@ -594,7 +594,7 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
 	 END;
      SET @current_user_id = idUs;
 	START TRANSACTION;
-	 INSERT INTO contenidos(formato,rutaArchivo, texto, idUsuario, fechaCreacion) VALUES(formato1,rutaArchivo1,texto1,idU, NOW());
+	 INSERT INTO contenidos(formato,rutaArchivo, texto, idUsuario, fechaCreacion) VALUES(formato1,rutaArchivo1,texto1,idU1, NOW());
 	COMMIT;
 	SET @current_user_id = NULL;
    SET mensaje = 'Contenido subido con éxito.';
@@ -1214,6 +1214,7 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7);
 ALTER TABLE usuario ADD COLUMN activo BOOLEAN DEFAULT TRUE;
 
 INSERT INTO usuario(email, nombre, contrasenia, idRol, activo) VALUES('admin@gmail.com', 'Admin1', '1', 8, 1);
+
 
 
 
