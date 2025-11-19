@@ -7,6 +7,7 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
 
 @RestController
 @RequestMapping("/api/emisiones")
@@ -32,8 +33,21 @@ public class EmisionController {
             return ResponseEntity.badRequest().body(e.getMessage());
         }
     }
+ // En EmisionController.java
+    @PostMapping("/comenzar")
+    public Emision comenzarTransmision(@RequestBody Map<String, Long> payload) {
+        Long idPrograma = payload.get("idPrograma");
+        Long idUsuario = 1L; // TODO: Sacar del token de seguridad real
+        
+        return emisionService.comenzarEmision(idPrograma, idUsuario);
+    }
 
-    // 3. Sacar una emisión del aire (APAGAR)
+    // --- Endpoint para apagar (Botón Rojo) ---
+    @PutMapping("/{id}/finalizar")
+    public String finalizarTransmision(@PathVariable Long id) {
+        Long idUsuario = 1L; 
+        return emisionService.finalizarEmision(id, idUsuario);
+    }
     @PutMapping("/{id}/apagado")
     public ResponseEntity<String> sacarDeVivo(@PathVariable Long id, @RequestParam Long idUsuarioAuditoria) {
         try {
