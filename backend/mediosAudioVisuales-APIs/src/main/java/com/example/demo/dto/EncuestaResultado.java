@@ -1,5 +1,7 @@
 package com.example.demo.dto;
 
+import java.util.Date;
+
 import lombok.Data;
 
 /**
@@ -21,4 +23,5 @@ public class EncuestaResultado {
 
     // Info de los Votos (v)
     private Long totalVotos;
+    private Date fechaCreacion;
 }
