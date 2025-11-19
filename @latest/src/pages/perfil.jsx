@@ -16,6 +16,9 @@ export default function Perfil() {
     // Estado para el input de nueva contraseña
     const [nuevaPassword, setNuevaPassword] = useState("");
 
+    // Estado para la imagen (Logo por defecto, Http Cat en respuesta)
+    const [imagenPerfil, setImagenPerfil] = useState(logoImage);
+
     // ID del usuario logueado
     const [idUsuario, setIdUsuario] = useState(null);
 
@@ -57,21 +60,29 @@ export default function Perfil() {
         }
 
         try {
-            // Como no tenés un endpoint específico para "cambiar contraseña",
-            // podemos usar el de 'modificarRolUsuario' si lo adaptamos, 
-            // OJO: Tu backend actual solo permite cambiar ROL.
-            // 
-            // Para que esto funcione REALMENTE, necesitarías un endpoint nuevo 
-            // en el UsuarioController: @PutMapping("/password")
+            // Objeto que espera el backend (ajustar según tu DTO/Map)
+            const payload = {
+                idUsuario: idUsuario,
+                nuevaPassword: nuevaPassword
+            };
+
+            // Llamada real a la API
+            const response = await axios.put(`http://localhost:8080/api/usuarios/contrasenia`, payload);
             
-            // POR AHORA (Simulación):
-            console.log(`Cambiando contraseña del usuario ${idUsuario} a: ${nuevaPassword}`);
-            alert("Funcionalidad pendiente de backend (necesita endpoint).");
-            setNuevaPassword(""); // Limpiar campo
+            // ÉXITO: Gato 200
+            console.log("Contraseña cambiada con éxito:", response.data);
+            setImagenPerfil(`https://http.cat/${response.status}`);
+            alert("Contraseña cambiada correctamente.");
+            setNuevaPassword(""); 
 
         } catch (error) {
             console.error("Error al cambiar contraseña:", error);
-            alert("Error al cambiar la contraseña.");
+            
+            // ERROR: Gato con el status code del error (ej: 404, 500)
+            const status = error.response ? error.response.status : 500;
+            setImagenPerfil(`https://http.cat/${status}`);
+            
+            alert(`Error al cambiar la contraseña. Código: ${status}`);
         }
     }
 
@@ -99,7 +110,8 @@ export default function Perfil() {
                 <main className="contenido-perfil">
 
                     <div className="logo-contenedor">
-                        <img className="logo-perfil" src={logoImage} alt="Logo" />
+                        {/* La imagen ahora es dinámica para mostrar el gato http */}
+                        <img className="logo-perfil" src={imagenPerfil} alt="Logo o Status" />
                     </div>
                     
                     <div className="datos-perfil"> 
