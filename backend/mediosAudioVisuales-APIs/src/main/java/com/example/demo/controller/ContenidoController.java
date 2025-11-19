@@ -4,16 +4,25 @@ import com.example.demo.dto.Contenido;
 import com.example.demo.dto.ContenidoCreacionDTO;
 import com.example.demo.service.ContenidoService;
 import com.example.demo.service.ContenidoTagService;
-import com.example.demo.repository.ContenidoRepository; // Necesario para llamar a los métodos de valorar directamente
+import com.example.demo.service.TagService;
+import com.example.demo.repository.ContenidoRepository; 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.io.IOException;
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+import java.nio.file.StandardCopyOption;
 import java.util.List;
-import java.util.Map; // Import necesario para recibir el JSON de valoración
+import java.util.Map; 
+import java.util.UUID;
 
 @RestController
 @RequestMapping("/api/contenido")
+@CrossOrigin(origins = "http://localhost:5173") // Refuerzo de CORS
 public class ContenidoController {
 
     @Autowired
@@ -22,29 +31,76 @@ public class ContenidoController {
     @Autowired
     private ContenidoTagService contenidoTagService;
     
-    // Inyectamos el repositorio directamente para las valoraciones (o podrías hacerlo vía servicio)
     @Autowired
     private ContenidoRepository contenidoRepository; 
+    
+    @Autowired
+    private TagService tagService;
 
-    /**
-     * 1. Crear Contenido
-     */
-    @PostMapping("/crear")
-    public ResponseEntity<String> crearContenidoConTags(@RequestBody ContenidoCreacionDTO request) {
+    // --- ENDPOINT SUBIDA DE IMAGEN ---
+    @PostMapping("/upload")
+    public ResponseEntity<String> subirArchivo(@RequestParam("file") MultipartFile file) {
         try {
-            if (request.getContenido() == null) {
-                return ResponseEntity.badRequest().body("Error: No se enviaron datos del contenido.");
+            if (file.isEmpty()) {
+                return ResponseEntity.badRequest().body("El archivo está vacío.");
             }
-            String mensaje = contenidoService.crearContenido(request.getContenido(), request.getIdUsuarioAuditoria());
-            return ResponseEntity.ok(mensaje);
-        } catch (Exception e) {
-            return ResponseEntity.badRequest().body("Error al crear: " + e.getMessage());
+
+            // -----------------------------------------------------------
+            // 📍 AQUÍ CAMBIAS LA RUTA DE GUARDADO
+            // Si quieres una ruta absoluta (ej: C:/imagenes/), ponla aquí.
+            // "uploads/imagenes/" crea la carpeta dentro del proyecto.
+            String uploadDir = "uploads/imagenes/"; 
+            // -----------------------------------------------------------
+
+            Path uploadPath = Paths.get(uploadDir);
+
+            if (!Files.exists(uploadPath)) {
+                Files.createDirectories(uploadPath);
+            }
+
+            String originalName = file.getOriginalFilename();
+            String extension = "";
+            if (originalName != null && originalName.contains(".")) {
+                extension = originalName.substring(originalName.lastIndexOf("."));
+            }
+            
+            String nuevoNombre = UUID.randomUUID().toString() + extension;
+            Path filePath = uploadPath.resolve(nuevoNombre);
+            
+            Files.copy(file.getInputStream(), filePath, StandardCopyOption.REPLACE_EXISTING);
+
+            // Ruta web para el frontend (debe coincidir con WebConfig)
+            String rutaWeb = "/uploads/imagenes/" + nuevoNombre;
+            return ResponseEntity.ok(rutaWeb);
+
+        } catch (IOException e) {
+            e.printStackTrace();
+            return ResponseEntity.internalServerError().body("Error al subir archivo: " + e.getMessage());
         }
     }
 
-    /**
-     * 2. Borrar Contenido
-     */
+    // --- RESTO DE MÉTODOS (IGUALES QUE ANTES) ---
+    
+    @PostMapping("/crear")
+    public ResponseEntity<String> crearContenidoConTags(@RequestBody ContenidoCreacionDTO request) {
+        try {
+            if (request.getContenido() == null) return ResponseEntity.badRequest().body("Error: Sin datos.");
+            
+            String mensaje = contenidoService.crearContenido(request.getContenido(), request.getIdUsuarioAuditoria());
+            
+            List<Contenido> contenidosUser = contenidoService.listarContenidosPorUsuario(request.getContenido().getIdUsuario());
+            if (contenidosUser.isEmpty()) return ResponseEntity.ok(mensaje);
+            
+            Long idContenidoNuevo = contenidosUser.stream().mapToLong(Contenido::getId).max().orElseThrow();
+            List<Long> idsTags = tagService.resolverIdsDeTags(request.getTagsTexto(), request.getIdUsuarioAuditoria());
+            contenidoTagService.actualizarTagsParaContenido(idContenidoNuevo, idsTags, request.getIdUsuarioAuditoria());
+
+            return ResponseEntity.ok(mensaje);
+        } catch (Exception e) {
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
+        }
+    }
+
     @DeleteMapping("/{id}")
     public ResponseEntity<String> borrarContenido(@PathVariable Long id, @RequestParam Long idUsuarioAuditoria) {
         try {
@@ -56,25 +112,16 @@ public class ContenidoController {
         }
     }
 
-    /**
-     * 3. Listar TODOS
-     */
     @GetMapping("/todos")
     public ResponseEntity<List<Contenido>> listarTodos() {
         return ResponseEntity.ok(contenidoService.listarTodosLosContenidos());
     }
 
-    /**
-     * 4. Listar por usuario
-     */
     @GetMapping("/usuario/{idUsuario}")
     public ResponseEntity<List<Contenido>> listarPorUsuario(@PathVariable Long idUsuario) {
         return ResponseEntity.ok(contenidoService.listarContenidosPorUsuario(idUsuario));
     }
 
-    /**
-     * 5. Actualizar Tags
-     */
     @PutMapping("/{id}/tags")
     public ResponseEntity<String> actualizarTags(@PathVariable Long id, @RequestBody List<Long> nuevosTags, @RequestParam Long idUsuarioAuditoria) {
         try {
@@ -85,56 +132,26 @@ public class ContenidoController {
         }
     }
 
-    // ==================================================================
-    // 👇👇👇 ESTOS SON LOS MÉTODOS QUE TE FALTABAN 👇👇👇
-    // ==================================================================
-
-    /**
-     * 6. Valorar (Dar Like/Dislike) - SP 'ld'
-     */
     @PostMapping("/valorar")
-    public ResponseEntity<String> valorarContenido(
-            @RequestBody Map<String, Object> payload, 
-            @RequestParam Long idUsuarioAuditoria) {
+    public ResponseEntity<String> valorarContenido(@RequestBody Map<String, Object> payload, @RequestParam Long idUsuarioAuditoria) {
         try {
-            // Extraemos los datos del JSON
-            Integer idContenidoInt = (Integer) payload.get("idContenido");
-            Integer idUsuarioInt = (Integer) payload.get("idUsuario");
+            Integer idC = (Integer) payload.get("idContenido");
+            Integer idU = (Integer) payload.get("idUsuario");
             Boolean esLike = (Boolean) payload.get("esLike");
-            
-            // Convertimos a Long
-            Long idContenido = Long.valueOf(idContenidoInt);
-            Long idUsuario = Long.valueOf(idUsuarioInt);
-
-            String mensaje = contenidoRepository.valorarContenido(esLike, idContenido, idUsuario, idUsuarioAuditoria);
-            
-            return ResponseEntity.ok(mensaje);
+            return ResponseEntity.ok(contenidoRepository.valorarContenido(esLike, Long.valueOf(idC), Long.valueOf(idU), idUsuarioAuditoria));
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Error al valorar: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
 
-    /**
-     * 7. Borrar Valoración (Quitar Like/Dislike) - SP 'bv'
-     */
     @PostMapping("/borrarValoracion")
-    public ResponseEntity<String> borrarValoracion(
-            @RequestBody Map<String, Object> payload, 
-            @RequestParam Long idUsuarioAuditoria) {
+    public ResponseEntity<String> borrarValoracion(@RequestBody Map<String, Object> payload, @RequestParam Long idUsuarioAuditoria) {
         try {
-            Integer idContenidoInt = (Integer) payload.get("idContenido");
-            Integer idUsuarioInt = (Integer) payload.get("idUsuario");
-            
-            Long idContenido = Long.valueOf(idContenidoInt);
-            Long idUsuario = Long.valueOf(idUsuarioInt);
-
-            String mensaje = contenidoRepository.borrarValoracion(idContenido, idUsuario, idUsuarioAuditoria);
-            
-            return ResponseEntity.ok(mensaje);
+            Integer idC = (Integer) payload.get("idContenido");
+            Integer idU = (Integer) payload.get("idUsuario");
+            return ResponseEntity.ok(contenidoRepository.borrarValoracion(Long.valueOf(idC), Long.valueOf(idU), idUsuarioAuditoria));
         } catch (Exception e) {
-            e.printStackTrace();
-            return ResponseEntity.badRequest().body("Error al borrar valoración: " + e.getMessage());
+            return ResponseEntity.badRequest().body("Error: " + e.getMessage());
         }
     }
 }
