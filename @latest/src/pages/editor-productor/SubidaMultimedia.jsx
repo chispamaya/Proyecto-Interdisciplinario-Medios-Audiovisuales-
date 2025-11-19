@@ -1,19 +1,18 @@
 // src/pages/SubidaMultimedia.jsx
-import React, { useState, useEffect } from 'react'; // Importamos useEffect
-import axios from 'axios'; // Importamos axios
+import React, { useState, useEffect } from 'react';
+import axios from 'axios';
 import CargaArchivos from '../../components/ui/CargaArchivos.jsx';
 import DetallesEmision from '../../components/ui/DetallesEmision.jsx';
 import '../../styles/pages/subidaMultimedia.css';
 
-
-
-
+// 1. Agregamos 'categoria' al estado inicial
 const INITIAL_FORM_STATE = {
     tituloPrograma: '',
+    categoria: '', // <--- NUEVO CAMPO REQUERIDO POR TU DB
     horaEmision: '',
     horaFinalizacion: '',
     fechasEmision: [''],
-    lugarTransmision: '', // Esto guardará el ID de la plataforma seleccionada
+    lugarTransmision: '', // ID de la plataforma
     archivo: null,
     informe: null,
 };
@@ -21,11 +20,9 @@ const INITIAL_FORM_STATE = {
 export default function SubidaMultimedia() {
     const [formData, setFormData] = useState(INITIAL_FORM_STATE);
     const [isUploading, setIsUploading] = useState(false);
-    
-    // 💥 ESTADO NUEVO: Para guardar la lista de plataformas de la API 💥
     const [listaPlataformas, setListaPlataformas] = useState([]);
 
-    // 💥 EFECTO NUEVO: Cargar plataformas al iniciar el componente 💥
+    // Cargar plataformas al inicio
     useEffect(() => {
         const cargarPlataformas = async () => {
             try {
@@ -33,12 +30,10 @@ export default function SubidaMultimedia() {
                 setListaPlataformas(response.data);
             } catch (error) {
                 console.error("Error al cargar plataformas:", error);
-                // Opcional: Mostrar un mensaje de error al usuario
             }
         };
         cargarPlataformas();
     }, []);
-
 
     const handleChange = (name, value) => {
         setFormData(prev => ({
@@ -69,22 +64,59 @@ export default function SubidaMultimedia() {
         }));
     };
 
+    // --- LÓGICA DE ENVÍO AL BACKEND ---
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsUploading(true);
-        console.log('Datos a subir:', formData);
-        
-        // TODO: Aquí iría la lógica real de subida del programa
-        // Usando los datos de formData, incluyendo el ID de la plataforma (lugarTransmision)
-        
+
         try {
-            await new Promise(resolve => setTimeout(resolve, 2000)); 
+            // 1. Validaciones básicas
+            if (!formData.lugarTransmision) {
+                alert("Por favor seleccione una plataforma de transmisión.");
+                setIsUploading(false);
+                return;
+            }
+
+            // 2. Mapeo de datos para tu DTO 'Programa' en Java
+            // Tu backend espera hora formato "HH:mm:ss" (String) o Array.
+            // Al enviarlo como string "HH:mm:00" suele ser más seguro para LocalTime.
+            const programaPayload = {
+                nombre: formData.tituloPrograma,
+                categoria: formData.categoria, // Enviamos la categoría
+                
+                // Añadimos segundos :00 para cumplir formato LocalTime
+                horaInicio: formData.horaEmision ? `${formData.horaEmision}:00` : null,
+                horaFin: formData.horaFinalizacion ? `${formData.horaFinalizacion}:00` : null,
+                
+                idPlataforma: parseInt(formData.lugarTransmision),
+                estadoAprobacion: "Pendiente", // Valor por defecto seguro
+                
+                // Simulamos rutas ya que es un JSON body
+                rutaArchivo: formData.archivo ? `/uploads/${formData.archivo.name}` : "N/A",
+                formatoArchivo: formData.archivo ? formData.archivo.name.split('.').pop().toUpperCase() : "N/A",
+                
+                rutaInforme: formData.informe ? `/informes/${formData.informe.name}` : null,
+                formatoInforme: formData.informe ? formData.informe.name.split('.').pop().toUpperCase() : null
+            };
+
+            console.log("Enviando al backend:", programaPayload);
+
+            // 3. Llamada POST al Controller de Programas
+            const response = await axios.post('http://localhost:8080/api/programas', programaPayload);
             
-            alert('Programa subido exitosamente!');
-            setFormData(INITIAL_FORM_STATE); 
+            // 4. Manejo de respuesta (Tu backend devuelve un String con el mensaje)
+            const mensaje = response.data;
+            
+            if (typeof mensaje === 'string' && (mensaje.includes("éxito") || mensaje.includes("Exito"))) {
+                alert('¡Programa creado exitosamente!');
+                setFormData(INITIAL_FORM_STATE); // Limpiar formulario
+            } else {
+                alert('El servidor respondió: ' + mensaje);
+            }
+
         } catch (error) {
-            console.error('Error durante la subida:', error);
-            alert('Error al subir el programa.');
+            console.error('Error durante la creación:', error);
+            alert('Ocurrió un error al conectar con el servidor.');
         } finally {
             setIsUploading(false);
         }
@@ -96,6 +128,7 @@ export default function SubidaMultimedia() {
                 
                 <CargaArchivos handleChange={handleChange} formData={formData} />
                 
+                {/* Sección de Datos Básicos */}
                 <div className="titulo-programa-box">
                     <label htmlFor="tituloPrograma">Título del programa</label>
                     <input 
@@ -109,14 +142,33 @@ export default function SubidaMultimedia() {
                     />
                 </div>
 
-                {/* 💥 PASO LA LISTA DE PLATAFORMAS COMO PROP 💥 */}
+                {/* 💥 NUEVO CAMPO: CATEGORÍA (Requerido por DB) 💥 */}
+                <div className="titulo-programa-box" style={{ marginTop: '1rem' }}>
+                    <label htmlFor="categoria">Categoría</label>
+                    <select 
+                        id="categoria"
+                        name="categoria"
+                        value={formData.categoria}
+                        onChange={(e) => handleChange(e.target.name, e.target.value)}
+                        required
+                        style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc' }}
+                    >
+                        <option value="" disabled>Seleccione una categoría</option>
+                        <option value="NOTICIERO">Noticiero</option>
+                        <option value="DEPORTES">Deportes</option>
+                        <option value="ENTRETENIMIENTO">Entretenimiento</option>
+                        <option value="CULTURA">Cultura</option>
+                        <option value="SERIE">Serie / Ficción</option>
+                    </select>
+                </div>
+
                 <DetallesEmision 
                     formData={formData} 
                     handleChange={handleChange} 
                     handleDateChange={handleDateChange} 
                     addFecha={addFecha} 
                     removeFecha={removeFecha} 
-                    listaPlataformas={listaPlataformas} // <--- AQUÍ
+                    listaPlataformas={listaPlataformas}
                 />
 
                 <button 
@@ -124,7 +176,7 @@ export default function SubidaMultimedia() {
                     className="btn-subir-programa"
                     disabled={isUploading} 
                 >
-                    {isUploading ? 'Subiendo...' : 'Subir Programa'}
+                    {isUploading ? 'Guardando...' : 'Crear Programa'}
                 </button>
             </form>
         </div>
