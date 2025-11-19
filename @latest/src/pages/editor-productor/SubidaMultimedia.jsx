@@ -92,11 +92,10 @@ export default function SubidaMultimedia() {
                 estadoAprobacion: "Pendiente", // Valor por defecto seguro
                 
                 // Simulamos rutas ya que es un JSON body
-                rutaArchivo: formData.archivo ? `/uploads/${formData.archivo.name}` : "N/A",
+                rutaArchivo: formData.archivo ? `/programas/${formData.archivo.name}` : "N/A",
                 formatoArchivo: formData.archivo ? formData.archivo.name.split('.').pop().toUpperCase() : "N/A",
                 
-                rutaInforme: formData.informe ? `/informes/${formData.informe.name}` : null,
-                formatoInforme: formData.informe ? formData.informe.name.split('.').pop().toUpperCase() : null
+                rutaInforme: formData.informe ? `/informes/${formData.informe.name}` : null, // O crea una carpeta '/informes' en public                formatoInforme: formData.informe ? formData.informe.name.split('.').pop().toUpperCase() : null
             };
 
             console.log("Enviando al backend:", programaPayload);
