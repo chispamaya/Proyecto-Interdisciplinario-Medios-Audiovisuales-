@@ -125,7 +125,6 @@ public class ProgramaService {
 
         // Paso 3: Recorremos la lista de DÍAS (la parrilla)
         for (Dia dia : todosLosDias) {
-            
             Programa programa = mapaProgramas.get(dia.getIdPrograma());
             if (programa == null) continue; 
 
@@ -133,7 +132,7 @@ public class ProgramaService {
             String nombreProponente = mapaUsuarios.get(idProponente);
             
             AprobacionDTO dto = new AprobacionDTO();
-            
+            dto.setIdPrograma(programa.getId());
             // Llenamos el DTO con los datos que pide la pantalla
             dto.setIdDia(dia.getId());
             dto.setFechaEmision(dia.getDia()); 
