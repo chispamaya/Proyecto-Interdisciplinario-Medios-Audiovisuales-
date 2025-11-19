@@ -9,7 +9,8 @@ export default function DetallesEmision({
     handleChange, 
     handleDateChange, 
     addFecha, 
-    removeFecha 
+    removeFecha,
+    listaPlataformas // 💥 Recibimos la nueva prop 💥 
 }) {
 
     const handleInputChange = (e) => {
@@ -77,23 +78,33 @@ export default function DetallesEmision({
             {/* <button type="button" onClick={addFecha}>Agregar Fecha</button> */} 
 
             {/* LUGAR DE TRANSMISIÓN */}
-            <div className="card-detalle lugar-transmision-card">
-                <h3>¿Donde se va a transmitir?</h3>
-                <div className="input-detalle">
-                    <Globe size={20} />
-                    <select
-                        name="lugarTransmision"
-                        value={formData.lugarTransmision}
-                        onChange={handleInputChange}
-                        required
-                    >
-                        <option value="" disabled>Seleccione lugar</option>
-                        <option value="canal1">Canal 1</option>
-                        <option value="canal2">Canal 2</option>
-                        <option value="web">Web Streaming</option>
-                    </select>
-                </div>
+            <div className="form-group">
+                <label htmlFor="lugarTransmision">Lugar de Transmisión</label>
+                
+                {/* 💥 Usamos un SELECT en lugar de INPUT TEXT 💥 */}
+                <select
+                    id="lugarTransmision"
+                    name="lugarTransmision"
+                    value={formData.lugarTransmision}
+                    onChange={(e) => handleChange(e.target.name, e.target.value)}
+                    required
+                    className="input-form" // Asegurate de usar tu clase de estilo
+                >
+                    <option value="" disabled>Seleccione una plataforma</option>
+                    
+                    {listaPlataformas.length > 0 ? (
+                        listaPlataformas.map((plataforma) => (
+                            <option key={plataforma.id} value={plataforma.id}>
+                                {/* Mostramos Nombre y Tipo para más claridad */}
+                                {plataforma.nombre} ({plataforma.tipo})
+                            </option>
+                        ))
+                    ) : (
+                        <option value="" disabled>Cargando plataformas...</option>
+                    )}
+                </select>
             </div>
+            
 
         </div>
     );
