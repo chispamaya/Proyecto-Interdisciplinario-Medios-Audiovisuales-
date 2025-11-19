@@ -1,10 +1,8 @@
-// src/pages/espectador/Registro.jsx (CORREGIDO)
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import '../../styles/pages/registro.css'; 
 import logo from '../../assets/logo.png';
-import InputIcono from '../../components/ui/InputIcono.jsx'; // 💥 RUTA CORREGIDA
+import InputIcono from '../../components/ui/InputIcono.jsx';
 
 export default function Registro() {
     const [nombre, setNombre] = useState('');
@@ -12,14 +10,46 @@ export default function Registro() {
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
-    const handleRegistro = (e) => {
+    const handleRegistro = async (e) => {
         e.preventDefault();
-        // Lógica de registro...
-        console.log("Registrando usuario:", nombre, email, password);
+        
+        // Objeto que espera el Backend (Usuario.java)
+        const nuevoUsuario = {
+            nombre: nombre,
+            email: email,
+            contrasenia: password, // En Java se llama 'contrasenia'
+            idRol: 12 // ID del Rol Espectador según tu DB.sql
+        };
 
-        // Simulación de registro exitoso
-        alert("¡Registro exitoso! Ahora inicia sesión.");
-        navigate('/login-espectador'); // Lo mandamos al nuevo login de espectador
+        try {
+            const response = await fetch('http://localhost:8080/api/usuarios', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json',
+                },
+                body: JSON.stringify(nuevoUsuario)
+            });
+
+            // Tu backend devuelve un String plano (mensaje), no un JSON complejo
+            const mensaje = await response.text();
+
+            if (response.ok) {
+                if (mensaje.startsWith("Error")) {
+                    // Si el backend devuelve un mensaje de error controlado (ej: email duplicado)
+                    alert(mensaje);
+                } else {
+                    // Éxito
+                    alert("¡Registro exitoso! Ahora inicia sesión.");
+                    navigate('/login-espectador'); 
+                }
+            } else {
+                alert("Hubo un error en el servidor.");
+            }
+
+        } catch (error) {
+            console.error("Error de conexión:", error);
+            alert("No se pudo conectar con el servidor.");
+        }
     };
 
     return (

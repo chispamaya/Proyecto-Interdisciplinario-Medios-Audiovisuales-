@@ -1,103 +1,242 @@
 /* =================================================
-   --- PALETA DE COLORES Y VARIABLES GLOBALES ---
+   --- 1. VARIABLES GLOBALES Y PALETA ---
    ================================================= */
-   :root {
-    /* Colores base (tomados del layout) */
+:root {
+    /* Colores de Fondo y Estructura */
     --espectador-bg: #333;
-    --espectador-header-accent: #00AFFF;
-    --espectador-header-accent-hover: #008fcc;
-    
-    /* Colores de UI (nuevos) */
+    /* Fondo general gris oscuro */
     --espectador-card-bg: #222;
+    /* Fondo de tarjetas (más oscuro) */
     --espectador-border: #444;
+    /* Bordes sutiles */
+    --header-bg-color: #14213d;
+    /* Azul oscuro del header */
+
+    /* Colores de Texto */
     --espectador-text-primary: #f5f5f5;
     --espectador-text-secondary: #aaa;
+
+    /* Colores de Acción / Marca */
+    --espectador-header-accent: #00AFFF;
+    /* Azul brillante (Login/Acción) */
+    --espectador-header-accent-hover: #008fcc;
     --espectador-live-red: #e53935;
-    --espectador-like-blue: #3498db; /* Azul para Like */
-    --espectador-dislike-red: #e74c3c; /* Rojo para Dislike */
+    /* Rojo (En Vivo / Logout) */
+
+    /* Colores de Reacciones */
+    --espectador-like-blue: #3498db;
+    --espectador-dislike-red: #e74c3c;
 
     /* Tipografía */
-    --font-primary: 'Inter', sans-serif;
+    --font-primary: 'Inter', system-ui, -apple-system, sans-serif;
 }
 
 /* =================================================
-   --- PÁGINA "EN VIVO" ---
+   --- 2. HEADER ESPECTADOR (INTEGRADO) ---
+   ================================================= */
+/* El contenedor del header */
+.espectador-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    background-color: var(--header-bg-color);
+    padding: 10px 20px;
+    width: 100%;
+    height: 70px;
+    box-sizing: border-box;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+
+    /* NO intrusivo: fluye con la página */
+    position: relative;
+    z-index: 100;
+}
+
+/* Secciones (Izquierda, Centro, Derecha) */
+.header-left,
+.header-center,
+.header-right {
+    flex: 1;
+    display: flex;
+    align-items: center;
+}
+
+.header-center {
+    justify-content: center;
+}
+
+.header-right {
+    justify-content: flex-end;
+}
+
+/* Logo */
+.header-logo {
+    height: 45px;
+    width: auto;
+    object-fit: contain;
+}
+
+/* Botones de Autenticación (Iniciar / Cerrar Sesión) */
+.btn-auth-espectador {
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 600;
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.2s, background-color 0.2s;
+    cursor: pointer;
+    border: none;
+    color: white;
+    font-family: var(--font-primary);
+}
+
+.btn-auth-espectador:hover {
+    transform: scale(1.05);
+}
+
+/* Estilo LOGIN (Azul) */
+.btn-auth-espectador.login {
+    background-color: var(--espectador-header-accent);
+}
+
+.btn-auth-espectador.login:hover {
+    background-color: var(--espectador-header-accent-hover);
+}
+
+/* Estilo LOGOUT (Gris oscuro / Rojo al hover opcional) */
+.btn-auth-espectador.logout {
+    background-color: #2a2a2a;
+    border: 1px solid #555;
+}
+
+.btn-auth-espectador.logout:hover {
+    background-color: #444;
+}
+
+/* Botón de Navegación "¡Ver En Vivo!" (En el header) */
+.btn-live-nav {
+    background-color: var(--espectador-live-red);
+    color: white;
+    padding: 8px 16px;
+    border-radius: 20px;
+    font-weight: 700;
+    text-decoration: none;
+    font-size: 0.9rem;
+    display: inline-flex;
+    align-items: center;
+    gap: 8px;
+    transition: transform 0.2s;
+}
+
+.btn-live-nav:hover {
+    transform: scale(1.05);
+    box-shadow: 0 0 10px rgba(229, 57, 53, 0.4);
+}
+
+.live-dot {
+    width: 8px;
+    height: 8px;
+    background-color: white;
+    border-radius: 50%;
+    display: inline-block;
+    animation: pulse 1.5s infinite;
+}
+
+
+/* =================================================
+   --- 3. PÁGINA "EN VIVO" (VIDEO) ---
    ================================================= */
 
 .envivo-main-content {
     padding: 2rem;
     width: 100%;
     box-sizing: border-box;
-    max-width: 1400px;
+    max-width: 1200px;
+    /* Ancho máximo contenido */
     margin: 0 auto;
 }
 
-/* ESTILOS PARA EL ÁREA DEL TÍTULO Y BOTÓN "IR A ENCUESTAS" */
+/* Título y Botones Superiores */
 .envivo-header-area {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    margin-bottom: 1rem; 
-}
-
-.envivo-header-area .envivo-title {
-    margin: 0; 
+    margin-bottom: 1.5rem;
 }
 
 .envivo-title {
-    font-size: 1.2rem;
+    font-size: 1.4rem;
     color: var(--espectador-live-red);
-    font-weight: 700;
+    font-weight: 800;
     text-transform: uppercase;
-    text-align: left;
-    margin: 0 0 1rem 0;
+    margin: 0;
     display: flex;
     align-items: center;
-    text-shadow: 0 0 10px rgba(229, 57, 53, 0.5);
+    text-shadow: 0 0 15px rgba(229, 57, 53, 0.3);
 }
 
 .envivo-title::before {
     content: '•';
     font-size: 2.5rem;
-    line-height: 1rem;
+    line-height: 0.5;
+    /* Ajuste vertical del punto */
     margin-right: 0.5rem;
     color: var(--espectador-live-red);
     animation: pulse 1.5s infinite;
 }
 
 @keyframes pulse {
-    0% { opacity: 1; }
-    50% { opacity: 0.3; }
-    100% { opacity: 1; }
+    0% {
+        opacity: 1;
+        transform: scale(1);
+    }
+
+    50% {
+        opacity: 0.5;
+        transform: scale(0.9);
+    }
+
+    100% {
+        opacity: 1;
+        transform: scale(1);
+    }
 }
 
-.envivo-container-white {
-    background-color: transparent;
-    color: inherit;
-    border-radius: 0;
-    padding: 0;
-    width: 100%;
-    max-width: 100%;
-    box-shadow: none;
-    background-image: none;
-    position: static;
-}
-.envivo-container-white::before {
-    content: none;
+/* Botón Genérico para ir a encuestas desde el video */
+.btn-encuestas-vivo {
+    display: inline-flex;
+    align-items: center;
+    padding: 0.6rem 1.2rem;
+    font-size: 0.9rem;
+    font-weight: bold;
+    color: #ffffff;
+    background-color: var(--espectador-header-accent);
+    border: none;
+    border-radius: 20px;
+    text-decoration: none;
+    cursor: pointer;
+    transition: background-color 0.2s;
 }
 
+.btn-encuestas-vivo:hover {
+    background-color: var(--espectador-header-accent-hover);
+}
+
+/* Contenedor del Video (Responsive 16:9) */
 .envivo-video-wrapper {
     position: relative;
-    padding-top: 56.25%; 
+    padding-bottom: 56.25%;
+    /* Aspect Ratio 16:9 */
+    padding-top: 0;
     height: 0;
     overflow: hidden;
     border-radius: 12px;
-    width: 100%; 
-    max-width: 100%; 
-    margin: 0; 
-    border: 2px solid var(--espectador-border); 
+    width: 100%;
     background-color: #000;
-    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.4);
+    box-shadow: 0 15px 40px rgba(0, 0, 0, 0.5);
+    border: 1px solid var(--espectador-border);
 }
 
 .envivo-iframe {
@@ -109,554 +248,396 @@
     border: 0;
 }
 
-/* ESTILOS PARA EL BOTÓN "IR A ENCUESTAS" (EN PÁGINA "EN VIVO") */
-.btn-encuestas-vivo {
-    display: inline-block;
-    padding: 0.6rem 1.2rem;
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: #ffffff;
-    background-color: var(--espectador-header-accent, #00AFFF); 
-    border: none;
-    border-radius: 20px; 
-    text-decoration: none;
-    text-align: center;
-    cursor: pointer;
-    transition: background-color 0.3s ease;
-    white-space: nowrap; 
-}
-
-.btn-encuestas-vivo:hover {
-    background-color: var(--espectador-header-accent-hover, #008fcc);
-}
-
 
 /* =================================================
-   --- ESTILOS PARA EL BOTÓN "¡VER EN VIVO!" (EN PÁGINA "ENCUESTAS") ---
+   --- 4. FEED DE ENCUESTAS Y POSTS ---
    ================================================= */
 
-/* Header de la página de Encuestas */
-.encuestas-header-area {
-    display: flex;
-    justify-content: flex-end; /* Alinea el botón a la derecha */
-    align-items: center;
-    margin-bottom: 1rem;
-    width: 100%;
-    max-width: 700px; /* Mismo ancho que el feed */
-    margin: 0 auto 1rem auto; /* Centrado */
-}
-
-/* Botón para volver a "En Vivo" */
-.btn-ver-en-vivo {
-    display: inline-flex; /* Para alinear el puntito y el texto */
-    align-items: center;
-    gap: 0.5rem;
-    padding: 0.6rem 1.2rem;
-    font-size: 0.9rem;
-    font-weight: bold;
-    color: #ffffff;
-    background-color: var(--espectador-live-red, #e53935);
-    border: none;
-    border-radius: 20px;
-    text-decoration: none;
-    cursor: pointer;
-    transition: all 0.3s ease;
-}
-
-.btn-ver-en-vivo:hover {
-    opacity: 0.8;
-    box-shadow: 0 0 15px rgba(229, 57, 53, 0.5);
-}
-
-/* Puntito rojo que parpadea */
-.btn-ver-en-vivo .live-dot-pulse {
-    width: 10px;
-    height: 10px;
-    background-color: #fff;
-    border-radius: 50%;
-    animation: pulse 1.5s infinite;
-}
-
-
-/* =================================================
-   --- PÁGINA "FORO / ENCUESTAS" (ESTILO "X") ---
-   ================================================= */
-
-/* --- Contenedor Principal (El Feed) --- */
 .encuestas-feed-container {
     width: 100%;
-    max-width: 700px; /* Ancho típico de un feed */
+    max-width: 700px;
+    /* Ancho tipo timeline red social */
     margin: 0 auto;
-    padding: 0 1rem 2rem 1rem; /* Ajustado */
+    padding-bottom: 3rem;
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 1.5rem;
+    /* Espacio entre posts */
 }
 
-/* --- Tarjeta de Post (Estilo Tweet) --- */
+/* Tarjeta de Post */
 .post-card {
     background-color: var(--espectador-card-bg);
     border: 1px solid var(--espectador-border);
     border-radius: 12px;
-    padding: 1.25rem;
+    padding: 1.5rem;
     display: flex;
     flex-direction: column;
     gap: 1rem;
+    transition: border-color 0.2s;
 }
 
-/* --- Header del Post --- */
+.post-card:hover {
+    border-color: #555;
+}
+
+/* Cabecera del Post (Usuario) */
 .post-header {
     display: flex;
-    align-items: flex-start;
+    align-items: center;
     gap: 0.75rem;
 }
-.post-avatar {
-    width: 48px;
-    height: 48px;
-    border-radius: 50%;
-    object-fit: cover;
-    border: 1px solid var(--espectador-border);
-}
+
 .post-user-info {
     display: flex;
     flex-direction: column;
     line-height: 1.3;
 }
+
 .post-user-info strong {
-    font-size: 1rem;
+    font-size: 1.05rem;
     color: var(--espectador-text-primary);
 }
+
 .post-user-info span {
     font-size: 0.9rem;
     color: var(--espectador-text-secondary);
 }
 
-/* --- Cuerpo del Post --- */
+/* Cuerpo del Post */
 .post-body {
-    padding-left: calc(48px + 0.75rem); /* Alinea con el header */
-    margin-top: -1rem; /* Sube un poco para pegarse */
     display: flex;
     flex-direction: column;
-    gap: 1rem;
+    gap: 0.8rem;
 }
 
-/* --- ESTILO PARA TÍTULO DE ENCUESTA --- */
 .post-titulo-encuesta {
-    font-size: 1.25rem;
+    font-size: 1.2rem;
     font-weight: 700;
     color: var(--espectador-text-primary);
     margin: 0;
-    padding: 0;
-    line-height: 1.3;
 }
 
 .post-text {
     font-size: 1rem;
     color: var(--espectador-text-primary);
     line-height: 1.5;
-    white-space: pre-wrap; /* Respeta saltos de línea y espacios */
-    margin-top: 0.25rem; 
+    white-space: pre-wrap;
 }
 
 .post-main-image {
     width: 100%;
-    border-radius: 12px;
+    border-radius: 8px;
     border: 1px solid var(--espectador-border);
     object-fit: cover;
-    max-height: 400px;
-    margin-top: 0.5rem; /* Espacio si hay texto arriba */
+    max-height: 450px;
+    margin-top: 0.5rem;
 }
 
-/* --- Barra de Rating (Like/Dislike) --- */
-.rating-bar {
+/* Footer (Likes/Dislikes) */
+.post-footer {
     display: flex;
+    justify-content: flex-end;
     align-items: center;
-    gap: 0.5rem;
-    width: 100%;
+    padding-top: 1rem;
+    border-top: 1px solid var(--espectador-border);
+    margin-top: 0.5rem;
+    gap: 12px;
 }
-.rating-progress-bar {
-    flex-grow: 1;
-    height: 10px;
-    background-color: var(--espectador-dislike-red);
-    border-radius: 5px;
-    overflow: hidden;
-}
-.rating-progress-bar .progress {
-    height: 100%;
-    background-color: var(--espectador-like-blue);
-    border-radius: 5px;
-    transition: width 0.5s ease;
-}
-.rating-btn {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: none;
-    border: none;
-    font-size: 0.9rem;
-    font-weight: 600;
+
+/* Botones de Reacción */
+.reaction-btn {
+    background-color: rgba(255, 255, 255, 0.05);
+    border: 1px solid var(--espectador-border);
+    border-radius: 20px;
+    padding: 6px 12px;
+    font-size: 0.95rem;
+    color: var(--espectador-text-secondary);
     cursor: pointer;
-    transition: color 0.2s;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    min-width: 40px;
+    /* Para que no queden muy chicos */
 }
-.rating-btn.like {
+
+.reaction-btn:hover {
+    background-color: rgba(255, 255, 255, 0.1);
+    transform: translateY(-2px);
+}
+
+.reaction-btn.liked {
+    background-color: rgba(52, 152, 219, 0.15);
+    border-color: var(--espectador-like-blue);
     color: var(--espectador-like-blue);
 }
-.rating-btn.dislike {
+
+.reaction-btn.disliked {
+    background-color: rgba(231, 76, 60, 0.15);
+    border-color: var(--espectador-dislike-red);
     color: var(--espectador-dislike-red);
-}
-.rating-btn:hover {
-    opacity: 0.8;
 }
 
 
 /* =================================================
-   --- 👇 ENCUESTA (ESTILO X - AHORA MÁS PIOLA) 👇 ---
+   --- 5. ESTILOS DE ENCUESTA (OPCIONES) ---
    ================================================= */
 .poll-form-x {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    width: 100%;
 }
+
 .poll-options-list-x {
     display: flex;
     flex-direction: column;
-    gap: 0.75rem;
+    gap: 0.8rem;
 }
 
-/* El contenedor de la opción (label) */
 .poll-option-x {
     display: flex;
     align-items: center;
-    gap: 0.75rem; /* Espacio entre el círculo y el texto */
+    gap: 1rem;
     border: 2px solid var(--espectador-border);
     border-radius: 8px;
-    padding: 0.8rem 1rem;
+    padding: 10px 15px;
     cursor: pointer;
-    position: relative;
-    
-    /* --- CAMBIO DEFINITIVO: MATAR ANIMACIÓN --- */
-    transition: none !important;
-    animation: none !important;
+    transition: background-color 0.2s, border-color 0.2s;
+    background-color: transparent;
 }
 
-/* --- CAMBIO RADICAL: Efecto hover ELIMINADO --- */
 .poll-option-x:hover {
-    /* NADA. CERO EFECTO. NI SALTO, NI COLOR, NI NADA. */
+    background-color: rgba(255, 255, 255, 0.02);
+    border-color: #666;
 }
 
-/* El input original se oculta */
+.poll-option-x.selected {
+    border-color: var(--espectador-header-accent);
+    background-color: rgba(0, 175, 255, 0.08);
+}
+
 .poll-option-x input[type="radio"] {
-    display: none; 
+    display: none;
 }
 
-/* El nuevo círculo custom */
+/* Radio Button Customizado */
 .custom-radio {
     width: 20px;
     height: 20px;
     border: 2px solid var(--espectador-text-secondary);
     border-radius: 50%;
-    background-color: var(--espectador-card-bg);
-    transition: all 0.2s;
-    flex-shrink: 0; /* No se achica */
+    background-color: transparent;
     position: relative;
+    flex-shrink: 0;
+    transition: border-color 0.2s;
 }
 
-/* El texto de la opción */
-.poll-option-text-x {
-    font-size: 1rem;
-    font-weight: 500;
-    color: var(--espectador-text-primary);
-    transition: all 0.2s;
-}
-
-/* --- ESTADO SELECCIONADO --- */
-/* (La transición acá SÍ se queda, para que el click sea suave) */
-
-/* Cuando el label tiene la clase .selected (via JS) */
-.poll-option-x.selected {
-    border-color: var(--espectador-header-accent, #00AFFF);
-    background-color: rgba(0, 175, 255, 0.05); /* Un brillo sutil */
-}
-
-/* El círculo cambia de color */
 .poll-option-x.selected .custom-radio {
-    border-color: var(--espectador-header-accent, #00AFFF);
-    background-color: var(--espectador-header-accent, #00AFFF);
+    border-color: var(--espectador-header-accent);
 }
 
-/* El puntito de adentro aparece */
 .poll-option-x.selected .custom-radio::after {
     content: '';
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    width: 8px;
-    height: 8px;
-    background-color: var(--espectador-card-bg); /* Color del fondo de la tarjeta */
+    width: 10px;
+    height: 10px;
+    background-color: var(--espectador-header-accent);
     border-radius: 50%;
 }
 
-/* El texto cambia de color */
+.poll-option-text-x {
+    font-size: 1rem;
+    color: var(--espectador-text-primary);
+    font-weight: 500;
+}
+
 .poll-option-x.selected .poll-option-text-x {
-    font-weight: 700; 
-    color: var(--espectador-header-accent, #00AFFF);
-}
-
-/* Botón de votar (con hover) */
-.poll-submit-btn-x {
-    background: var(--espectador-header-accent);
-    color: white;
-    padding: 0.75rem 1rem;
-    border: none;
-    border-radius: 20px;
     font-weight: 700;
-    cursor: pointer;
-    transition: all 0.2s;
-    width: 100px; /* Botón más chico */
-    align-self: flex-start;
-}
-.poll-submit-btn-x:hover {
-    background: var(--espectador-header-accent-hover);
+    color: var(--espectador-header-accent);
 }
 
-/* --- Footer del Post (Acciones) --- */
-.post-footer {
-    display: flex;
-    justify-content: flex-end; 
-    padding-top: 0.75rem;
-    border-top: 1px solid var(--espectador-border);
-    margin-left: calc(48px + 0.75rem); /* Alinea con el cuerpo */
-}
-.footer-icon {
-    display: flex;
-    align-items: center;
-    gap: 0.5rem;
-    background: none;
-    border: none;
-    color: var(--espectador-text-secondary);
-    font-size: 0.85rem;
-    cursor: pointer;
-    transition: color 0.2s;
-}
-.footer-icon:hover {
-    color: var(--espectador-header-accent); /* Se pone azul al pasar */
-}
-
-/* ELIMINAMOS TODOS LOS ESTILOS .new-post-* */
 
 /* =================================================
-   --- ESTILOS PARA LOS TAGS (#) ---
+   --- 6. TAGS (#) ---
    ================================================= */
-
 .post-tags-container {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.5rem;
-  margin-top: 1rem; /* Espacio después de la encuesta/texto */
-  padding-left: calc(48px + 0.75rem); 
+    display: flex;
+    flex-wrap: wrap;
+    gap: 0.6rem;
+    margin-top: 0.5rem;
 }
 
 .post-tag {
-  padding: 0.25rem 0.75rem;
-  background-color: var(--espectador-header-accent-hover, #008fcc); 
-  color: var(--espectador-text-primary, #f5f5f5);
-  border-radius: 20px; /* Bien redondeado */
-  font-size: 0.8rem;
-  font-weight: 600;
-  cursor: pointer;
-  transition: background-color 0.2s;
+    padding: 4px 12px;
+    background-color: rgba(0, 175, 255, 0.15);
+    /* Azul transparente */
+    color: var(--espectador-header-accent);
+    border-radius: 15px;
+    font-size: 0.85rem;
+    font-weight: 600;
+    border: 1px solid transparent;
 }
 
 .post-tag:hover {
-  background-color: var(--espectador-header-accent, #00AFFF);
+    border-color: var(--espectador-header-accent);
 }
+
 
 /* =================================================
-   --- RESPONSIVE DESIGN (PARA EL FEED) ---
+   --- 7. HTTP CATS & PANTALLAS DE ERROR ---
    ================================================= */
-@media (max-width: 768px) {
-    .envivo-main-content {
-        padding: 1.5rem;
-    }
-    .encuestas-feed-container {
-        padding: 1.5rem 0.5rem;
-    }
-    
-    .btn-encuestas-vivo, .btn-ver-en-vivo {
-        padding: 0.5rem 1rem;
-        font-size: 0.8rem;
-    }
-
-    .encuestas-header-area {
-        padding: 0 1.5rem; /* Alinear con el padding del main */
-        max-width: 100%;
-        margin-bottom: 1rem;
-    }
+.error-container {
+    text-align: center;
+    padding: 3rem 1rem;
+    color: var(--espectador-text-primary);
 }
 
-@media (max-width: 480px) {
-    .envivo-main-content {
-        padding: 1rem;
-    }
-    
-    .envivo-header-area {
-        flex-direction: column;
-        align-items: flex-start; /* Todo a la izquierda */
-        gap: 1rem; /* Espacio entre título y botón */
-    }
-
-    .envivo-title {
-        font-size: 1rem;
-    }
-    
-    .encuestas-feed-container {
-        padding: 1rem 0;
-    }
-    
-    .encuestas-header-area {
-        padding: 0 1rem; /* Alinear con el padding del main */
-        margin-bottom: 1rem;
-    }
-
-    .post-card {
-        padding: 1rem;
-        border-radius: 0; /* Ocupa todo el ancho en móvil */
-        border-left: 0;
-        border-right: 0;
-    }
-    .post-avatar {
-        width: 40px;
-        height: 40px;
-    }
-    .post-body, .post-footer, .post-tags-container {
-        padding-left: 0;
-        margin-left: 0;
-    }
-    
-    .post-titulo-encuesta {
-        font-size: 1.1rem;
-    }
-
-    .post-text, .poll-option-text-x {
-        font-size: 0.95rem;
-    }
-    .footer-icon span {
-        display: none; /* Oculta contadores en móvil */
-    }
-    .post-footer {
-        padding-top: 0.5rem;
-    }
+.error-container h2 {
+    margin-bottom: 1rem;
+    color: var(--espectador-live-red);
 }
 
-/* =======================================
-   AÑADIR ESTO AL FINAL DE EnVivo.css
-   ======================================= */
-
-/* --- PARCHE PARA BUG DE ANIMACIÓN HOVER (CORREGIDO) --- */
-.rating-btn,
-.poll-submit-btn-x,
-.footer-icon {
-    position: static;
-    overflow: visible;
-    animation: none !important; /* <-- ARREGLADO */
+.http-cat-img {
+    max-width: 100%;
+    width: 500px;
+    /* Tamaño controlado */
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    margin-top: 1.5rem;
+    border: 4px solid var(--espectador-card-bg);
 }
 
-.rating-btn::after,
-.poll-submit-btn-x::after,
-.footer-icon::after {
-    content: none !important;
+.loading-spinner {
+    text-align: center;
+    padding: 3rem;
+    color: var(--espectador-header-accent);
+    font-weight: bold;
+    font-size: 1.3rem;
+    animation: pulse 1s infinite;
 }
+
 
 /* =================================================
-   --- NUEVO: ESTILOS PARA EL MODAL DE LOGIN ---
+   --- 8. MODAL DE LOGIN (OVERLAY) ---
    ================================================= */
-
 .login-prompt-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  width: 100%;
-  height: 100%;
-  background: rgba(0, 0, 0, 0.7); /* Fondo oscuro semi-transparente */
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  backdrop-filter: blur(4px); /* Efecto borroso */
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+    backdrop-filter: blur(5px);
 }
 
 .login-prompt-box {
-  background: var(--espectador-card-bg, #222);
-  border: 1px solid var(--espectador-border, #444);
-  padding: 2rem;
-  border-radius: 12px;
-  text-align: center;
-  color: var(--espectador-text-primary, #f5f5f5);
-  width: 90%;
-  max-width: 400px;
-  position: relative;
-  box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    background: var(--espectador-card-bg);
+    border: 1px solid var(--espectador-border);
+    padding: 2.5rem;
+    border-radius: 16px;
+    text-align: center;
+    color: var(--espectador-text-primary);
+    width: 90%;
+    max-width: 400px;
+    box-shadow: 0 20px 50px rgba(0, 0, 0, 0.7);
 }
 
 .login-prompt-box p {
-  margin: 0; /* <- CAMBIO: Quitamos margen de abajo */
-  font-size: 1.1rem;
-  line-height: 1.5;
-  color: var(--espectador-text-secondary, #aaa);
+    font-size: 1.1rem;
+    margin-bottom: 2rem;
+    line-height: 1.6;
 }
 
-/* --- CAMBIO: 'X' ELIMINADA --- */
-.login-prompt-close {
-  /* NADA. ELIMINADA. */
-}
-
-/* --- NUEVO: Contenedor para los dos botones --- */
 .login-prompt-actions {
-  display: flex;
-  gap: 1rem;
-  width: 100%;
-  margin-top: 1.5rem; /* Espacio entre el texto y los botones */
+    display: flex;
+    gap: 1rem;
+    width: 100%;
 }
 
-/* --- NUEVO: Botón "Más Tarde" (SIN HOVER) --- */
-.login-prompt-btn-later {
-  background: var(--espectador-border, #444);
-  color: var(--espectador-text-primary, #f5f5f5);
-  border: none;
-  border-radius: 20px;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  width: 100%;
-  text-transform: capitalize;
-  transition: none !important; /* SIN ANIMACIÓN */
-  animation: none !important; /* SIN ANIMACIÓN */
-}
-.login-prompt-btn-later:hover {
-  /* NADA. SIN HOVER. */
-  background: var(--espectador-border, #444); /* Se queda igual */
-}
-
-
-/* --- CAMBIO: Botón "Iniciar Sesión" (SIN HOVER) --- */
+.login-prompt-btn-later,
 .login-prompt-btn-login {
-  background: var(--espectador-header-accent, #00AFFF);
-  color: white;
-  border: none;
-  border-radius: 20px;
-  padding: 0.75rem 1.5rem;
-  font-size: 1rem;
-  font-weight: 700;
-  cursor: pointer;
-  width: 100%;
-  text-transform: capitalize;
-  transition: none !important; /* SIN ANIMACIÓN */
-  animation: none !important; /* SIN ANIMACIÓN */
+    border: none;
+    border-radius: 25px;
+    padding: 0.8rem 0;
+    font-size: 1rem;
+    font-weight: 700;
+    cursor: pointer;
+    width: 100%;
+    transition: transform 0.2s;
 }
 
+.login-prompt-btn-later:hover,
 .login-prompt-btn-login:hover {
-  /* NADA. SIN HOVER. */
-  background: var(--espectador-header-accent, #00AFFF); /* Se queda igual */
+    transform: translateY(-2px);
+}
+
+.login-prompt-btn-later {
+    background: var(--espectador-border);
+    color: var(--espectador-text-primary);
+}
+
+.login-prompt-btn-login {
+    background: var(--espectador-header-accent);
+    color: white;
+}
+
+
+/* =================================================
+   --- 9. RESPONSIVE ---
+   ================================================= */
+@media (max-width: 768px) {
+    .envivo-main-content {
+        padding: 1.5rem 1rem;
+    }
+
+    .encuestas-feed-container {
+        padding: 0 0 2rem 0;
+    }
+
+    /* Ajuste header móvil */
+    .espectador-header {
+        padding: 10px 15px;
+    }
+
+    .header-logo {
+        height: 35px;
+    }
+
+    /* Ocultar textos largos de botones en header si es necesario */
+    .btn-auth-espectador span {
+        display: none;
+    }
+
+    /* Icono solo */
+}
+
+@media (max-width: 480px) {
+    .post-card {
+        padding: 1rem;
+        border-radius: 0;
+        /* Borde cuadrado en móvil para aprovechar espacio */
+        border-left: none;
+        border-right: none;
+    }
+
+    .envivo-title {
+        font-size: 1.1rem;
+    }
+
+    .btn-encuestas-vivo {
+        font-size: 0.8rem;
+        padding: 0.5rem 1rem;
+    }
+
+    .login-prompt-box {
+        padding: 1.5rem;
+    }
 }

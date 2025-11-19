@@ -1,139 +1,180 @@
-import React, { useState } from 'react';
-// 1. Importamos Link y AÑADIMOS useNavigate
-import { Link, useNavigate } from 'react-router-dom'; 
-import './EnVivo.css'; 
+import React, { useState, useEffect } from 'react';
+import { useNavigate } from 'react-router-dom';
+import { ThumbsUp, ThumbsDown } from 'lucide-react'; 
+import './EnVivo.css';
 
-// --- Componente PostCard ---
-// 2. Recibe 'isLoggedIn' como prop
-const PostCard = ({ post, isLoggedIn }) => {
-  const [selectedOption, setSelectedOption] = useState(null);
-  
-  // 3. Estado para mostrar el modal de inicio de sesión
+const AuthorInfo = ({ userId }) => {
+  const [nombre, setNombre] = useState("Usuario");
+  useEffect(() => {
+    if (!userId) return;
+    fetch(`http://localhost:8080/api/usuarios/${userId}`)
+      .then(res => res.ok ? res.json() : null)
+      .then(data => { if(data) setNombre(data.nombre || `Usuario ${userId}`); })
+      .catch(console.error);
+  }, [userId]);
+
+  return (
+    <div className="post-user-info">
+      <strong>{nombre}</strong>
+    </div>
+  );
+};
+
+const PostCard = ({ post, tagsMap }) => {
+  const [selectedOption, setSelectedOption] = useState(post.userVotedOptionId || null);
   const [showLoginPrompt, setShowLoginPrompt] = useState(false);
   const navigate = useNavigate();
 
-  // 4. Lógica de Votación (Actualizada con Auth)
-  const handleVote = (e) => {
-    e.preventDefault();
+  const initialReaction = post.userReaction === true ? 'like' : (post.userReaction === false ? 'dislike' : null);
+  const [userReaction, setUserReaction] = useState(initialReaction);
+  
+  const [likes, setLikes] = useState(0); 
+  const [dislikes, setDislikes] = useState(0);
+
+  const esEncuesta = post.tipo === 'ENCUESTA';
+  const esContenido = post.tipo === 'CONTENIDO';
+  const detalle = post.detalle || {};
+  const creadorId = esEncuesta ? detalle.idCreador : detalle.idUsuario;
+  const tagIds = detalle.tags || [];
+  const mediaUrl = detalle.rutaArchivo ? `http://localhost:8080${detalle.rutaArchivo}` : null;
+
+  const getAuthData = () => {
+    const userStr = localStorage.getItem('usuario');
+    return userStr ? JSON.parse(userStr) : null;
+  };
+
+  const handleVoteClick = async (idOpcion) => {
+    const user = getAuthData();
+    if (!user) { setShowLoginPrompt(true); return; }
+
+    const esMismaOpcion = selectedOption === idOpcion;
+    setSelectedOption(esMismaOpcion ? null : idOpcion);
     
-    // Si no está logueado, muestra el prompt y detiene
-    if (!isLoggedIn) {
-      setShowLoginPrompt(true);
-      return;
+    try {
+        await fetch(`http://localhost:8080/api/encuestas/votar?idUsuarioAuditoria=${user.id}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                idOpcion: idOpcion,
+                idUsuario: user.id,
+                idEncuesta: post.idReal
+            })
+        });
+    } catch (error) {
+        console.error("Error votando:", error);
+        setSelectedOption(selectedOption); 
     }
-    
-    if (selectedOption) {
-      console.log(`Votado por opción: ${selectedOption} en post: ${post.id}`);
+  };
+
+  const handleReaction = async (tipoClickeado) => {
+    const user = getAuthData();
+    if (!user) { setShowLoginPrompt(true); return; }
+
+    const idContenido = post.idReal;
+    let endpoint = "";
+    let body = {};
+
+    if (userReaction === tipoClickeado) {
+        if (tipoClickeado === 'like') setLikes(l => Math.max(0, l - 1));
+        else setDislikes(d => Math.max(0, d - 1));
+        setUserReaction(null);
+        
+        endpoint = "borrarValoracion";
+        body = { idContenido, idUsuario: user.id };
     } else {
-      console.log("No se seleccionó opción");
+        if (tipoClickeado === 'like') {
+            setLikes(l => l + 1);
+            if (userReaction === 'dislike') setDislikes(d => Math.max(0, d - 1));
+        } else {
+            setDislikes(d => d + 1);
+            if (userReaction === 'like') setLikes(l => Math.max(0, l - 1));
+        }
+        setUserReaction(tipoClickeado);
+
+        endpoint = "valorar";
+        body = { idContenido, idUsuario: user.id, esLike: (tipoClickeado === 'like') };
+    }
+
+    try {
+        await fetch(`http://localhost:8080/api/contenido/${endpoint}?idUsuarioAuditoria=${user.id}`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(body)
+        });
+    } catch (e) {
+        console.error("Error reacción:", e);
     }
   };
 
-  // 5. Función para redirigir al login
-  const handleGoToLogin = () => {
-    // Asumimos que la ruta de login del espectador es esta
-    navigate('/login-espectador'); 
-  };
-
+  const handleGoToLogin = () => navigate('/login-espectador');
 
   return (
     <div className="post-card">
       <div className="post-header">
-        <img src={post.avatar || "https://via.placeholder.com/48"} alt="avatar" className="post-avatar" />
-        <div className="post-user-info">
-          <strong>{post.user}</strong>
-          <span>@{post.username}</span>
-        </div>
+        <AuthorInfo userId={creadorId} />
       </div>
 
       <div className="post-body">
+        {esEncuesta && post.detalle.preguntar && <h3 className="post-titulo-encuesta">{post.detalle.preguntar}</h3>}
+        {detalle.texto && <p className="post-text">{detalle.texto}</p>}
         
-        {/* Título (Solo para Encuestas) */}
-        {post.tipo === 'encuesta' && post.titulo && (
-          <h3 className="post-titulo-encuesta">{post.titulo}</h3>
-        )}
-
-        {/* Texto (Para ambos, si existe) */}
-        {post.texto && (
-          <p className="post-text">{post.texto}</p>
-        )}
-
-        {/* Imagen (Solo para Mensajes) */}
-        {post.tipo === 'mensaje' && post.imageUrl && (
-          <img src={post.imageUrl} alt="Contenido" className="post-main-image" />
+        {mediaUrl && esContenido && (
+            <img src={mediaUrl} alt="Contenido" className="post-main-image" />
         )}
         
-        {/* Encuesta (Solo para Encuestas) */}
-        {post.tipo === 'encuesta' && (
-          <form className="poll-form-x" onSubmit={handleVote}>
+        {esEncuesta && post.opciones && (
+          <div className="poll-form-x">
             <div className="poll-options-list-x">
-              {post.options.map((option) => (
-                <label 
-                  key={option.id} 
-                  className={`poll-option-x ${selectedOption === option.id ? 'selected' : ''}`}
+              {post.opciones.map((opcion) => (
+                <div 
+                  key={opcion.idOpcion} 
+                  className={`poll-option-x ${selectedOption === opcion.idOpcion ? 'selected' : ''}`}
+                  onClick={() => handleVoteClick(opcion.idOpcion)}
                 >
-                  <input 
-                    type="radio" 
-                    name={`poll-${post.id}`} 
-                    value={option.id}
-                    onChange={() => setSelectedOption(option.id)}
-                    checked={selectedOption === option.id}
-                  />
-                  {/* Este es el círculo customizado */}
+                  <input type="radio" readOnly checked={selectedOption === opcion.idOpcion} />
                   <span className="custom-radio"></span> 
-                  
-                  <span className="poll-option-text-x">{option.text}</span>
-                </label>
+                  <span className="poll-option-text-x">{opcion.texto}</span>
+                </div>
               ))}
             </div>
-            <button 
-              type="submit" 
-              className="poll-submit-btn-x" 
-              disabled={!selectedOption}
-            >
-              Votar
-            </button>
-          </form>
-        )}
-
-        {/* Tags (SOLO PARA MENSAJES, si existen) */}
-        {post.tipo === 'mensaje' && post.tags && post.tags.length > 0 && (
-          <div className="post-tags-container">
-            {post.tags.map((tag, index) => (
-              <span key={index} className="post-tag">
-                {tag}
-              </span>
-            ))}
           </div>
         )}
 
+        {esContenido && tagIds.length > 0 && (
+            <div className="post-tags-container">
+                {tagIds.map((tagId, idx) => (
+                    <span key={idx} className="post-tag">#{tagsMap[Number(tagId)] || tagId}</span>
+                ))}
+            </div>
+        )}
       </div>
 
-      <div className="post-footer">
-        {/* Dejado vacío como en tu CSS */}
-      </div>
+      {esContenido && (
+        <div className="post-footer">
+          <button 
+            className={`reaction-btn ${userReaction === 'like' ? 'liked' : ''}`} 
+            onClick={() => handleReaction('like')}
+            title="Me gusta"
+          >
+              <ThumbsUp size={20} /> 
+          </button>
+          <button 
+            className={`reaction-btn ${userReaction === 'dislike' ? 'disliked' : ''}`} 
+            onClick={() => handleReaction('dislike')}
+            title="No me gusta"
+          >
+              <ThumbsDown size={20} />
+          </button>
+        </div>
+      )}
 
-      {/* 7. NUEVO: Modal de Inicio de Sesión (CON DOS BOTONES, SIN 'X') */}
       {showLoginPrompt && (
         <div className="login-prompt-overlay">
           <div className="login-prompt-box">
-            {/* 'X' ELIMINADA */}
-            <p>ups.. no has iniciado sesion ,inicia para disfrutar de todas las funciones del usuario</p>
-            
-            {/* NUEVO CONTENEDOR DE BOTONES */}
+            <p>Inicia sesión para interactuar.</p>
             <div className="login-prompt-actions">
-              <button 
-                className="login-prompt-btn-later" 
-                onClick={() => setShowLoginPrompt(false)}
-              >
-                Más Tarde
-              </button>
-              <button 
-                className="login-prompt-btn-login" 
-                onClick={handleGoToLogin}
-              >
-                Iniciar Sesión
-              </button>
+              <button className="login-prompt-btn-later" onClick={() => setShowLoginPrompt(false)}>Cancelar</button>
+              <button className="login-prompt-btn-login" onClick={handleGoToLogin}>Login</button>
             </div>
           </div>
         </div>
@@ -142,79 +183,107 @@ const PostCard = ({ post, isLoggedIn }) => {
   );
 };
 
-
-// --- Componente Principal de la Página de Encuestas ---
 export default function EncuestasEspectador() {
-  
-  // 8. LÓGICA DE AUTH:
-  // ¡IMPORTANTE! Reemplaza esto con tu lógica de autenticación real
-  // (Por ejemplo, de tu Contexto de Auth: const { user } = useAuth(); const isLoggedIn = !!user;)
-  const isLoggedIn = false; 
-  // (Pone 'true' o 'false' acá para probar)
+  const [posts, setPosts] = useState([]);
+  const [tagsMap, setTagsMap] = useState({});
+  const [errorStatus, setErrorStatus] = useState(null);
 
-  
-  // Datos dummy
-  const dummyPosts = [
-    { 
-      id: 1, 
-      tipo: 'encuesta', 
-      user: 'Canal', 
-      username: 'canal_oficial',
-      avatar: 'https://via.placeholder.com/48/FFA500/000000?text=C',
-      titulo: 'Debate Caliente: ¿Quién tiene razón?', // TÍTULO NUEVO
-      texto: 'Vimos el informe y la discusión en el piso, pero queremos saber tu opinión.', // Texto/Pregunta Opcional
-      tags: ['#debate', '#noticias', '#vivo'], // Estos tags ya no se mostrarán
-      options: [
-        { id: 'a', text: 'El analista A' },
-        { id: 'b', text: 'La conductora B' },
-        { id: 'c', text: 'Ninguno, ambos exageran' }
-      ]
-    },
-    { 
-      id: 2, 
-      tipo: 'mensaje', // TIPO MENSAJE
-      user: 'Canal', 
-      username: 'canal_oficial',
-      avatar: 'https://via.placeholder.com/48/FFA500/000000?text=C',
-      texto: '¡Tremenda foto del backstage! Miren quién nos visitó hoy.', // Texto Opcional
-      tags: ['#backstage', '#invitado'], // Estos tags SÍ se mostrarán
-      imageUrl: 'https://via.placeholder.com/600x400' // Imagen ObligatorIA
-    },
-    { 
-      id: 3, 
-      tipo: 'mensaje', 
-      user: 'Canal', 
-      username: 'canal_oficial',
-      avatar: 'https://via.placeholder.com/48/FFA500/000000?text=C',
-      texto: '¡No se olviden que mañana arrancamos 10am!', // Solo texto (backend debe permitirlo)
-      tags: ['#programacion', '#importante'], // Estos tags SÍ se mostrarán
-      imageUrl: null // Asumimos que si el tipo es 'mensaje' la imagen es obligatoria
-    }
-  ];
+  useEffect(() => {
+    const loadData = async () => {
+        try {
+            const userStr = localStorage.getItem('usuario');
+            const user = userStr ? JSON.parse(userStr) : null;
+            const userIdParam = user ? `?idUsuario=${user.id}` : '';
+
+            const tagsRes = await fetch('http://localhost:8080/api/tags');
+            if (tagsRes.ok) {
+                const tagsData = await tagsRes.json();
+                const mapa = {};
+                tagsData.forEach(t => mapa[Number(t.id)] = t.tag);
+                setTagsMap(mapa);
+            }
+
+            const feedRes = await fetch(`http://localhost:8080/api/feed${userIdParam}`);
+            if (!feedRes.ok) throw new Error(feedRes.status);
+            const rawFeed = await feedRes.json();
+            setPosts(procesarFeed(rawFeed));
+        } catch (error) {
+            console.error(error);
+            setErrorStatus(503); // Asumimos error de conexión si falla
+        }
+    };
+    loadData();
+  }, []);
+
+  const procesarFeed = (data) => {
+    const encuestasMap = new Map();
+    const contenidos = [];
+
+    data.forEach(item => {
+        if (item.tipo === 'CONTENIDO') {
+            contenidos.push({
+                uniqueId: `content-${item.id}`,
+                idReal: item.detalle.id,
+                tipo: 'CONTENIDO',
+                fecha: item.fechaCreacion,
+                detalle: item.detalle,
+                userReaction: item.detalle.miReaccion 
+            });
+        } else if (item.tipo === 'ENCUESTA') {
+            const idEncuesta = item.detalle.idEncuesta;
+            if (!encuestasMap.has(idEncuesta)) {
+                encuestasMap.set(idEncuesta, {
+                    uniqueId: `poll-${idEncuesta}`,
+                    idReal: idEncuesta,
+                    tipo: 'ENCUESTA',
+                    fecha: item.fechaCreacion,
+                    detalle: item.detalle,
+                    opciones: [],
+                    userVotedOptionId: null 
+                });
+            }
+            const encuesta = encuestasMap.get(idEncuesta);
+            
+            if (item.detalle.votadaPorMi) {
+                encuesta.userVotedOptionId = item.detalle.idOpcion;
+            }
+
+            if (!encuesta.opciones.some(o => o.idOpcion === item.detalle.idOpcion)) {
+                encuesta.opciones.push({
+                    idOpcion: item.detalle.idOpcion,
+                    texto: item.detalle.opcion,
+                    votos: item.detalle.totalVotos
+                });
+            }
+        }
+    });
+    Array.from(encuestasMap.values()).forEach(e => e.opciones.sort((a, b) => a.idOpcion - b.idOpcion));
+    const todos = [...contenidos, ...Array.from(encuestasMap.values())];
+    return todos.sort((a, b) => b.fecha - a.fecha);
+  };
+
+  // IMPLEMENTACIÓN HTTP CATS PARA ERROR DE CARGA
+  if (errorStatus) {
+      return (
+        <main className="envivo-main-content">
+            <div className="error-container">
+                <h2>¡Ups! Algo salió mal ({errorStatus})</h2>
+                <p>No pudimos cargar las publicaciones.</p>
+                <img 
+                    src={`https://http.cat/${errorStatus}`} 
+                    alt={`Error ${errorStatus}`} 
+                    className="http-cat-img" 
+                />
+            </div>
+        </main>
+      );
+  }
 
   return (
-    // Wrapper principal
     <main className="envivo-main-content">
-      
-      {/* Botón "¡Ver En Vivo!" (como estaba antes) */}
-      <div className="encuestas-header-area">
-        <Link to="/en-vivo" className="btn-ver-en-vivo">
-          <span className="live-dot-pulse"></span>
-          ¡Ver En Vivo!
-        </Link>
-      </div>
-
-      {/* Este es tu feed de encuestas original */}
       <div className="encuestas-feed-container">
-        {/* <NewPostForm /> */}
-        
-        {dummyPosts.map(post => (
-          // 9. Pasamos el estado de login al PostCard
-          <PostCard 
-            key={post.id} 
-            post={post} 
-            isLoggedIn={isLoggedIn} 
-          />
+        {posts.map(post => (
+          <PostCard key={post.uniqueId} post={post} tagsMap={tagsMap} />
         ))}
       </div>
     </main>

@@ -1,23 +1,46 @@
-// src/pages/espectador/LoginEspectador.jsx (NUEVO)
-
 import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
-import '../../styles/pages/loginEspectador.css'; // CSS para esta página
+import '../../styles/pages/loginEspectador.css';
 import logo from '../../assets/logo.png';
-import InputIcono from '../../components/ui/InputIcono.jsx'; // 💥 RUTA CORREGIDA
+import InputIcono from '../../components/ui/InputIcono.jsx';
 
 export default function LoginEspectador() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
     const navigate = useNavigate();
 
-    const handleLogin = (e) => {
+    const handleLogin = async (e) => {
         e.preventDefault();
-        // Lógica de autenticación de *espectador*...
-        console.log("Intentando iniciar sesión de ESPECTADOR con:", email, password);
+        
+        localStorage.clear(); // Limpiar sesión previa
 
-        // Simulación de login exitoso
-        navigate('/en-vivo'); 
+        try {
+            const response = await fetch('http://localhost:8080/api/usuarios/login', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ email: email, password: password })
+            });
+
+            const textData = await response.text();
+            
+            if (!textData) {
+                alert("Credenciales incorrectas.");
+                return;
+            }
+
+            const usuario = JSON.parse(textData);
+
+            if (usuario && usuario.id) {
+                localStorage.setItem('usuario', JSON.stringify(usuario));
+                navigate('/en-vivo'); 
+            } else {
+                alert("Error al iniciar sesión.");
+            }
+
+        } catch (error) {
+            console.error("Error:", error);
+            alert("Error de conexión.");
+        }
     };
 
     return (
@@ -49,14 +72,9 @@ export default function LoginEspectador() {
                         Ingresar
                     </button>
                 </form>
-
-                {/* Link a la página de Registro */}
                 <div className="login-espectador-registro-link">
-                    <p>
-                        ¿No tenés cuenta? <Link to="/registro">Registrate acá</Link>
-                    </p>
+                    <p>¿No tenés cuenta? <Link to="/registro">Registrate acá</Link></p>
                 </div>
-
             </div>
         </div>
     );
