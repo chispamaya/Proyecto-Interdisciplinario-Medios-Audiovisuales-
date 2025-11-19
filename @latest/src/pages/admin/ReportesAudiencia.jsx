@@ -1,64 +1,31 @@
 // src/pages/admin/ReportesAudiencia.jsx
 import React, { useState, useEffect } from 'react';
-// 🟢 Importamos axios
 import axios from 'axios'; 
-// Importamos los estilos para esta página
 import '../../styles/pages/reportesAudiencia.css';
-// Importamos íconos de Lucide
 import { Tags, BarChart3, ThumbsUp, ThumbsDown, RefreshCw, AlertTriangle } from 'lucide-react';
 
-// --- Datos de Ejemplo (Mock Data) - SOLO PARA TAGS (Se mantiene igual) ---
-const MOCK_TAGS_DATA = [
-    { id: 1, name: 'Noticias', likes: 1820, dislikes: 150 },
-    { id: 2, name: 'Deportes', likes: 2500, dislikes: 300 },
-    { id: 3, name: 'Entretenimiento', likes: 5300, dislikes: 420 },
-    { id: 4, name: 'Música', likes: 1200, dislikes: 80 },
-    { id: 5, name: 'Política', likes: 450, dislikes: 900 },
-    { id: 6, name: 'Cultura', likes: 780, dislikes: 50 },
-    { id: 7, name: 'Gaming', likes: 3100, dislikes: 210 },
-];
+// 🔴 BORRAMOS LOS DATOS MOCK DE TAGS
+// Ya no usamos MOCK_TAGS_DATA
 
-// --- Sub-componente para Reporte de Tags (Estático) ---
-function TagsReport() {
-    return (
-        <div className="report-content-wrapper tags-report-container">
-            {MOCK_TAGS_DATA.map(tag => (
-                <div key={tag.id} className="report-card tag-card">
-                    <h3>{tag.name}</h3>
-                    <div className="tag-stats">
-                        <div className="stat-item likes">
-                            <ThumbsUp size={20} />
-                            <span>{tag.likes.toLocaleString()}</span>
-                        </div>
-                        <div className="stat-item dislikes">
-                            <ThumbsDown size={20} />
-                            <span>{tag.dislikes.toLocaleString()}</span>
-                        </div>
-                    </div>
-                </div>
-            ))}
-        </div>
-    );
-}
-
-// --- Sub-componente para Reporte de Encuestas (Conectado al Backend) ---
-function PollsReport({ data, loading, error, onRetry }) {
+// --- Sub-componente para Reporte de Tags (AHORA DINÁMICO) ---
+// Recibe props igual que el de encuestas para manejar estados
+function TagsReport({ data, loading, error, onRetry }) {
     
     // 1. Estado de Carga
     if (loading) {
         return (
             <div className="report-content-wrapper state-message-container">
                 <RefreshCw size={40} className="spinner-icon" />
-                <p>Cargando encuestas...</p>
+                <p>Cargando listado de tags...</p>
             </div>
         );
     }
 
-    // 2. Estado de Error (Con HTTP Cats)
+    // 2. Estado de Error
     if (error) {
         return (
             <div className="report-content-wrapper state-message-container">
-                <h3 className="error-title">Ocurrió un error al cargar los datos</h3>
+                <h3 className="error-title">Error al cargar los Tags</h3>
                 <div className="http-cat-wrapper">
                     <img 
                         src={`https://http.cat/${error}`} 
@@ -73,7 +40,66 @@ function PollsReport({ data, loading, error, onRetry }) {
         );
     }
 
-    // 3. Estado Vacío (No hay encuestas)
+    // 3. Estado Vacío
+    if (!data || data.length === 0) {
+        return (
+            <div className="report-content-wrapper state-message-container">
+                <AlertTriangle size={48} className="empty-state-icon" />
+                <h3 className="empty-state-text">No hay tags creados aún.</h3>
+            </div>
+        );
+    }
+
+    return (
+        <div className="report-content-wrapper tags-report-container">
+            {data.map(tag => (
+                <div key={tag.id} className="report-card tag-card">
+                    {/* TU PARTE: Mostrar el nombre real que viene de la DB */}
+                    <h3>{tag.tag}</h3> 
+                    
+                    <div className="tag-stats">
+                        <div className="stat-item likes">
+                            <ThumbsUp size={20} />
+                            {/* PARTE DE TU AMIGO: Mientras él no haga la API de likes, mostramos 0 */}
+                            <span>{(tag.likes || 0).toLocaleString()}</span>
+                        </div>
+                        <div className="stat-item dislikes">
+                            <ThumbsDown size={20} />
+                            {/* PARTE DE TU AMIGO: Default a 0 */}
+                            <span>{(tag.dislikes || 0).toLocaleString()}</span>
+                        </div>
+                    </div>
+                </div>
+            ))}
+        </div>
+    );
+}
+
+// --- Sub-componente para Reporte de Encuestas (INTACTO) ---
+function PollsReport({ data, loading, error, onRetry }) {
+    if (loading) {
+        return (
+            <div className="report-content-wrapper state-message-container">
+                <RefreshCw size={40} className="spinner-icon" />
+                <p>Cargando encuestas...</p>
+            </div>
+        );
+    }
+
+    if (error) {
+        return (
+            <div className="report-content-wrapper state-message-container">
+                <h3 className="error-title">Ocurrió un error al cargar los datos</h3>
+                <div className="http-cat-wrapper">
+                    <img src={`https://http.cat/${error}`} alt={`Error ${error}`} className="http-cat-image" />
+                </div>
+                <button className="retry-button" onClick={onRetry}>
+                    <RefreshCw size={18} /> Reintentar
+                </button>
+            </div>
+        );
+    }
+
     if (!data || data.length === 0) {
         return (
             <div className="report-content-wrapper state-message-container">
@@ -83,7 +109,6 @@ function PollsReport({ data, loading, error, onRetry }) {
         );
     }
 
-    // 4. Renderizado de Datos
     const calculatePercentage = (votes, total) => {
         if (total === 0) return 0;
         return (votes / total) * 100;
@@ -93,7 +118,6 @@ function PollsReport({ data, loading, error, onRetry }) {
         <div className="report-content-wrapper polls-report-container">
             {data.map(poll => {
                 const totalVotes = poll.options.reduce((sum, option) => sum + option.votes, 0);
-
                 return (
                     <div key={poll.id} className="report-card poll-card">
                         <h4>{poll.question}</h4>
@@ -107,18 +131,13 @@ function PollsReport({ data, loading, error, onRetry }) {
                                             <span className="option-votes">{option.votes.toLocaleString()} Votos</span>
                                         </div>
                                         <div className="poll-option-bar-bg">
-                                            <div 
-                                                className="poll-option-bar-fill" 
-                                                style={{ width: `${percentage}%` }}
-                                            ></div>
+                                            <div className="poll-option-bar-fill" style={{ width: `${percentage}%` }}></div>
                                         </div>
                                     </div>
                                 );
                             })}
                         </div>
-                        <div className="poll-total-votes">
-                            Total votos: {totalVotes}
-                        </div>
+                        <div className="poll-total-votes">Total votos: {totalVotes}</div>
                     </div>
                 );
             })}
@@ -130,52 +149,60 @@ function PollsReport({ data, loading, error, onRetry }) {
 export default function ReportesAudiencia() {
     const [activeView, setActiveView] = useState('tags');
     
-    // Estados del Backend
+    // --- Estados Encuestas (Existing) ---
     const [pollsData, setPollsData] = useState([]);
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    const [loading, setLoading] = useState(false); // Loading de encuestas
+    const [error, setError] = useState(null);      // Error de encuestas
 
+    // --- 🟢 NUEVOS ESTADOS PARA TAGS ---
+    const [tagsData, setTagsData] = useState([]);
+    const [tagsLoading, setTagsLoading] = useState(false);
+    const [tagsError, setTagsError] = useState(null);
+
+    // --- 🟢 FETCH TAGS (Tu responsabilidad) ---
+    const fetchTags = async () => {
+        setTagsLoading(true);
+        setTagsError(null);
+        try {
+            // Llamamos al endpoint que ya existe: TagController -> listarTodosLosTags()
+            const response = await axios.get('http://localhost:8080/api/tags');
+            setTagsData(response.data); 
+        } catch (err) {
+            console.error("Error fetching tags:", err);
+            const status = err.response?.status || 503;
+            setTagsError(status);
+        } finally {
+            setTagsLoading(false);
+        }
+    };
+
+    // --- FETCH ENCUESTAS (Lógica de tu compañero - INTACTA) ---
     const fetchPolls = async () => {
         setLoading(true);
         setError(null);
         try {
-            // 🟢 Usamos axios.get
             const response = await axios.get('http://localhost:8080/api/encuestas/reporte-completo');
-            
-            // Axios devuelve el cuerpo en response.data
             const rawData = response.data;
-
-            // --- Lógica de Agrupación ---
             const pollsMap = {};
-
             rawData.forEach(row => {
                 if (!pollsMap[row.idEncuesta]) {
                     pollsMap[row.idEncuesta] = {
                         id: row.idEncuesta,
-                        // Usamos el campo 'preguntar' del DTO Java
                         question: row.preguntar, 
                         options: []
                     };
                 }
-
                 if (row.idOpcion) {
                     pollsMap[row.idEncuesta].options.push({
                         id: row.idOpcion,
-                        // Usamos el campo 'opcion' del DTO Java
                         text: row.opcion,
-                        // Usamos el campo 'totalVotos' del DTO Java
                         votes: row.totalVotos || 0
                     });
                 }
             });
-
-            const mappedData = Object.values(pollsMap);
-
-            setPollsData(mappedData);
-
+            setPollsData(Object.values(pollsMap));
         } catch (err) {
             console.error("Error fetching polls:", err);
-            // Manejo de errores de Axios: si hay respuesta, usa su status; si no (ej: red caída), usa 503
             const status = err.response?.status || 503; 
             setError(status); 
         } finally {
@@ -183,7 +210,14 @@ export default function ReportesAudiencia() {
         }
     };
 
-    // Cargar datos al cambiar a la pestaña 'polls'
+    // 🟢 Efecto para cargar TAGS cuando se selecciona esa vista
+    useEffect(() => {
+        if (activeView === 'tags') {
+            fetchTags();
+        }
+    }, [activeView]);
+
+    // Efecto para cargar ENCUESTAS cuando se selecciona esa vista
     useEffect(() => {
         if (activeView === 'polls') {
             fetchPolls();
@@ -213,7 +247,13 @@ export default function ReportesAudiencia() {
                 <h2 className="reportes-title">Reportes de Audiencia</h2>
                 
                 {activeView === 'tags' ? (
-                    <TagsReport />
+                    // 🟢 Renderizamos el componente de Tags con los datos reales
+                    <TagsReport 
+                        data={tagsData}
+                        loading={tagsLoading}
+                        error={tagsError}
+                        onRetry={fetchTags}
+                    />
                 ) : (
                     <PollsReport 
                         data={pollsData} 
