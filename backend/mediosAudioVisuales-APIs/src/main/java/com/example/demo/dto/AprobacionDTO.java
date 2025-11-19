@@ -9,7 +9,7 @@ public class AprobacionDTO {
     
     private Long idDia; 
     private LocalDate fechaEmision;
-
+    private Long idPrograma;
     private String tituloPrograma;
     private LocalTime horaInicio; 
     private LocalTime horaFin;    
