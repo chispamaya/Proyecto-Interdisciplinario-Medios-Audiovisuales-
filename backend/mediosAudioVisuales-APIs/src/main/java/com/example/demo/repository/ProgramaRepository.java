@@ -28,6 +28,7 @@ public class ProgramaRepository {
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate).withProcedureName("cpr");
 
         Map<String, Object> inParams = new HashMap<>();
+        inParams.put("estadoAprobacion1", programa.getEstadoAprobacion());
         inParams.put("categoria1", programa.getCategoria());
         inParams.put("nombre1", programa.getNombre());
         inParams.put("horaInicio1", programa.getHoraInicio());
@@ -92,17 +93,20 @@ public class ProgramaRepository {
  
     public List<Programa> listarTodosLosProgramas() {
         // (Este método está perfecto, usa SQL directo)
-        String sql = "SELECT * FROM programas";     
-        return jdbcTemplate.query(sql, new ProgramaRowMapper());
+    	String sql = "SELECT * FROM programas ORDER BY id DESC";
+    	return jdbcTemplate.query(sql, new ProgramaRowMapper());
     }
 
     
     public Programa buscarProgramaPorId(Long idProgramaBuscado) {
         // (Este método está perfecto, usa el SP 's' de 3 params)
-        String sql = "CALL s('programas', ?, @mensaje)";       
+    	String sql = "SELECT * FROM programas WHERE id = ?"; 
+        
         try {
+            // Usamos el ProgramaRowMapper para mapear los resultados del SELECT *
             return jdbcTemplate.queryForObject(sql, new ProgramaRowMapper(), idProgramaBuscado);
         } catch (Exception e) {
+            // Considera loggear 'e' aquí para ayudar a depurar si falla
             return null; 
         }
     }
