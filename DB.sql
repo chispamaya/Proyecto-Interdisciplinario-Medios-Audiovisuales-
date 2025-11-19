@@ -378,7 +378,7 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
    SET mensaje = 'Usuario borrado con éxito.';
  END //
  
- CREATE PROCEDURE mu(IN id1 int, IN idRol1 int, IN idUs int, OUT mensaje varchar(50))
+ CREATE PROCEDURE mu(IN id1 int, IN contrasenia1 varchar(255), IN idRol1 int, IN idUs int, OUT mensaje varchar(50))
  BEGIN
 	DECLARE error varchar(500);
 	DECLARE errorC varchar(50);
@@ -396,7 +396,7 @@ CREATE PROCEDURE bd(IN id1 int, IN idUs int, OUT mensaje varchar(50))
     SET @current_user_id = idUs;
 	START TRANSACTION;
 	 UPDATE usuario
-	 SET idRol = idRol1
+	 SET contrasenia = contrasenia1, idRol = idRol1
 	 WHERE id = id1;
 	COMMIT;
    SET @current_user_id = NULL;
@@ -1213,6 +1213,7 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7);
 ALTER TABLE usuario ADD COLUMN activo BOOLEAN DEFAULT TRUE;
 
 INSERT INTO usuario(nombre, email, contrasenia, idRol, activo) VALUES ("Admin", "admin@gmail.com", "1", 8, 1);
+
 
 
 
