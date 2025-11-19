@@ -199,7 +199,8 @@
     flex-direction: column;
     align-items: center;
     justify-content: center;
-    min-height: 400px; /* Altura mínima para centrar verticalmente */
+    min-height: 400px;
+    /* Altura mínima para centrar verticalmente */
     text-align: center;
     color: var(--color-text-secondary, #A0A8B9);
     padding: 2rem;
@@ -212,9 +213,14 @@
     color: var(--color-primary, #8634AA);
 }
 
-@keyframes spin { 
-    from { transform: rotate(0deg); } 
-    to { transform: rotate(360deg); } 
+@keyframes spin {
+    from {
+        transform: rotate(0deg);
+    }
+
+    to {
+        transform: rotate(360deg);
+    }
 }
 
 /* Estado de Error (HTTP Cats) */
@@ -230,7 +236,7 @@
     width: 500px;
     border-radius: 12px;
     overflow: hidden;
-    box-shadow: 0 4px 15px rgba(0,0,0,0.3);
+    box-shadow: 0 4px 15px rgba(0, 0, 0, 0.3);
     margin-bottom: 20px;
 }
 
@@ -256,7 +262,8 @@
 }
 
 .retry-button:hover {
-    background-color: #6d2a8a; /* Un tono más oscuro del primario */
+    background-color: #6d2a8a;
+    /* Un tono más oscuro del primario */
 }
 
 .retry-button:active {
@@ -318,15 +325,21 @@
     .reportes-title {
         font-size: 1.5rem;
     }
-    
+
     .http-cat-wrapper {
-        width: 100%; /* Que ocupe todo el ancho en móvil */
+        width: 100%;
+        /* Que ocupe todo el ancho en móvil */
     }
 }
 
 /* Scrollbars */
-.tags-report-container::-webkit-scrollbar { height: 8px; }
-.polls-report-container::-webkit-scrollbar { width: 8px; }
+.tags-report-container::-webkit-scrollbar {
+    height: 8px;
+}
+
+.polls-report-container::-webkit-scrollbar {
+    width: 8px;
+}
 
 .tags-report-container::-webkit-scrollbar,
 .polls-report-container::-webkit-scrollbar {
