@@ -13,6 +13,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Map;
+
 import org.springframework.web.bind.annotation.CrossOrigin; // <-- ¡IMPORTA ESTO!
 
 
@@ -57,7 +59,16 @@ public class ProgramaController {
         Long idUsuarioQueModifica = 1L; // TODO: Reemplazar con ID de seguridad
         return programaService.modificarPrograma(programa, idUsuarioQueModifica);
     }
-
+    @PutMapping("/{id}/estado")
+    public String actualizarEstado(@PathVariable Long id, @RequestBody Map<String, String> payload) {
+        String nuevoEstado = payload.get("estado");
+        // Validamos que venga el estado
+        if (nuevoEstado == null || nuevoEstado.isEmpty()) {
+            return "Error: Estado no proporcionado.";
+        }
+        // Llamamos al servicio (asumiendo usuario ID 1 para auditoría)
+        return programaService.actualizarEstadoPrograma(id, nuevoEstado, 1L);
+    }
     /**
      * Endpoint para BORRAR un Programa (SP 'bpr')
      * - Método: DELETE
