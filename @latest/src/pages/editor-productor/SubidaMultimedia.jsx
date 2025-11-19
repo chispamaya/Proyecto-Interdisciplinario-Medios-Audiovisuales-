@@ -1,121 +1,97 @@
-// src/pages/SubidaMultimedia.jsx
 import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 import CargaArchivos from '../../components/ui/CargaArchivos.jsx';
 import DetallesEmision from '../../components/ui/DetallesEmision.jsx';
 import '../../styles/pages/subidaMultimedia.css';
 
-// 1. Agregamos 'categoria' al estado inicial
-const INITIAL_FORM_STATE = {
+const api = axios.create({ baseURL: 'http://localhost:8080/api/programas' });
+
+const INITIAL_STATE = {
     tituloPrograma: '',
-    categoria: '', // <--- NUEVO CAMPO REQUERIDO POR TU DB
+    categoria: 'SERIE',
     horaEmision: '',
     horaFinalizacion: '',
     fechasEmision: [''],
-    lugarTransmision: '', // ID de la plataforma
+    lugarTransmision: '', 
     archivo: null,
-    informe: null,
+    informe: null
 };
 
 export default function SubidaMultimedia() {
-    const [formData, setFormData] = useState(INITIAL_FORM_STATE);
+    const [formData, setFormData] = useState(INITIAL_STATE);
     const [isUploading, setIsUploading] = useState(false);
     const [listaPlataformas, setListaPlataformas] = useState([]);
 
-    // Cargar plataformas al inicio
     useEffect(() => {
-        const cargarPlataformas = async () => {
+        const fetchPlataformas = async () => {
             try {
-                const response = await axios.get('http://localhost:8080/api/plataformas');
-                setListaPlataformas(response.data);
-            } catch (error) {
-                console.error("Error al cargar plataformas:", error);
+                const res = await axios.get('http://localhost:8080/api/plataformas'); // Ajusta puerto si es necesario
+                setListaPlataformas(res.data);
+            } catch (e) { 
+                setListaPlataformas([{id: 1, nombre: "Plataforma Default"}]);
             }
         };
-        cargarPlataformas();
+        fetchPlataformas();
     }, []);
 
-    const handleChange = (name, value) => {
-        setFormData(prev => ({
-            ...prev,
-            [name]: value
-        }));
-    };
-
+    const handleChange = (name, value) => setFormData(prev => ({ ...prev, [name]: value }));
+    
     const handleDateChange = (index, value) => {
-        setFormData(prev => {
-            const newFechas = [...prev.fechasEmision];
-            newFechas[index] = value;
-            return { ...prev, fechasEmision: newFechas };
-        });
+        const newFechas = [...formData.fechasEmision];
+        newFechas[index] = value;
+        setFormData(prev => ({ ...prev, fechasEmision: newFechas }));
     };
 
-    const addFecha = () => {
-        setFormData(prev => ({
-            ...prev,
-            fechasEmision: [...prev.fechasEmision, ''] 
-        }));
-    };
+    const addFecha = () => setFormData(prev => ({ ...prev, fechasEmision: [...prev.fechasEmision, ''] }));
+    const removeFecha = (index) => setFormData(prev => ({ ...prev, fechasEmision: prev.fechasEmision.filter((_, i) => i !== index) }));
 
-    const removeFecha = (index) => {
-        setFormData(prev => ({
-            ...prev,
-            fechasEmision: prev.fechasEmision.filter((_, i) => i !== index)
-        }));
-    };
-
-    // --- LÓGICA DE ENVÍO AL BACKEND ---
     const handleSubmit = async (e) => {
         e.preventDefault();
         setIsUploading(true);
 
         try {
-            // 1. Validaciones básicas
-            if (!formData.lugarTransmision) {
-                alert("Por favor seleccione una plataforma de transmisión.");
-                setIsUploading(false);
-                return;
+            let nombreArchivoFinal = "";
+            let nombreInformeFinal = "";
+
+            // 1. Subir Archivos
+            if (formData.archivo) {
+                const d = new FormData(); d.append("file", formData.archivo);
+                const r = await api.post("/upload", d, { headers: { "Content-Type": "multipart/form-data" }});
+                nombreArchivoFinal = r.data.fileName;
+            }
+            if (formData.informe) {
+                const d = new FormData(); d.append("file", formData.informe);
+                const r = await api.post("/upload", d, { headers: { "Content-Type": "multipart/form-data" }});
+                nombreInformeFinal = r.data.fileName;
             }
 
-            // 2. Mapeo de datos para tu DTO 'Programa' en Java
-            // Tu backend espera hora formato "HH:mm:ss" (String) o Array.
-            // Al enviarlo como string "HH:mm:00" suele ser más seguro para LocalTime.
-            const programaPayload = {
+            // 2. Preparar DTO con Fechas
+            // Convertimos ['2025-10-10'] -> [{dia: '2025-10-10'}]
+            const diasParaGuardar = formData.fechasEmision
+                .filter(f => f && f.trim() !== "") // Filtrar vacíos
+                .map(fechaStr => ({ dia: fechaStr }));
+
+            const payload = {
                 nombre: formData.tituloPrograma,
-                categoria: formData.categoria, // Enviamos la categoría
-                
-                // Añadimos segundos :00 para cumplir formato LocalTime
-                horaInicio: formData.horaEmision ? `${formData.horaEmision}:00` : null,
-                horaFin: formData.horaFinalizacion ? `${formData.horaFinalizacion}:00` : null,
-                
-                idPlataforma: parseInt(formData.lugarTransmision),
-                estadoAprobacion: "Pendiente", // Valor por defecto seguro
-                
-                // Simulamos rutas ya que es un JSON body
-                rutaArchivo: formData.archivo ? `/programas/${formData.archivo.name}` : "N/A",
-                formatoArchivo: formData.archivo ? formData.archivo.name.split('.').pop().toUpperCase() : "N/A",
-                
-                rutaInforme: formData.informe ? `/informes/${formData.informe.name}` : null, // O crea una carpeta '/informes' en public                formatoInforme: formData.informe ? formData.informe.name.split('.').pop().toUpperCase() : null
+                categoria: formData.categoria,
+                horaInicio: formData.horaEmision ? formData.horaEmision + ":00" : null,
+                horaFin: formData.horaFinalizacion ? formData.horaFinalizacion + ":00" : null,
+                idPlataforma: parseInt(formData.lugarTransmision || 1),
+                rutaArchivo: nombreArchivoFinal,
+                rutaInforme: nombreInformeFinal,
+                formatoArchivo: "MP4",
+                formatoInforme: "PDF",
+                estadoAprobacion: "En Revisión",
+                dias: diasParaGuardar // <--- AQUÍ ENVIAMOS LAS FECHAS
             };
 
-            console.log("Enviando al backend:", programaPayload);
-
-            // 3. Llamada POST al Controller de Programas
-            const response = await axios.post('http://localhost:8080/api/programas', programaPayload);
-            
-            // 4. Manejo de respuesta (Tu backend devuelve un String con el mensaje)
-            const mensaje = response.data;
-            
-            if (typeof mensaje === 'string' && (mensaje.includes("éxito") || mensaje.includes("Exito"))) {
-                alert('¡Programa creado exitosamente!');
-                setFormData(INITIAL_FORM_STATE); // Limpiar formulario
-            } else {
-                alert('El servidor respondió: ' + mensaje);
-            }
+            await api.post("", payload);
+            alert("✅ Programa creado exitosamente");
+            setFormData(INITIAL_STATE);
 
         } catch (error) {
-            console.error('Error durante la creación:', error);
-            alert('Ocurrió un error al conectar con el servidor.');
+            console.error(error);
+            alert("Error al crear programa");
         } finally {
             setIsUploading(false);
         }
@@ -124,40 +100,19 @@ export default function SubidaMultimedia() {
     return (
         <div className="subida-multimedia-container">
             <form className="formulario-subida" onSubmit={handleSubmit}>
-                
                 <CargaArchivos handleChange={handleChange} formData={formData} />
                 
-                {/* Sección de Datos Básicos */}
-                <div className="titulo-programa-box">
-                    <label htmlFor="tituloPrograma">Título del programa</label>
-                    <input 
-                        id="tituloPrograma"
-                        name="tituloPrograma"
-                        type="text"
-                        placeholder="Ingrese el título"
-                        value={formData.tituloPrograma}
-                        onChange={(e) => handleChange(e.target.name, e.target.value)}
-                        required
-                    />
+                <div className="titulo-programa-box" style={{marginTop:20}}>
+                    <label>Título</label>
+                    <input name="tituloPrograma" type="text" value={formData.tituloPrograma} onChange={(e)=>handleChange(e.target.name, e.target.value)} required />
                 </div>
 
-                {/* 💥 NUEVO CAMPO: CATEGORÍA (Requerido por DB) 💥 */}
-                <div className="titulo-programa-box" style={{ marginTop: '1rem' }}>
-                    <label htmlFor="categoria">Categoría</label>
-                    <select 
-                        id="categoria"
-                        name="categoria"
-                        value={formData.categoria}
-                        onChange={(e) => handleChange(e.target.name, e.target.value)}
-                        required
-                        style={{ width: '100%', padding: '10px', borderRadius: '8px', border: '1px solid #ccc' }}
-                    >
-                        <option value="" disabled>Seleccione una categoría</option>
+                <div className="titulo-programa-box" style={{marginTop:10}}>
+                    <label>Categoría</label>
+                    <select name="categoria" value={formData.categoria} onChange={(e)=>handleChange(e.target.name, e.target.value)} required style={{width:'100%', padding:10, borderRadius:5, border:'1px solid #ccc'}}>
+                        <option value="SERIE">Serie</option>
+                        <option value="PELICULA">Película</option>
                         <option value="NOTICIERO">Noticiero</option>
-                        <option value="DEPORTES">Deportes</option>
-                        <option value="ENTRETENIMIENTO">Entretenimiento</option>
-                        <option value="CULTURA">Cultura</option>
-                        <option value="SERIE">Serie / Ficción</option>
                     </select>
                 </div>
 
@@ -170,12 +125,8 @@ export default function SubidaMultimedia() {
                     listaPlataformas={listaPlataformas}
                 />
 
-                <button 
-                    type="submit" 
-                    className="btn-subir-programa"
-                    disabled={isUploading} 
-                >
-                    {isUploading ? 'Guardando...' : 'Crear Programa'}
+                <button type="submit" className="btn-subir-programa" disabled={isUploading}>
+                    {isUploading ? "Guardando..." : "Crear Programa"}
                 </button>
             </form>
         </div>

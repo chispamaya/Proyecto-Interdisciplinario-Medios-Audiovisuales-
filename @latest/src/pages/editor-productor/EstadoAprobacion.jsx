@@ -1,154 +1,235 @@
 import React, { useState, useEffect } from 'react';
-// 👇 Importa useParams y Link
-import { useParams, Link } from 'react-router-dom';
-import { Download, Calendar, Clock } from 'lucide-react';
+import { useParams, Link, useNavigate } from 'react-router-dom';
+import { Download, Calendar, Clock, AlertCircle, User, FileText } from 'lucide-react';
+import axios from 'axios';
 import '../../styles/pages/estadoAprobacion.css';
 import logoImage from '../../assets/logo.png';
 
-// --- Simulación de DATOS COMPLETOS (incluyendo fechas por programa) ---
-// En una app real, estos datos vendrían de tu API
-const programasData = [
-    {
-        id: 1,
-        nombre: "La peña",
-        usuario: "Leon Vega",
-        imagen: logoImage,
-        fechas: ['15/10/25', '16/10/25', '17/10/25'],
-        horaEmision: '19:40',
-        horaFinalizacion: '21:00'
-    },
-    {
-        id: 2,
-        nombre: "Programa 2",
-        usuario: "Usuario 2",
-        imagen: logoImage,
-        fechas: ['20/11/25', '21/11/25'],
-        horaEmision: '14:00',
-        horaFinalizacion: '15:30'
-    },
-    {
-        id: 3,
-        nombre: "Programa 3",
-        usuario: "Usuario 3",
-        imagen: logoImage,
-        fechas: ['01/12/25', '05/12/25', '10/12/25', '15/12/25'],
-        horaEmision: '10:00',
-        horaFinalizacion: '11:00'
-    },
-    // Puedes añadir más programas aquí
-];
-// --- Fin Simulación ---
+const api = axios.create({ baseURL: 'http://localhost:8080/api/programas' });
 
 export default function EstadoAprobacion() {
-    // 👇 Obtiene el parámetro 'id' de la URL (ej: /estado/2 -> id = '2')
     const { id } = useParams();
-    const currentId = parseInt(id, 10); // Convierte el id de string a número
+    const navigate = useNavigate();
+    const currentId = id ? parseInt(id, 10) : null;
 
-    // 👇 Encuentra el programa actual basado en el ID de la URL
-    // Por defecto, muestra el programa con id 1 si no se encuentra o no hay ID
-    const currentProgram = programasData.find(p => p.id === currentId) || programasData.find(p => p.id === 1) || null;
+    const [listaProgramas, setListaProgramas] = useState([]);
+    const [programaDetalle, setProgramaDetalle] = useState(null);
+    const [loading, setLoading] = useState(true);
 
-    // Si no se encuentra ningún programa (ni siquiera el default id 1), muestra un mensaje o redirige
-    if (!currentProgram) {
-        return <div className="detalle-propuesta-container">Programa no encontrado.</div>;
+    // 1. Cargar Lista
+    useEffect(() => {
+        const fetchLista = async () => {
+            try {
+                const response = await api.get('/aprobacion');
+                setListaProgramas(response.data);
+                
+                // Si hay datos y no hay ID seleccionado, ir al primero
+                if (!id && response.data.length > 0) {
+                    const primerId = response.data[0].idPrograma || response.data[0].id;
+                    navigate(`/estado/${primerId}`);
+                }
+            } catch (err) { console.error("Error lista:", err); }
+        };
+        fetchLista();
+    }, [id, navigate]);
+
+    // 2. Cargar Detalle
+    useEffect(() => {
+        if (!currentId) {
+            setProgramaDetalle(null);
+            setLoading(false);
+            return;
+        }
+        const fetchDetalle = async () => {
+            setLoading(true);
+            try {
+                const response = await api.get(`/${currentId}`);
+                setProgramaDetalle(response.data);
+            } catch (err) {
+                console.error("Error detalle:", err);
+                setProgramaDetalle(null);
+            } finally { setLoading(false); }
+        };
+        fetchDetalle();
+    }, [currentId]);
+
+    const getCleanFileName = (ruta) => {
+        if (!ruta || ruta === "null" || ruta === "") return null;
+        return ruta.split(/[/\\]/).pop();
+    };
+
+    const getNombreUsuario = () => {
+        if (programaDetalle?.usuarioNombre) return programaDetalle.usuarioNombre;
+        const item = listaProgramas.find(p => (p.idPrograma === currentId || p.id === currentId));
+        return item ? item.propuestaDe : "Usuario Desconocido";
+    };
+
+    const handleDownload = () => {
+        if (!programaDetalle) return;
+
+        // Array de descargas
+        const targets = [
+            { ruta: programaDetalle.rutaArchivo, tipo: "contenido" },
+            { ruta: programaDetalle.rutaInforme, tipo: "informe" }
+        ];
+
+        let descargasIniciadas = 0;
+
+        targets.forEach((target) => {
+            const nombreLimpio = getCleanFileName(target.ruta);
+            
+            // Solo descargar si hay nombre y no es una cadena vacía
+            if (nombreLimpio && nombreLimpio.length > 3) { 
+                const url = `http://localhost:8080/api/programas/download/${nombreLimpio}`;
+                console.log(`Descargando ${target.tipo}: ${url}`);
+                
+                setTimeout(() => {
+                    window.open(url, '_blank');
+                }, descargasIniciadas * 800); // Aumenté el delay a 800ms para seguridad
+                
+                descargasIniciadas++;
+            }
+        });
+
+        if (descargasIniciadas === 0) {
+            alert("⚠️ No se encontraron archivos válidos para descargar.");
+        }
+    };
+
+    const handleEstado = async (estado) => {
+        if (!currentId) return;
+        try {
+            await api.put(`/${currentId}/estado`, { estado });
+            alert(`Programa ${estado}.`);
+            // Forzar recarga completa para actualizar lista
+            window.location.href = "/estado"; 
+        } catch (e) { alert("Error al actualizar estado"); }
+    };
+
+    if (loading && currentId) return <div className="loading-container">Cargando...</div>;
+
+    // 🚨 ESTADO VACÍO: Si no hay programas en la lista
+    if (listaProgramas.length === 0) {
+        return (
+            <div className="detalle-propuesta-container" style={{justifyContent:'center', alignItems:'center', height:'100vh'}}>
+                 <div className="empty-state" style={{textAlign:'center'}}>
+                    <AlertCircle size={64} color="#ccc" style={{marginBottom:20}}/>
+                    <h2>No hay contenidos pendientes de revisión</h2>
+                    <p>Todos los programas han sido aprobados o rechazados.</p>
+                </div>
+            </div>
+        );
     }
 
     return (
         <div className="detalle-propuesta-container">
-            {/* ------------------------------------- */}
-            {/* --- 1. BARRA LATERAL IZQUIERDA (Dinámica) --- */}
-            {/* ------------------------------------- */}
+            {/* SIDEBAR */}
             <div className="propuesta-sidebar">
-                {/* 👇 Itera sobre TODOS los programas para la sidebar */}
-                {programasData.map((p) => (
-                    // 👇 Envuelve cada item con un Link
-                    <Link to={`/estado/${p.id}`} key={p.id} className="propuesta-link">
-                        {/* 👇 Aplica 'active' si el ID del programa coincide con el ID de la URL */}
-                        <div className={`propuesta-item ${p.id === currentProgram.id ? 'active' : ''}`}>
-                            <img className="propuesta-logo-sm" src={p.imagen} alt={`${p.nombre} Logo`} />
-                            <div className="propuesta-info">
-                                <p className="propuesta-titulo">{p.nombre}</p>
-                                <p className="propuesta-proponente">Propuesta de: {p.usuario}</p>
+                {listaProgramas.map((p) => {
+                    const pId = p.idPrograma || p.id;
+                    return (
+                        <Link 
+                            to={`/estado/${pId}`} 
+                            key={pId} 
+                            className="propuesta-link"
+                            style={{ textDecoration: 'none', color: 'inherit', display: 'block' }}
+                        >
+                            <div className={`propuesta-item ${pId === currentId ? 'active' : ''}`}>
+                                <img className="propuesta-logo-sm" src={logoImage} alt="Logo" />
+                                <div className="propuesta-info">
+                                    <p className="propuesta-titulo">{p.tituloPrograma || p.nombre}</p>
+                                    <p className="propuesta-proponente">De: {p.propuestaDe || p.usuario}</p>
+                                </div>
                             </div>
-                        </div>
-                    </Link>
-                ))}
+                        </Link>
+                    );
+                })}
             </div>
 
-            {/* ------------------------------------- */}
-            {/* --- 2. CONTENIDO PRINCIPAL (Dinámico) --- */}
-            {/* ------------------------------------- */}
+            {/* MAIN */}
             <main className="propuesta-main-content">
+                {programaDetalle ? (
+                    <>
+                        <div className="propuesta-header">
+                            <img className="propuesta-logo-lg" src={logoImage} alt="Logo" />
+                            <div className="propuesta-titulo-box">
+                                <h1 className="propuesta-titulo-lg">{programaDetalle.nombre}</h1>
+                                <p className="propuesta-proponente-lg">
+                                    <User size={18} style={{marginRight:5, verticalAlign:'middle'}}/>
+                                    Propuesta de: <strong>{getNombreUsuario()}</strong>
+                                </p>
+                            </div>
+                        </div>
 
-                {/* CABECERA */}
-                <div className="propuesta-header">
-                    {/* 👇 Muestra la imagen del programa actual */}
-                    <img className="propuesta-logo-lg" src={currentProgram.imagen} alt={`${currentProgram.nombre} Logo`} />
-                    <div className="propuesta-titulo-box">
-                        {/* 👇 Muestra el nombre del programa actual */}
-                        <h1 className="propuesta-titulo-lg">{currentProgram.nombre}</h1>
-                        {/* 👇 Muestra el usuario del programa actual */}
-                        <p className="propuesta-proponente-lg">Propuesta de: {currentProgram.usuario}</p>
-                    </div>
-                </div>
-
-                {/* DETALLES Y BOTÓN */}
-                <div className="detalles-grid">
-
-                    {/* FECHA DE EMISIÓN CARD (Con scroll) */}
-                    <div className="card-detalle fecha-card">
-                        <h2 className='card-title'>FECHA DE EMISIÓN</h2>
-                        <div className="fechas-list-wrapper">
-                            {/* 👇 Muestra las fechas del programa actual */}
-                            {currentProgram.fechas.map((fecha, index) => (
-                                <div key={index} className="detalle-item">
-                                    <Calendar size={24} className="detalle-icon" />
-                                    <p className="detalle-text">{fecha}</p>
+                        <div className="detalles-grid">
+                            {/* CARD FECHAS */}
+                            <div className="card-detalle fecha-card">
+                                <h2 className='card-title'>DÍAS DE EMISIÓN</h2>
+                                <div className="fechas-list-wrapper">
+                                    {programaDetalle.dias && programaDetalle.dias.length > 0 ? (
+                                        programaDetalle.dias.map((d, i) => (
+                                            <div key={i} className="detalle-item">
+                                                <Calendar size={20} className="detalle-icon"/>
+                                                <p className="detalle-text">{d.dia || d}</p>
+                                            </div>
+                                        ))
+                                    ) : (
+                                        <p className="no-data">Sin días asignados</p>
+                                    )}
                                 </div>
-                            ))}
-                            {/* Mensaje si no hay fechas */}
-                            {currentProgram.fechas.length === 0 && <p>No hay fechas programadas.</p>}
-                        </div>
-                    </div>
+                            </div>
 
-                    {/* HORARIOS CARD */}
-                    <div className="horarios-card">
-                        <div className="card-detalle horario-emision-card">
-                            <h2 className='card-title'>HORARIO DE EMISIÓN</h2>
-                            <div className="detalle-item">
-                                <Clock size={24} className="detalle-icon" />
-                                {/* 👇 Muestra la hora de emisión del programa actual */}
-                                <p className="detalle-text">{currentProgram.horaEmision || 'N/A'}</p>
+                            {/* CARD HORARIOS */}
+                            <div className="horarios-card">
+                                <div className="card-detalle horario-emision-card">
+                                    <h2 className='card-title'>INICIO</h2>
+                                    <div className="detalle-item">
+                                        <Clock size={24} className="detalle-icon"/>
+                                        <p className="detalle-text">{programaDetalle.horaInicio || '--:--'}</p>
+                                    </div>
+                                </div>
+                                <div className="card-detalle horario-finalizacion-card">
+                                    <h2 className='card-title'>FIN</h2>
+                                    <div className="detalle-item">
+                                        <Clock size={24} className="detalle-icon"/>
+                                        <p className="detalle-text">{programaDetalle.horaFin || '--:--'}</p>
+                                    </div>
+                                </div>
+                            </div>
+
+                            {/* CARD DESCARGA */}
+                            <div className="descargar-card-wrapper">
+                                <button className="btn-descargar" onClick={handleDownload}>
+                                    <Download size={24} />
+                                    <span>Descargar Contenido e Informe</span>
+                                </button>
+                                <div style={{marginTop:10, fontSize:'0.85rem', color:'#555', display:'flex', gap:10, justifyContent:'center'}}>
+                                    {getCleanFileName(programaDetalle.rutaArchivo) && (
+                                        <span style={{display:'flex', alignItems:'center'}}><FileText size={14} style={{marginRight:3}}/> Video</span>
+                                    )}
+                                    {getCleanFileName(programaDetalle.rutaInforme) && (
+                                        <span style={{display:'flex', alignItems:'center'}}><FileText size={14} style={{marginRight:3}}/> Informe</span>
+                                    )}
+                                </div>
                             </div>
                         </div>
-                        <div className="card-detalle horario-finalizacion-card">
-                            <h2 className='card-title'>HORARIO DE FINALIZACIÓN</h2>
-                            <div className="detalle-item">
-                                <Clock size={24} className="detalle-icon" />
-                                {/* 👇 Muestra la hora de finalización del programa actual */}
-                                <p className="detalle-text">{currentProgram.horaFinalizacion || 'N/A'}</p>
-                            </div>
+
+                        <div className="accion-buttons">
+                            <button className="btn-accion btn-no-publicar" onClick={() => handleEstado("Rechazado")}>
+                                Rechazar
+                            </button>
+                            <button className="btn-accion btn-publicar" onClick={() => handleEstado("Aprobado")}>
+                                Aprobar
+                            </button>
                         </div>
+                    </>
+                ) : (
+                    <div className="empty-state">
+                        <AlertCircle size={48} color="#ccc"/>
+                        <p>Selecciona un programa para ver detalles.</p>
                     </div>
-
-                    {/* DESCARGAR ARCHIVOS BUTTON */}
-                    <div className="descargar-card-wrapper">
-                        <button className="btn-descargar">
-                            <Download size={24} />
-                            <span>Descargar archivos</span>
-                        </button>
-                    </div>
-                </div>
-
-                {/* BOTONES DE ACCIÓN */}
-                <div className="accion-buttons">
-                    <button className="btn-accion btn-no-publicar">No publicar</button>
-                    <button className="btn-accion btn-publicar">Publicar</button>
-                </div>
+                )}
             </main>
         </div>
     );
 }
-
-
-
