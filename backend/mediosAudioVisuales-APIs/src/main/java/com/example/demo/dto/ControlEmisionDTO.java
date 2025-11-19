@@ -37,6 +37,8 @@ public class ControlEmisionDTO {
     /** DTO para la sección "Próximos" */
     @Data
     public static class ProgramaInfo {
+        private Long idPrograma; 
+
         private String titulo;
         private LocalTime horaInicio;
         private LocalTime horaFin;
