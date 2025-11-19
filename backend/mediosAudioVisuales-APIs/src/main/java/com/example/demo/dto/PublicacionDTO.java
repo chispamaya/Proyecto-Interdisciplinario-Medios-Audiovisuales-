@@ -5,11 +5,10 @@ import java.util.Date;
 
 @Data
 public class PublicacionDTO {
-    // Datos comunes para ordenar y filtrar
     private Long id;
     private String tipo; // "CONTENIDO" o "ENCUESTA"
-    private Date fechaCreacion;
+    private Date fechaCreacion; // <--- CRUCIAL PARA EL ORDEN
     
-    // Aquí guardaremos el objeto real (puede ser un Contenido o un EncuestaResultado)
+    // Aquí guardaremos el objeto completo (Contenido o EncuestaResultado)
     private Object detalle; 
 }

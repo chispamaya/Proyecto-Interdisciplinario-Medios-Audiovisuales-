@@ -137,25 +137,28 @@ public class UsuarioService {
 	    }
 
 	public Usuario login(String email, String contrasenia) {
-	        
+		
 	        // 1. Buscamos al usuario por su email
 	        Usuario usuarioEnDB = usuarioRepository.buscarUsuarioPorEmail(email);
 	
 	        // 2. Verificamos si el usuario existe
 	        if (usuarioEnDB == null) {
+
 	            // Usuario no encontrado
 	            return null; 
 	        }
-	
+
 	        // 3. Verificamos si la contraseña coincide
 	        // ⚠️ ADVERTENCIA DE SEGURIDAD: ¡Esto no es seguro!
 	        // En un proyecto real, NUNCA guardes contraseñas en texto plano.
 	        // Deberías usar un "hasher" (como BCrypt) para comparar.
 	        // Pero para tu proyecto, esta comparación simple funciona:
 	        if (usuarioEnDB.getContrasenia().equals(contrasenia)) {
+	      
 	            // ¡Éxito!
 	            return usuarioEnDB;
 	        } else {
+
 	            // Contraseña incorrecta
 	            return null;
 	        }

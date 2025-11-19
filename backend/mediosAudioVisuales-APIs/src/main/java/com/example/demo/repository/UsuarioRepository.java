@@ -66,6 +66,7 @@ public class UsuarioRepository {
         try {
             return jdbcTemplate.queryForObject(sql, new UsuarioRowMapper(), email);
         } catch (Exception e) {
+
             return null;
         }
     }

@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
 import java.util.List;
-// Se eliminó el import java.util.Collections que no se usaba
 
 @Service
 public class FeedService {
@@ -19,42 +18,41 @@ public class FeedService {
     private ContenidoRepository contenidoRepository;
 
     @Autowired
-    private EncuestaRepository encuestaRepository; 
+    private EncuestaRepository encuestaRepository;
 
     public List<PublicacionDTO> obtenerFeedUnificado() {
         List<PublicacionDTO> feed = new ArrayList<>();
 
-        // 1. TRAER Y CONVERTIR CONTENIDOS
+        // 1. Obtener y convertir CONTENIDOS
         List<Contenido> contenidos = contenidoRepository.listarTodosLosContenidos();
         for (Contenido c : contenidos) {
             PublicacionDTO item = new PublicacionDTO();
             item.setId(c.getId());
             item.setTipo("CONTENIDO");
             item.setFechaCreacion(c.getFechaCreacion());
-            item.setDetalle(c); 
+            item.setDetalle(c); // Guardamos todo el objeto contenido
             feed.add(item);
         }
 
-        // 2. TRAER Y CONVERTIR ENCUESTAS
-        // ¡Ahora sí llamamos al método que acabamos de crear!
+        // 2. Obtener y convertir ENCUESTAS
         List<EncuestaResultado> encuestas = encuestaRepository.listarTodasLasEncuestas();
-
         for (EncuestaResultado e : encuestas) {
             PublicacionDTO item = new PublicacionDTO();
             item.setId(e.getIdEncuesta());
             item.setTipo("ENCUESTA");
             item.setFechaCreacion(e.getFechaCreacion());
-            item.setDetalle(e);
+            item.setDetalle(e); // Guardamos todo el resultado de la encuesta
             feed.add(item);
         }
 
-        // 3. ORDENAR LA LISTA MEZCLADA (Lo más nuevo primero)
+        // 3. ORDENAR la lista combinada por fecha (DESCENDENTE)
         feed.sort((p1, p2) -> {
-            // Manejo de nulos para evitar errores si falta alguna fecha
+            // Si alguna fecha es nula, la mandamos al final para que no rompa
             if (p1.getFechaCreacion() == null && p2.getFechaCreacion() == null) return 0;
-            if (p1.getFechaCreacion() == null) return 1; // Nulos al final
+            if (p1.getFechaCreacion() == null) return 1;
             if (p2.getFechaCreacion() == null) return -1;
             
+            // Orden descendente (más nuevo arriba)
             return p2.getFechaCreacion().compareTo(p1.getFechaCreacion());
         });
 

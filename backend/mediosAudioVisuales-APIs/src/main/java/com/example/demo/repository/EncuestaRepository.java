@@ -43,15 +43,14 @@ public class EncuestaRepository {
         return (Long) outParams.get("idE");
     }
 
-    // Método para buscar una sola encuesta por ID
     public List<EncuestaResultado> buscarEncuestaConOpcionesYVotos(Long idEncuesta) {
         String sql = "CALL s('encuesta', ?, @mensaje)";
         return jdbcTemplate.query(sql, new EncuestaResultadoRowMapper(), idEncuesta);
     }
 
-    // --- ¡NUEVO MÉTODO! Listar TODAS las encuestas (para el Feed) ---
+    // --- NUEVO MÉTODO PARA EL FEED ---
     public List<EncuestaResultado> listarTodasLasEncuestas() {
-        // Pasamos NULL como ID para que el SP 's' entienda que queremos TODAS
+        // Enviamos NULL al SP para que entienda que queremos todas
         String sql = "CALL s('encuesta', NULL, @mensaje)";
         return jdbcTemplate.query(sql, new EncuestaResultadoRowMapper());
     }
@@ -65,13 +64,11 @@ public class EncuestaRepository {
             dto.setPreguntar(rs.getString("preguntar"));
             dto.setIdCreador(rs.getLong("idCreador"));
             
-            // Importante: Asegúrate que tu SP devuelve 'fechaCreacion'
-            // Si te da error aquí, es porque el SP no devuelve la columna.
-            // Puedes comentar esta línea si el SP no está actualizado.
+            // --- LECTURA DE FECHA (Requiere actualización del SP 's') ---
             try {
                 dto.setFechaCreacion(rs.getTimestamp("fechaCreacion"));
-            } catch (SQLException e) {
-                // Si la columna no existe, la ignoramos por ahora
+            } catch (Exception e) {
+                // Ignorar si no viene la columna
             }
 
             dto.setIdOpcion(rs.getLong("idOpcion"));
