@@ -51,7 +51,34 @@ public class EmisionRepository {
         return jdbcTemplate.query(sql, new EmisionRowMapper());
     }
 
+    public boolean insertarEmisionEnVivo(Long idPrograma, Long idUsuario) {
+        try {
+            // 1. Primero, "apagamos" cualquier otra emisión que pudiera haber quedado prendida por error
+            String sqlApagar = "UPDATE emisiones SET enVivo = false WHERE enVivo = true";
+            jdbcTemplate.update(sqlApagar);
 
+            // 2. Insertamos la nueva emisión
+            // Asegúrate que las columnas coincidan con tu DB (fecha, horaInicio, enVivo, etc.)
+            String sqlInsert = "INSERT INTO emisiones (idPrograma, fecha, horaInicio, enVivo) VALUES (?, CURDATE(), CURTIME(), true)";
+            
+            int filas = jdbcTemplate.update(sqlInsert, idPrograma);
+            return filas > 0;
+        } catch (Exception e) {
+            System.out.println("Error al crear emisión: " + e.getMessage());
+            return false;
+        }
+    }
+    
+    // --- 🔥 NUEVO MÉTODO: FINALIZAR EMISIÓN (Para el botón ROJO) 🔥 ---
+    public boolean finalizarEmision(Long idEmision, Long idUsuario) {
+        try {
+            String sql = "UPDATE emisiones SET enVivo = false, horaFin = CURTIME() WHERE id = ?";
+            int filas = jdbcTemplate.update(sql, idEmision);
+            return filas > 0;
+        } catch (Exception e) {
+            return false;
+        }
+    }
     private static class EmisionRowMapper implements RowMapper<Emision> {
         @Override
         public Emision mapRow(ResultSet rs, int rowNum) throws SQLException {
