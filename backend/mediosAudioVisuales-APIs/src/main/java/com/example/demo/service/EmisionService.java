@@ -24,7 +24,24 @@ public class EmisionService {
     public List<Emision> listarEmisiones() {
         return emisionRepository.listarTodasLasEmisiones();
     }
-
+    public Emision comenzarEmision(Long idPrograma, Long idUsuario) {
+        boolean exito = emisionRepository.insertarEmisionEnVivo(idPrograma, idUsuario);
+        
+        if (exito) {
+            // Si se guardó bien, devolvemos la lista actualizada o buscamos la recién creada.
+            // Para simplificar, devolvemos un objeto Emision "dummy" con éxito
+            Emision e = new Emision();
+            e.setIdPrograma(idPrograma);
+            e.setEnVivo(true);
+            return e;
+        } else {
+            throw new RuntimeException("No se pudo iniciar la emisión en la base de datos.");
+        }
+    }
+    public String finalizarEmision(Long idEmision, Long idUsuario) {
+        boolean exito = emisionRepository.finalizarEmision(idEmision, idUsuario);
+        return exito ? "Emisión finalizada correctamente." : "Error al finalizar.";
+    }
     /**
      * Lógica para OBTENER una sola emisión por ID.
      */

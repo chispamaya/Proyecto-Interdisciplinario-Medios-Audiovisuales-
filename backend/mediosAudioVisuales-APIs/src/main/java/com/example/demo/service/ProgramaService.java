@@ -205,20 +205,19 @@ public class ProgramaService {
 	    }
 	public ControlEmisionDTO getControlEmisionDashboard() {
 	        
-	        // --- LÓGICA DE ORQUESTACIÓN ---
 	        ControlEmisionDTO dashboard = new ControlEmisionDTO();
 	        LocalDate hoy = LocalDate.now();
 	        LocalTime ahora = LocalTime.now();
 	
-	        
-
+	        // --- A. DATOS "EN VIVO" ---
+	        // 1. Buscamos si hay alguna emisión activa (enVivo = true)
 	        Emision emisionEnVivo = emisionRepository.listarTodasLasEmisiones().stream()
-	                .filter(Emision::getEnVivo) // Filtra la lista por enVivo == true
+	                .filter(Emision::getEnVivo) 
 	                .findFirst()
-	                .orElse(null); // Si no hay ninguna, 'emisionEnVivo' es null
+	                .orElse(null);
 	
 	        if (emisionEnVivo != null) {
-	            // 2. Si hay algo "En Vivo", buscamos sus datos
+	            // 2. Si hay algo "En Vivo", buscamos sus datos de Programa
 	            Programa programaEnVivo = programaRepository.buscarProgramaPorId(emisionEnVivo.getIdPrograma());
 	            
 	            if (programaEnVivo != null) {
@@ -234,7 +233,6 @@ public class ProgramaService {
 	                // 4. Llenamos los "Bloques Publicitarios" (Segmentos) de ESE programa
 	                List<Segmento> segmentos = segmentoRepository.listarSegmentosPorPrograma(programaEnVivo.getId());
 	                
-	                // Convertimos la lista de Segmento a SegmentoInfo
 	                dashboard.setPublicidades(
 	                    segmentos.stream().map(seg -> {
 	                        ControlEmisionDTO.SegmentoInfo segInfo = new ControlEmisionDTO.SegmentoInfo();
@@ -246,32 +244,46 @@ public class ProgramaService {
 	            }
 	        }
 	        
-	        // --- B. DATOS "PRÓXIMOS PROGRAMAS" ---
+	        // --- B. DATOS "PRÓXIMOS PROGRAMAS" (AGENDA) ---
 	        
-	        // 1. Buscamos los programas de "HOY"
+	        // 1. Buscamos todos los días agendados para la fecha de HOY
 	        List<Dia> diasDeHoy = diaRepository.listarDiasPorFecha(hoy);
 	        List<Programa> todosLosProgramas = programaRepository.listarTodosLosProgramas();
 	        
-	        // 2. Creamos el "mapa" de programas para buscar rápido
+	        // 2. Creamos un mapa para acceso rápido a los datos del programa
 	        Map<Long, Programa> mapaProgramas = todosLosProgramas.stream()
 	                .collect(Collectors.toMap(Programa::getId, p -> p));
 	
-	        // 3. Filtramos y Mapeamos la lista
+	        // 3. Filtramos y Mapeamos la lista de próximos
 	        List<ControlEmisionDTO.ProgramaInfo> proximos = new ArrayList<>();
+	        
 	        for (Dia dia : diasDeHoy) {
 	            Programa prog = mapaProgramas.get(dia.getIdPrograma());
 	            
-	            // Si el programa existe Y su hora de inicio es DESPUÉS de ahora...
-	            if (prog != null && prog.getHoraInicio() != null && prog.getHoraInicio().isAfter(ahora)) {
+	            // 🔴 CORRECCIÓN IMPORTANTE:
+	            // Verificamos que la HORA DE FIN sea después de AHORA.
+	            // Esto incluye programas que van a empezar y programas que ESTÁN ocurriendo pero no terminaron.
+	            if (prog != null && prog.getHoraFin() != null && prog.getHoraFin().isAfter(ahora)) {
+	                
+	                // Opcional: Si este programa YA es el que está En Vivo, lo saltamos para no duplicar
+	                if (emisionEnVivo != null && emisionEnVivo.getIdPrograma().equals(prog.getId())) {
+	                    continue;
+	                }
+	
 	                ControlEmisionDTO.ProgramaInfo progInfo = new ControlEmisionDTO.ProgramaInfo();
+	                
+	                // ¡CRUCIAL! Setear el ID para que el botón del Frontend funcione
+	                progInfo.setIdPrograma(prog.getId()); 
+	                
 	                progInfo.setTitulo(prog.getNombre());
 	                progInfo.setHoraInicio(prog.getHoraInicio());
 	                progInfo.setHoraFin(prog.getHoraFin());
+	                
 	                proximos.add(progInfo);
 	            }
 	        }
 	        
-	        // (Opcional: ordenar la lista por hora de inicio)
+	        // Ordenamos la lista por hora de inicio (los más tempranos primero)
 	        proximos.sort((p1, p2) -> p1.getHoraInicio().compareTo(p2.getHoraInicio()));
 	        
 	        dashboard.setProximos(proximos);
