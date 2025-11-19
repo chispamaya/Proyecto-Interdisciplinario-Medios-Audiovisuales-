@@ -1,41 +1,26 @@
 package com.example.demo.config;
 
-import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.web.cors.CorsConfiguration;
-import org.springframework.web.cors.CorsConfigurationSource;
-import org.springframework.web.cors.UrlBasedCorsConfigurationSource;
-import org.springframework.web.servlet.config.annotation.EnableWebMvc;
-
-import java.util.List;
+import org.springframework.web.servlet.config.annotation.CorsRegistry;
+import org.springframework.web.servlet.config.annotation.ResourceHandlerRegistry;
+import org.springframework.web.servlet.config.annotation.WebMvcConfigurer;
 
 @Configuration
-@EnableWebMvc
-public class WebConfig {
+public class WebConfig implements WebMvcConfigurer {
 
-    // NOTA: Ya no implementamos WebMvcConfigurer.
-    // En su lugar, creamos este Bean que Spring Security usará automáticamente.
+    @Override
+    public void addCorsMappings(CorsRegistry registry) {
+        registry.addMapping("/**")
+                .allowedOrigins("http://localhost:5173") // Tu frontend
+                .allowedMethods("GET", "POST", "PUT", "DELETE", "OPTIONS", "PATCH")
+                .allowedHeaders("*") // Permitir todos los headers
+                .allowCredentials(true);
+    }
 
-    @Bean
-    public CorsConfigurationSource corsConfigurationSource() {
-        CorsConfiguration configuration = new CorsConfiguration();
-        
-        // 1. Permitir tu Frontend
-        configuration.setAllowedOrigins(List.of("http://localhost:5173"));
-        
-        // 2. Métodos permitidos
-        configuration.setAllowedMethods(List.of("GET", "POST", "PUT", "DELETE", "OPTIONS"));
-        
-        // 3. Headers permitidos
-        configuration.setAllowedHeaders(List.of("*"));
-        
-        // 4. Permitir credenciales
-        configuration.setAllowCredentials(true);
-        
-        // 5. Aplicar a TODAS las rutas
-        UrlBasedCorsConfigurationSource source = new UrlBasedCorsConfigurationSource();
-        source.registerCorsConfiguration("/**", configuration);
-        
-        return source;
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        // Configuración para servir las imágenes
+        registry.addResourceHandler("/uploads/**")
+                .addResourceLocations("file:uploads/");
     }
 }
