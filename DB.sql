@@ -1212,6 +1212,8 @@ INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7);
 
 ALTER TABLE usuario ADD COLUMN activo BOOLEAN DEFAULT TRUE;
 
+INSERT INTO usuario(nombre, email, contrasenia, idRol, activo) VALUES ("Admin", "admin@gmail.com", "1", 8, 1);
+
 
 
 
