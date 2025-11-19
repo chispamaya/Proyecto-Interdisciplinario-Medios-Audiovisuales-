@@ -1,57 +1,34 @@
 import React, { useState, useEffect } from 'react';
-import axios from 'axios';
-import { format, startOfWeek, addDays } from 'date-fns';
-import { es } from 'date-fns/locale';
-// CORRECCIÓN AQUÍ: Subimos dos niveles con ../../
 import '../../styles/pages/parrillaSemanal.css';
 
-export default function ParrillaSemanal() {
-    const [parrilla, setParrilla] = useState({});
-    const [cargando, setCargando] = useState(true);
-    
-    // Generamos los días de la semana actual para las cabeceras
-    const hoy = new Date();
-    const inicioSemana = startOfWeek(hoy, { weekStartsOn: 1 }); // Lunes
-    const diasSemana = Array.from({ length: 7 }).map((_, i) => addDays(inicioSemana, i));
+const diasSemana = ["LUNES", "MARTES", "MIERCOLES", "JUEVES", "VIERNES", "SABADO", "DOMINGO"];
 
+export default function ParrillaSemanal() {
+    
+    // 1. Estado local para guardar la parrilla que viene del Backend
+    const [parrillaReal, setParrillaReal] = useState({});
+    const [loading, setLoading] = useState(true);
+
+    // 2. Cargar datos al iniciar la página
     useEffect(() => {
-        cargarDatos();
+        const cargarParrilla = async () => {
+            try {
+                const response = await fetch('http://localhost:8080/api/programas/parrilla-semanal');
+                if (!response.ok) throw new Error("Error cargando parrilla");
+                
+                const data = await response.json();
+                // data será algo como: { "LUNES": [{nombrePrograma: "Noticias", ...}], "MARTES": [] }
+                setParrillaReal(data);
+            } catch (error) {
+                console.error(error);
+            } finally {
+                setLoading(false);
+            }
+        };
+        cargarParrilla();
     }, []);
 
-    const cargarDatos = async () => {
-        try {
-            // 1. Cargar Programas (para tener los nombres)
-            const resProgramas = await axios.get('http://localhost:8080/api/programas/todos'); 
-            const programasMap = {};
-            resProgramas.data.forEach(p => {
-                programasMap[p.id] = p.nombre || p.titulo;
-            });
-
-            // 2. Cargar la Parrilla (Días asignados)
-            const resDias = await axios.get('http://localhost:8080/api/dias/todos');
-            
-            // 3. Organizar por fecha
-            const parrillaOrganizada = {};
-
-            resDias.data.forEach(item => {
-                const fechaStr = item.dia; // "YYYY-MM-DD"
-                if (!parrillaOrganizada[fechaStr]) {
-                    parrillaOrganizada[fechaStr] = [];
-                }
-                parrillaOrganizada[fechaStr].push({
-                    programa: programasMap[item.idPrograma] || "Programa Desconocido",
-                    hora: "Horario a definir" 
-                });
-            });
-
-            setParrilla(parrillaOrganizada);
-            setCargando(false);
-
-        } catch (error) {
-            console.error("Error cargando parrilla:", error);
-            setCargando(false);
-        }
-    };
+    if (loading) return <div className="parrilla-container"><p>Cargando programación...</p></div>;
 
     return (
         <div className="parrilla-container">
@@ -59,40 +36,43 @@ export default function ParrillaSemanal() {
                 <h1>PROGRAMACIÓN SEMANAL</h1>
             </div>
 
-            {cargando ? (
-                <div style={{color:'white', textAlign:'center', padding:'20px'}}>Cargando programación...</div>
-            ) : (
-                <div className="parrilla-grid">
-                    {diasSemana.map((diaDate) => {
-                        const fechaKey = format(diaDate, 'yyyy-MM-dd');
-                        const nombreDia = format(diaDate, 'EEEE', { locale: es }).toUpperCase();
-                        const bloques = parrilla[fechaKey] || [];
+            <div className="parrilla-grid">
+                
+                {diasSemana.map((dia) => {
+                    
+                    // 3. Obtenemos los bloques del backend para este día
+                    const bloquesDelDia = parrillaReal[dia] || []; 
 
-                        return (
-                            <div key={fechaKey} className="dia-wrapper">
-                                <div className="dia-columna-header">
-                                    {nombreDia} <br/>
-                                    <span style={{fontSize:'0.8em', opacity:0.8}}>{format(diaDate, 'dd/MM')}</span>
-                                </div>
-                                
-                                <div className="dia-columna-contenido">
-                                    {bloques.length > 0 ? (
-                                        bloques.map((bloque, index) => (
-                                            <div key={`${fechaKey}-${index}`} className="bloque-programa">
-                                                <p className="programa-nombre">{bloque.programa}</p>
-                                            </div>
-                                        ))
-                                    ) : (
-                                        <div className="bloque-vacio" style={{padding:'10px', opacity:0.5, fontSize:'0.9rem'}}>
-                                            Sin programación
-                                        </div>
-                                    )}
-                                </div>
+                    return (
+                        <div key={`wrapper-${dia}`} className="dia-wrapper"> 
+                            
+                            <div className="dia-columna-header">
+                                {dia}
                             </div>
-                        );
-                    })}
-                </div>
-            )}
+                            
+                            <div className="dia-columna-contenido">
+                                
+                                {bloquesDelDia.length > 0 ? (
+                                    bloquesDelDia.map((bloque, index) => (
+                                        <div key={`${dia}-${index}`} className="bloque-programa">
+                                            <p className="programa-nombre">{bloque.nombrePrograma}</p>
+                                            <p className="programa-hora">
+                                                {bloque.horaInicio} - {bloque.horaFin}
+                                            </p>
+                                            
+                                            {/* Si quisieras mostrar "En vivo" basado en la hora actual, podrías calcularlo aquí */}
+                                        </div>
+                                    ))
+                                ) : (
+                                    <div className="bloque-vacio">
+                                        <p>Sin programación</p>
+                                    </div>
+                                )}
+                            </div>
+                        </div> 
+                    );
+                })}
+            </div>
         </div>
     );
 }
