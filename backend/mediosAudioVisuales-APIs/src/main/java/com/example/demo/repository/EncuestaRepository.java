@@ -23,12 +23,7 @@ public class EncuestaRepository {
     @Autowired
     private JdbcTemplate jdbcTemplate;
 
-    /**
-     * Llama al SP 'cen' para crear una encuesta y DEVUELVE el ID nuevo.
-     * SP: cen(IN preguntar1, IN idU, OUT mensaje, IN idUs, OUT idE)
-     */
     public Long crearEncuesta(Encuesta encuesta, Long idUsuarioAuditoria) {
-        
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate)
                 .withProcedureName("cen")
                 .declareParameters(
@@ -45,36 +40,40 @@ public class EncuestaRepository {
         inParams.put("idUs", idUsuarioAuditoria);
 
         Map<String, Object> outParams = jdbcCall.execute(inParams);
-        
         return (Long) outParams.get("idE");
     }
 
-    
-    /**
-     * Llama a "CALL s('encuesta', ID, @mensaje)" para traer la encuesta,
-     * sus opciones y el conteo de votos, TAL CUAL lo hace tu SP.
-     * SP: s(IN tabla, IN id1, OUT mensaje)
-     */
+    // Método para buscar una sola encuesta por ID
     public List<EncuestaResultado> buscarEncuestaConOpcionesYVotos(Long idEncuesta) {
-        
         String sql = "CALL s('encuesta', ?, @mensaje)";
-        
-        // Usa el NUEVO RowMapper que traduce el resultado del JOIN
         return jdbcTemplate.query(sql, new EncuestaResultadoRowMapper(), idEncuesta);
     }
-    /**
-     * El "TRADUCTOR" NUEVO para el resultado del JOIN del SP 's'
-     * (Traduce la fila combinada a un DTO 'EncuestaResultado')
-     */
+
+    // --- ¡NUEVO MÉTODO! Listar TODAS las encuestas (para el Feed) ---
+    public List<EncuestaResultado> listarTodasLasEncuestas() {
+        // Pasamos NULL como ID para que el SP 's' entienda que queremos TODAS
+        String sql = "CALL s('encuesta', NULL, @mensaje)";
+        return jdbcTemplate.query(sql, new EncuestaResultadoRowMapper());
+    }
+
     class EncuestaResultadoRowMapper implements RowMapper<EncuestaResultado> {
         @Override
         public EncuestaResultado mapRow(ResultSet rs, int rowNum) throws SQLException {
             EncuestaResultado dto = new EncuestaResultado();
             
-            // Mapeamos los alias del SELECT de tu SP 's'
             dto.setIdEncuesta(rs.getLong("idEncuesta"));
             dto.setPreguntar(rs.getString("preguntar"));
             dto.setIdCreador(rs.getLong("idCreador"));
+            
+            // Importante: Asegúrate que tu SP devuelve 'fechaCreacion'
+            // Si te da error aquí, es porque el SP no devuelve la columna.
+            // Puedes comentar esta línea si el SP no está actualizado.
+            try {
+                dto.setFechaCreacion(rs.getTimestamp("fechaCreacion"));
+            } catch (SQLException e) {
+                // Si la columna no existe, la ignoramos por ahora
+            }
+
             dto.setIdOpcion(rs.getLong("idOpcion"));
             dto.setOpcion(rs.getString("opcion"));
             dto.setTotalVotos(rs.getLong("totalVotos"));
@@ -83,4 +82,3 @@ public class EncuestaRepository {
         }
     }
 }
-

@@ -80,6 +80,7 @@ class ContenidoRowMapper implements RowMapper<Contenido> {
         contenido.setRutaArchivo(rs.getString("rutaArchivo"));
         contenido.setTexto(rs.getString("texto")); 
         contenido.setIdUsuario(rs.getLong("idUsuario"));
+        contenido.setFechaCreacion(rs.getTimestamp("fechaCreacion"));
         return contenido;
     }
 }
