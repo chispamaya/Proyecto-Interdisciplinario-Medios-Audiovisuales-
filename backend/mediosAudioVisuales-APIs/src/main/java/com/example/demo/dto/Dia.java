@@ -2,6 +2,8 @@ package com.example.demo.dto; // (O el paquete que estés usando, ej: com.exampl
 
 import lombok.Data;
 import java.time.LocalDate;
+
+import com.fasterxml.jackson.annotation.JsonFormat;
 // Se eliminan todas las importaciones de jakarta.persistence.*
 
 @Data // <-- Se queda (Lombok)
@@ -9,7 +11,7 @@ public class Dia {
 
     // Se van @Id y @GeneratedValue
     private Long id;
-
+    @JsonFormat(shape = JsonFormat.Shape.STRING, pattern = "yyyy-MM-dd")
     private LocalDate dia;
 
     // Se van @ManyToOne y @JoinColumn
