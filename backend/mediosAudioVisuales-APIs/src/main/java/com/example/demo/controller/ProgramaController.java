@@ -4,6 +4,7 @@ package com.example.demo.controller;
 import com.example.demo.dto.AprobacionDTO;
 import com.example.demo.dto.ControlEmisionDTO;
 import com.example.demo.dto.Dia;
+import com.example.demo.dto.ParrillaDTO;
 import com.example.demo.dto.Programa;
 
 // Importamos el "Cerebro" (Service)
@@ -108,10 +109,9 @@ public class ProgramaController {
      * - Método: POST
      * - URL: /api/programas/dias
      */
-    @PostMapping("/dias")
-    public String asignarDia(@RequestBody Dia dia) {
-        Long idUsuarioQueAsigna = 1L; // TODO: Reemplazar con ID de seguridad
-        return programaService.asignarDia(dia, idUsuarioQueAsigna);
+    @GetMapping("/dias")
+    public List<Dia> listarDiasAsignados() {
+        return programaService.listarTodosLosDias();
     }
 
     /**
@@ -150,7 +150,10 @@ public class ProgramaController {
         // Llama al método que arma el DTO "Maestro"
         return programaService.getControlEmisionDashboard();
     }
-
+    @GetMapping("/parrilla-semanal")
+    public Map<String, List<ParrillaDTO>> getParrillaSemanal() {
+        return programaService.obtenerParrillaSemanal();
+    }
     /**
      * Endpoint para "SACAR DEL AIRE" (Botón en)
      * - Método: PUT
