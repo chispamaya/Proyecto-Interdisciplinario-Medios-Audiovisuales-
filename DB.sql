@@ -149,6 +149,83 @@ CREATE TABLE auditoria(
 	foreign key (usuario_id) references usuario(id)
 );
 
+INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
+
+INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
+
+INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
+
+INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
+
+INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
+
+INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
+
+INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
+
+
+INSERT INTO rol (nombre) VALUES ('Administrador');   
+
+
+INSERT INTO rol (nombre) VALUES ('Programador');
+
+INSERT INTO rol (nombre) VALUES ('Programador');
+
+INSERT INTO rol (nombre) VALUES ('Programador');
+
+
+INSERT INTO rol (nombre) VALUES ('Espectador');
+
+
+ 
+INSERT INTO permisos (tipoPermiso) VALUES ('SUBIR_CONTENIDO');
+INSERT INTO permisos (tipoPermiso) VALUES ('ESTADO-APROBACION'); 
+INSERT INTO permisos (tipoPermiso) VALUES ('VER_PARRILLA'); 
+ 
+INSERT INTO permisos (tipoPermiso) VALUES ('HACER-TODO');  
+
+INSERT INTO permisos (tipoPermiso) VALUES ('ARMAR_PARRILLA'); 
+INSERT INTO permisos (tipoPermiso) VALUES ('CONTROLAR_EMISION');
+
+INSERT INTO permisos (tipoPermiso) VALUES ('HACER-NADA');
+
+
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (1, 1); 
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (1, 2); 
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (1, 3); 
+
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (2, 1); 
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (2, 2); 
+
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (3, 1); 
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (3, 3); 
+
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (4, 2); 
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (4, 3); 
+
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (5, 1); 
+
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (6, 2); 
+
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (7, 3); 
+
+
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (8, 4); 
+
+
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (9, 5); 
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (9, 6); 
+
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (10, 5); 
+
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (11, 6); 
+
+
+INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7); 
+
+ALTER TABLE usuario ADD COLUMN activo BOOLEAN DEFAULT TRUE;
+
+INSERT INTO usuario(nombre, email, contrasenia, idRol, activo) VALUES ("Admin", "admin@gmail.com", "1", 8, 1);
 
 DELIMITER // 
 CREATE PROCEDURE s(IN tabla VARCHAR(50), IN id1 INT, OUT mensaje VARCHAR(50))
@@ -1136,83 +1213,8 @@ Delimiter //
 Delimiter ;
  
 
-INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
-
-INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
-
-INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
-
-INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
-
-INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
-
-INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
-
-INSERT INTO rol (nombre) VALUES ('Productor/Editor'); 
 
 
-INSERT INTO rol (nombre) VALUES ('Administrador');   
-
-
-INSERT INTO rol (nombre) VALUES ('Programador');
-
-INSERT INTO rol (nombre) VALUES ('Programador');
-
-INSERT INTO rol (nombre) VALUES ('Programador');
-
-
-INSERT INTO rol (nombre) VALUES ('Espectador');
-
-
- 
-INSERT INTO permisos (tipoPermiso) VALUES ('SUBIR_CONTENIDO');
-INSERT INTO permisos (tipoPermiso) VALUES ('ESTADO-APROBACION'); 
-INSERT INTO permisos (tipoPermiso) VALUES ('VER_PARRILLA'); 
- 
-INSERT INTO permisos (tipoPermiso) VALUES ('HACER-TODO');  
-
-INSERT INTO permisos (tipoPermiso) VALUES ('ARMAR_PARRILLA'); 
-INSERT INTO permisos (tipoPermiso) VALUES ('CONTROLAR_EMISION');
-
-INSERT INTO permisos (tipoPermiso) VALUES ('HACER-NADA');
-
-
-INSERT INTO permisos_rol (idRol, idPermiso) VALUES (1, 1); 
-INSERT INTO permisos_rol (idRol, idPermiso) VALUES (1, 2); 
-INSERT INTO permisos_rol (idRol, idPermiso) VALUES (1, 3); 
-
-INSERT INTO permisos_rol (idRol, idPermiso) VALUES (2, 1); 
-INSERT INTO permisos_rol (idRol, idPermiso) VALUES (2, 2); 
-
-INSERT INTO permisos_rol (idRol, idPermiso) VALUES (3, 1); 
-INSERT INTO permisos_rol (idRol, idPermiso) VALUES (3, 3); 
-
-INSERT INTO permisos_rol (idRol, idPermiso) VALUES (4, 2); 
-INSERT INTO permisos_rol (idRol, idPermiso) VALUES (4, 3); 
-
-INSERT INTO permisos_rol (idRol, idPermiso) VALUES (5, 1); 
-
-INSERT INTO permisos_rol (idRol, idPermiso) VALUES (6, 2); 
-
-INSERT INTO permisos_rol (idRol, idPermiso) VALUES (7, 3); 
-
-
-INSERT INTO permisos_rol (idRol, idPermiso) VALUES (8, 4); 
-
-
-INSERT INTO permisos_rol (idRol, idPermiso) VALUES (9, 5); 
-INSERT INTO permisos_rol (idRol, idPermiso) VALUES (9, 6); 
-
-INSERT INTO permisos_rol (idRol, idPermiso) VALUES (10, 5); 
-
-INSERT INTO permisos_rol (idRol, idPermiso) VALUES (11, 6); 
-
-
-INSERT INTO permisos_rol (idRol, idPermiso) VALUES (12, 7); 
-
-ALTER TABLE usuario ADD COLUMN activo BOOLEAN DEFAULT TRUE;
-
-INSERT INTO usuario(nombre, email, contrasenia, idRol, activo) VALUES ("Admin", "admin@gmail.com", "1", 8, 1);
 
 
 
