@@ -1,4 +1,7 @@
+// src/pages/admin/ReportesAudiencia.jsx
 import React, { useState, useEffect } from 'react';
+// 🟢 Importamos axios
+import axios from 'axios'; 
 // Importamos los estilos para esta página
 import '../../styles/pages/reportesAudiencia.css';
 // Importamos íconos de Lucide
@@ -136,23 +139,16 @@ export default function ReportesAudiencia() {
         setLoading(true);
         setError(null);
         try {
-            const response = await fetch('http://localhost:8080/api/encuestas/reporte-completo');
+            // 🟢 Usamos axios.get
+            const response = await axios.get('http://localhost:8080/api/encuestas/reporte-completo');
             
-            if (!response.ok) {
-                // Lanzamos el status para que lo capture el catch y muestre el gato correspondiente
-                throw { status: response.status };
-            }
-
-            // Recibimos una lista plana de filas (DTO EncuestaResultado)
-            const rawData = await response.json();
+            // Axios devuelve el cuerpo en response.data
+            const rawData = response.data;
 
             // --- Lógica de Agrupación ---
-            // El backend devuelve filas individuales por cada opción.
-            // Necesitamos agruparlas por 'idEncuesta'.
             const pollsMap = {};
 
             rawData.forEach(row => {
-                // Si la encuesta no existe aún en el mapa, la creamos
                 if (!pollsMap[row.idEncuesta]) {
                     pollsMap[row.idEncuesta] = {
                         id: row.idEncuesta,
@@ -162,8 +158,6 @@ export default function ReportesAudiencia() {
                     };
                 }
 
-                // Agregamos la opción actual a la encuesta correspondiente
-                // Verificamos que idOpcion no sea nulo (por si acaso)
                 if (row.idOpcion) {
                     pollsMap[row.idEncuesta].options.push({
                         id: row.idOpcion,
@@ -175,15 +169,15 @@ export default function ReportesAudiencia() {
                 }
             });
 
-            // Convertimos el mapa de objetos de nuevo a un array
             const mappedData = Object.values(pollsMap);
 
             setPollsData(mappedData);
 
         } catch (err) {
             console.error("Error fetching polls:", err);
-            // Si el error tiene status (ej: 404, 500) úsalo, si no (ej: red caída) usa 503
-            setError(err.status || 503); 
+            // Manejo de errores de Axios: si hay respuesta, usa su status; si no (ej: red caída), usa 503
+            const status = err.response?.status || 503; 
+            setError(status); 
         } finally {
             setLoading(false);
         }
