@@ -24,6 +24,7 @@ import org.springframework.web.bind.annotation.CrossOrigin; // <-- ¡IMPORTA EST
  */
 @RestController
 @RequestMapping("/api/programas")
+
 public class ProgramaController {
 
     // --- 1. Conectamos el "Cerebro" (Service) ---
