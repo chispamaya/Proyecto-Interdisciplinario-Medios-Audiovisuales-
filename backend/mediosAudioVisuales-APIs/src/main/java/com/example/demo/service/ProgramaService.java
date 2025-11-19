@@ -127,7 +127,12 @@ public class ProgramaService {
         for (Dia dia : todosLosDias) {
             Programa programa = mapaProgramas.get(dia.getIdPrograma());
             if (programa == null) continue; 
-
+            String estado = programa.getEstadoAprobacion();
+            
+            
+            if (estado != null && (estado.equalsIgnoreCase("APROBADO") || estado.equalsIgnoreCase("RECHAZADO"))) {
+                continue; 
+            }
             Long idProponente = mapaPropuestas.get(programa.getId());
             String nombreProponente = mapaUsuarios.get(idProponente);
             
