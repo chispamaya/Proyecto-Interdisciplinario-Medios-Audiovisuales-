@@ -45,6 +45,9 @@ public class ProgramaService {
         if (nuevoPrograma.getNombre() == null || nuevoPrograma.getNombre().isEmpty()) {
             return "Error: El programa debe tener un nombre.";
         }
+        if (nuevoPrograma.getEstadoAprobacion() == null || nuevoPrograma.getEstadoAprobacion().isEmpty()) {
+            nuevoPrograma.setEstadoAprobacion("Pendiente"); 
+        }
         return programaRepository.crearPrograma(nuevoPrograma, idUsuarioQueCrea);
     }
 
