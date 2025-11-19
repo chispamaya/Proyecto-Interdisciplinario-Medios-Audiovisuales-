@@ -22,7 +22,6 @@ public class UsuarioRepository {
     // --- MÉTODOS DE ESCRITURA (CUD) USANDO SimpleJdbcCall ---
 
     public String crearUsuario(Usuario usuario, Long idUsuarioAuditoria) {
-    	
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate).withProcedureName("cu");
 
         Map<String, Object> inParams = new HashMap<>();
@@ -47,13 +46,17 @@ public class UsuarioRepository {
         return (String) outParams.get("mensaje");
     }
 
-
-    public String modificarRolDeUsuario(Long idUsuarioAModificar, Long idNuevoRol, Long idUsuarioAuditoria) {
+    /**
+     * ESTE ES EL MÉTODO QUE CAMBIA.
+     * Llama al SP 'mu' que ahora pide: id, contrasenia, rol.
+     */
+    public String actualizarUsuario(Long idUsuarioAModificar, String nuevaContrasenia, Long idNuevoRol, Long idUsuarioAuditoria) {
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate).withProcedureName("mu");
 
         Map<String, Object> inParams = new HashMap<>();
         inParams.put("id1", idUsuarioAModificar);
-        inParams.put("idRol1", idNuevoRol);
+        inParams.put("contrasenia1", nuevaContrasenia); // Nuevo parámetro
+        inParams.put("idRol1", idNuevoRol);             // Parámetro existente
         inParams.put("idUs", idUsuarioAuditoria);
 
         Map<String, Object> outParams = jdbcCall.execute(inParams);
@@ -62,40 +65,34 @@ public class UsuarioRepository {
 
     public Usuario buscarUsuarioPorEmail(String email) {
         String sql = "SELECT * FROM usuario WHERE email = ?";
-        
         try {
             return jdbcTemplate.queryForObject(sql, new UsuarioRowMapper(), email);
         } catch (Exception e) {
-
             return null;
         }
     }
     
-    
     public Usuario buscarUsuarioPorId(Long idUsuarioBuscado) {
-       
+        // Usamos el SP 's' o una query directa, como prefieras. Tu código usaba 's'.
+        // OJO: Asegúrate que tu SP 's' devuelva el resultset correctamente.
+        // Si da problemas, puedes usar: "SELECT * FROM usuario WHERE id = ?"
     	String sql = "CALL s('usuario', ?, @mensaje)";
-    	
         try {
         	return jdbcTemplate.queryForObject(sql, new UsuarioRowMapper(), idUsuarioBuscado);        
         } catch (Exception e) {
-            
             return null; 
         }
     }
 
-   
     public List<Usuario> listarTodosLosUsuarios() {
-        // 💥 CAMBIO: Filtramos solo los activos 💥
         String sql = "SELECT * FROM usuario WHERE activo = TRUE";       
         return jdbcTemplate.query(sql, new UsuarioRowMapper());
     }
+
     class UsuarioRowMapper implements RowMapper<Usuario> {
         @Override
         public Usuario mapRow(ResultSet rs, int rowNum) throws SQLException {
             Usuario usuario = new Usuario();
-            
-            // Mapeamos columna por columna
             usuario.setId(rs.getLong("id"));
             usuario.setEmail(rs.getString("email"));
             usuario.setNombre(rs.getString("nombre"));
@@ -106,5 +103,3 @@ public class UsuarioRepository {
         }
     }
 }
-
-
