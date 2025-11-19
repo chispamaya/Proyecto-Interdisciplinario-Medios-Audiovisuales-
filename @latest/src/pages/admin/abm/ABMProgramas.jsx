@@ -1,35 +1,44 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useNavigate } from 'react-router-dom'; 
-// Importa los iconos aquí
-import { Edit, Trash2 } from 'lucide-react'; 
+import { Edit, Trash2, RefreshCw } from 'lucide-react'; // Agregué RefreshCw para carga
+import axios from 'axios'; // 🟢 Importamos Axios
 import ABMPageLayout from '../../../components/abm/ABMPageLayout.jsx';
 import ABMProgramasForm from './ABMProgramasForm.jsx';
 
-// --- Datos de Ejemplo (Sin cambios) ---
-const programasData = [
-    { id: 1, nombre: "Noticias Matinales", duracion: "60 min", categoria: "Noticias", estado: "Activo" },
-    { id: 2, nombre: "Cine en Casa", duracion: "120 min", categoria: "Entretenimiento", estado: "Inactivo" },
-    { id: 3, nombre: "Deportes Hoy", duracion: "90 min", categoria: "Deportes", estado: "Activo" },
-    { id: 4, nombre: "El Debate Político", duracion: "75 min", categoria: "Política", estado: "Activo" },
-    { id: 5, nombre: "Recetas de Mamá", duracion: "30 min", categoria: "Cocina", estado: "Activo" },
-    { id: 6, nombre: "Música Clásica", duracion: "45 min", categoria: "Cultura", estado: "Inactivo" },
-    { id: 7, nombre: "Entrevistas Exclusivas", duracion: "60 min", categoria: "Noticias", estado: "Activo" },
-    { id: 8, nombre: "Series Retro", duracion: "150 min", categoria: "Entretenimiento", estado: "Activo" },
-    { id: 9, nombre: "Resumen Semanal", duracion: "40 min", categoria: "Noticias", estado: "Activo" },
-];
-
+// --- Función Auxiliar: Calcular Duración ---
+// Convierte "10:00:00" y "11:30:00" en "90 min"
+const calcularDuracionEnMinutos = (inicio, fin) => {
+    
+    // 1. Verificación robusta contra nulls y formatos inválidos
+    if (!inicio || !fin || !Array.isArray(inicio) || !Array.isArray(fin) || inicio.length < 2 || fin.length < 2) {
+        return "N/A";
+    }
+    
+    // 2. Desestructuramos directamente el array [H, M]
+    const [h1, m1] = inicio;
+    const [h2, m2] = fin;
+    
+    // 3. Lógica de cálculo (idéntica a la anterior)
+    const minutosInicio = h1 * 60 + m1;
+    const minutosFin = h2 * 60 + m2;
+    
+    let diferencia = minutosFin - minutosInicio;
+    if (diferencia < 0) diferencia += 24 * 60; // Ajuste por si cruza la medianoche
+    
+    return `${diferencia} min`;
+};
 
 // Función que crea la definición de columnas
 const getColumnasProgramas = (onEdit, onDelete) => [
     { key: 'id', header: 'ID' },
     { key: 'nombre', header: 'Nombre' },
-    { key: 'duracion', header: 'Duración' },
+    { key: 'duracion', header: 'Duración' }, // Ahora es calculado
     { key: 'categoria', header: 'Categoría' },
-    { key: 'estado', header: 'Estado' },
+    { key: 'estado', header: 'Estado' }, // Mapeado de estadoAprobacion
     {
         key: 'editar',
         header: 'Editar',
-        className: 'abm-columna-accion', // Clase para centrar
+        className: 'abm-columna-accion',
         render: (item) => (
             <button 
                 onClick={() => onEdit(item.id)} 
@@ -43,7 +52,7 @@ const getColumnasProgramas = (onEdit, onDelete) => [
     {
         key: 'eliminar',
         header: 'Eliminar',
-        className: 'abm-columna-accion', // Clase para centrar
+        className: 'abm-columna-accion',
         render: (item) => (
             <button 
                 onClick={() => onDelete(item.id)} 
@@ -57,27 +66,74 @@ const getColumnasProgramas = (onEdit, onDelete) => [
 ];
 
 export default function ABMProgramas() {
-    const [editingId, setEditingId] = useState(null); 
     const navigate = useNavigate(); 
     
+    // --- Estados ---
+    const [programas, setProgramas] = useState([]); // Datos reales
+    const [loading, setLoading] = useState(false);
+    const [editingId, setEditingId] = useState(null); 
+
+    // --- 1. Cargar Programas (GET) ---
+    const fetchProgramas = async () => {
+        setLoading(true);
+        try {
+            const response = await axios.get('http://localhost:8080/api/programas');
+            
+            // Transformamos los datos del Backend para que encajen en la tabla
+            const datosFormateados = response.data.map(prog => ({
+                id: prog.id,
+                nombre: prog.nombre,
+                categoria: prog.categoria,
+                // Calculamos duración basado en horaInicio y horaFin
+                duracion: calcularDuracionEnMinutos(prog.horaInicio, prog.horaFin), 
+                // Mapeamos el nombre del campo (Backend: estadoAprobacion -> Frontend: estado)
+                estado: prog.estadoAprobacion 
+            }));
+
+            setProgramas(datosFormateados);
+        } catch (error) {
+            console.error("Error cargando programas:", error);
+        } finally {
+            setLoading(false);
+        }
+    };
+
+    // Cargar al montar el componente
+    useEffect(() => {
+        fetchProgramas();
+    }, []);
+
+    // --- 2. Manejadores ---
+
     const handleEdit = (id) => {
         setEditingId(id); 
     };
 
-    const handleDelete = (id) => {
+    const handleDelete = async (id) => {
         if (window.confirm(`¿Seguro que deseas eliminar el programa ID: ${id}?`)) {
-            console.log(`Eliminar programa ID: ${id}`);
+            try {
+                // Llamada al Backend
+                await axios.delete(`http://localhost:8080/api/programas/${id}`);
+                // Si sale bien, recargamos la lista
+                fetchProgramas();
+            } catch (error) {
+                console.error("Error al eliminar:", error);
+                alert("No se pudo eliminar el programa.");
+            }
         }
     };
     
     const handleAdd = () => {
-        navigate('/subida'); // Sigue yendo a /subida
+        navigate('/subida'); 
     };
 
+    // Se llama cuando el formulario termina (ya sea Guardar o Cancelar)
     const handleCancelOrSuccess = () => {
-        setEditingId(null); 
+        setEditingId(null);
+        fetchProgramas(); // Recargamos la lista para ver los cambios editados
     };
     
+    // --- Renderizado del Formulario de Edición ---
     if (editingId !== null) {
         return (
             <ABMProgramasForm 
@@ -94,10 +150,10 @@ export default function ABMProgramas() {
     return (
         <ABMPageLayout
             title="ABM de Programas"
-            columns={columnas} // Pasa las columnas listas
-            data={programasData}
+            columns={columnas}
+            // Si está cargando, podrías pasar un array vacío o manejarlo en el layout
+            data={programas} 
             onAdd={handleAdd} 
-            // Ya no pasa onEdit/onDelete aquí
         />
     );
 }
