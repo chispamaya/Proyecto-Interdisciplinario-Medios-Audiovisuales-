@@ -23,16 +23,28 @@ public class DiaRepository {
     /**
      * Llama al SP cd (Crear Dia).
      */
-    public String crearDia(Dia dia, Long idUsuarioAuditoria) {
-        SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate).withProcedureName("cd");
-
-        Map<String, Object> inParams = new HashMap<>();
-        inParams.put("dia1", dia.getDia()); 
-        inParams.put("idP1", dia.getIdPrograma());
-        inParams.put("idUs", idUsuarioAuditoria); 
-
-        Map<String, Object> outParams = jdbcCall.execute(inParams);
-        return (String) outParams.get("mensaje");
+    public String crearDia(Dia dia, Long idUsuario) {
+        try {
+            // INTENTO 1: Estándar SQL (snake_case) -> Lo más probable
+            // id_programa, dia
+            String sql = "INSERT INTO dias (dia, id_programa) VALUES (?, ?)";
+            jdbcTemplate.update(sql, dia.getDia(), dia.getIdPrograma());
+            return "Asignación guardada correctamente.";
+            
+        } catch (Exception e) {
+            System.err.println("❌ Falló insert SQL estándar: " + e.getMessage());
+            
+            try {
+                // INTENTO 2: CamelCase (por si acaso)
+                String sql2 = "INSERT INTO dias (dia, idPrograma) VALUES (?, ?)";
+                jdbcTemplate.update(sql2, dia.getDia(), dia.getIdPrograma());
+                return "Asignación guardada (CamelCase).";
+            } catch (Exception e2) {
+                e2.printStackTrace();
+                // Devolvemos error 500 explícito para que el frontend sepa qué pasó
+                throw new RuntimeException("Error SQL al guardar día: " + e.getMessage());
+            }
+        }
     }
 
     /**
