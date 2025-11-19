@@ -23,6 +23,21 @@ public class ProgramaRepository {
      * Llama al SP 'cpr' (CORREGIDO)
      * Ahora pasa los 10 parámetros
      */
+    public String actualizarEstado(Long idPrograma, String nuevoEstado, Long idUsuarioAuditoria) {
+        try {
+            String sql = "UPDATE programas SET estadoAprobacion = ? WHERE id = ?";
+            int filasAfectadas = jdbcTemplate.update(sql, nuevoEstado, idPrograma);
+            
+            if (filasAfectadas > 0) {
+                // Opcional: Registrar auditoría aquí si es necesario
+                return "Estado actualizado correctamente.";
+            } else {
+                return "Error: No se encontró el programa.";
+            }
+        } catch (Exception e) {
+            return "Error al actualizar estado: " + e.getMessage();
+        }
+    }
     public String crearPrograma(Programa programa, Long idUsuarioAuditoria) {
         
         SimpleJdbcCall jdbcCall = new SimpleJdbcCall(jdbcTemplate).withProcedureName("cpr");
